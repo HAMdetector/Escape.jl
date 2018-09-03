@@ -1,4 +1,4 @@
-export HLAAllele, parse_allele, is_valid_allele
+export HLAAllele, HLAType, parse_allele, is_valid_allele, limit_hla_accuracy
 
 struct HLAAllele
     gene::Union{T} where T <: AbstractString
@@ -7,6 +7,23 @@ struct HLAAllele
     field_3::Union{Missing, T} where T <: AbstractString
     field_4::Union{Missing, T} where T <: AbstractString
     suffix::Union{Missing, T} where T <: AbstractString
+end
+
+struct HLAType
+    alleles::NTuple{6, HLAAllele}
+
+    function HLAType(alleles)
+        genes = Tuple(allele.gene for allele in alleles)
+
+        for gene in ("A", "B", "C")
+            c = count(genes .== gene) 
+            if c != 2
+                error("HLA type must contain 2 $gene alleles, got $(c)")
+            end
+        end
+
+        new(alleles)
+    end
 end
 
 """
@@ -36,10 +53,6 @@ function is_valid_allele(s::AbstractString)
     end
 
     return true
-end
-
-function HLAAllele(::Missing)
-    HLAAllele((missing for i in 1:6)...)
 end
 
 function parse_allele(x::AbstractString)
@@ -77,7 +90,7 @@ function parse_allele(x::AbstractString)
 end
 
 function parse_allele(x...)
-    return collect(parse_allele.(x))
+    return NTuple{length(x), HLAAllele}(parse_allele(allele) for allele in x)
 end
 
 function Base.rand(S::Type{HLAAllele}, gene::Symbol)
@@ -93,4 +106,27 @@ function Base.rand(S::Type{HLAAllele}, gene::Symbol)
     end
 
     return parse_allele(rand(allele_strings))
+end
+
+function Base.rand(::Type{HLAType})
+    hla_alleles = Tuple(rand(HLAAllele, s) for s in (:A, :A, :B, :B, :C, :C))
+
+    return HLAType(hla_alleles)
+end
+
+function Base.rand(::Type{HLAType}, d::Int)
+    return [rand(HLAType) for i in 1:d]
+end
+
+function limit_hla_accuracy(s::HLAAllele; depth::Int = 1)
+    depth < 1 || depth > 5 && error("depth must be between 1 and 5")
+
+    HLA_components::Vector{Union{Missing, String}} = [missing for i in 1:6]
+    HLA_components[1] = s.gene
+    fields = fieldnames(HLAAllele)
+    for i in 2:(depth + 1)
+        HLA_components[i] = getfield(s, fields[i]) 
+    end
+
+    return HLAAllele(HLA_components...)
 end

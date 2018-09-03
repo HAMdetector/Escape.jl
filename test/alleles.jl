@@ -4,6 +4,11 @@
     @test_throws ErrorException HLAAllele("HLA-A*1110N")
 end
 
+@testset "HLAType(::NTuple{6, HLAAllele})" begin
+    @test HLAType(parse_allele("A13", "A21", "B51", "B57", "C03", "C07")) isa HLAType
+    @test_throws ErrorException HLAType(parse_allele("A13", "B07"))
+end
+
 @testset "Base.:(==)(::HLAAllele, ::HLAAllele)" begin
     @test HLAAllele("HLA-B*11:10") == HLAAllele("HLA-B*11:10")
     @test HLAAllele("HLA-B*11:10") != HLAAllele("HLA-B*11:11")
@@ -46,7 +51,7 @@ end
 
 @testset "parse_allele(x...)" begin
     @test length(parse_allele("A*11", "A*12")) == 2
-    @test parse_allele("A*11", "A*12") == [parse_allele("A*11"), parse_allele("A*12")]
+    @test parse_allele("A*11", "A*12") == (parse_allele("A*11"), parse_allele("A*12"))
 end
 
 @testset "rand(::HLAAllele, ::Symbol)" begin
