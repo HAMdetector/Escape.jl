@@ -21,17 +21,14 @@ end
     @test is_valid_allele("HLA-A*11:01N") == true
 end
 
-@testset "Base.hash(::HLAAllele)" begin
-    @test hash(parse_allele("A*11"), UInt(1)) == hash(parse_allele("A*11"), UInt(1))
-    @test hash(parse_allele("A*11")) == hash(parse_allele("A*11"))
-    @test hash(parse_allele("B*11")) != hash(parse_allele("B*12"))
-    
-    allele = HLAAllele("A", "11", missing, missing, missing, missing)
-    @test hash(parse_allele("A*11")) == hash(allele)
-    
-    alleles = [parse_allele("A*11"), parse_allele("A*11"), parse_allele("A*12")]
-    unique_alleles = [parse_allele("A*11"), parse_allele("A*12")]
-    @test unique(alleles) == unique_alleles
+@testset "Base.isless(::HLAAllele, ::HLAAllele)" begin
+    @test parse_allele("A11") > parse_allele("A03")
+    @test parse_allele("A11") < parse_allele("B11")
+    @test parse_allele("A11") < parse_allele("C20")
+    @test parse_allele("A03") <= parse_allele("A11")
+    @test parse_allele("A11") <= parse_allele("A11")
+    @test ismissing(parse_allele("A11:01") <= parse_allele("A11"))
+    @test parse_allele("B51:03") > parse_allele("B51:01")
 end
 
 @testset "parse_allele(::AbstractString)" begin
@@ -54,6 +51,13 @@ end
     @test parse_allele("A*11", "A*12") == (parse_allele("A*11"), parse_allele("A*12"))
 end
 
+@testset "limit_hla_accuracy(::HLAAllele)" begin
+    allele = parse_allele("A*11:01:05N")
+    @test limit_hla_accuracy(allele) == parse_allele("A*11")
+    @test limit_hla_accuracy(allele, depth = 2) == parse_allele("A*1101")
+    @test limit_hla_accuracy(parse_allele("A11")) == parse_allele("A*11")
+end
+
 @testset "rand(::HLAAllele, ::Symbol)" begin
     @test typeof(rand(HLAAllele, :A)) == HLAAllele
     @test typeof(rand(HLAAllele, :B)) == HLAAllele
@@ -63,4 +67,17 @@ end
     @test rand(HLAAllele, :A).gene == "A"
     @test rand(HLAAllele, :B).gene == "B"
     @test rand(HLAAllele, :C).gene == "C"
+end
+
+@testset "rand(::HLAType)" begin
+    @test rand(HLAType) isa HLAType
+    @test length(rand(HLAType, 3)) == 3
+    @test rand(HLAType, 3)[2] isa HLAType
+end
+
+@testset "unique_alleles" begin
+    hla_types = [HLAType(parse_allele("A11", "A03", "B03", "B51", "C03", "C03")),
+                 HLAType(parse_allele("A13", "A27", "B03", "B51", "C07", "C07"))]
+    @test length(Escape.unique_alleles(hla_types)) == 8
+    @test allunique(Escape.unique_alleles(hla_types))
 end

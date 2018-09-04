@@ -19,4 +19,19 @@ struct HLAData <: AbstractHLAData
 
         new(name, fasta_file, hla_types)
     end
+end 
+
+function hla_matrix(data::Vector{HLAType})
+    alleles = sort(unique_alleles(data))
+    m = zeros(Int, length(data), length(alleles))
+
+    for i in eachindex(data)
+        hla_type = data[i]
+        for allele in hla_type.alleles
+            allele = limit_hla_accuracy(allele)
+            m[i, findfirst(x -> x == allele, alleles)] += 1
+        end
+    end
+
+    return m
 end

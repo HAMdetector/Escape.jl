@@ -55,6 +55,24 @@ function is_valid_allele(s::AbstractString)
     return true
 end
 
+function Base.isless(x::HLAAllele, y::HLAAllele)
+    for name in fieldnames(typeof(x))
+        x_value = getfield(x, name)
+        y_value = getfield(y, name)
+
+        xor(ismissing(x_value), ismissing(y_value)) && return missing
+        ismissing(x_value) && ismissing(y_value) && return false
+
+        if x_value < y_value
+            return true
+        elseif x_value > y_value
+            return false
+        end
+    end
+
+    return false
+end
+
 function parse_allele(x::AbstractString)
     if occursin("non", x)
         return HLAAllele(missing)
@@ -118,8 +136,24 @@ function Base.rand(::Type{HLAType}, d::Int)
     return [rand(HLAType) for i in 1:d]
 end
 
+function unique_alleles(hla_types; depth::Int = 1)
+    alleles = Vector{HLAAllele}()
+    
+    for hla_type in hla_types
+        for allele in hla_type.alleles
+            hla_type = limit_hla_accuracy(allele, depth = depth)
+
+            if hla_type ∉ alleles
+                push!(alleles, hla_type)
+            end
+        end
+    end
+
+    return alleles
+end
+
 function limit_hla_accuracy(s::HLAAllele; depth::Int = 1)
-    depth < 1 || depth > 5 && error("depth must be between 1 and 5")
+    1 <= depth <= 5 || error("depth must be between 1 and 5")
 
     HLA_components::Vector{Union{Missing, String}} = [missing for i in 1:6]
     HLA_components[1] = s.gene
