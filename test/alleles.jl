@@ -51,6 +51,11 @@ end
     @test parse_allele("A*11", "A*12") == (parse_allele("A*11"), parse_allele("A*12"))
 end
 
+@testset "string(::HLAAllele)" begin
+    @test string(HLAAllele("HLA-A*11:01:05N")) == "HLA-A*11:01:05N"
+    @test string(parse_allele("A1")) == "HLA-A*01"
+end
+
 @testset "limit_hla_accuracy(::HLAAllele)" begin
     allele = parse_allele("A*11:01:05N")
     @test limit_hla_accuracy(allele) == parse_allele("A*11")

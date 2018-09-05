@@ -111,6 +111,23 @@ function parse_allele(x...)
     return NTuple{length(x), HLAAllele}(parse_allele(allele) for allele in x)
 end
 
+function convert(::Type{String}, x::HLAAllele)
+    s = "HLA-"
+
+    s = s * x.gene * "*" * x.field_1
+    
+    s = !ismissing(x.field_2) ? s * ":" * x.field_2 : s
+    s = !ismissing(x.field_3) ? s * ":" * x.field_3 : s
+    s = !ismissing(x.field_4) ? s * ":" * x.field_4 : s
+    s = !ismissing(x.suffix) ? s * x.suffix : s
+    
+    return s
+end
+
+function Base.show(io::IO, x::HLAAllele)
+    print(io, convert(String, x))
+end
+
 function Base.rand(S::Type{HLAAllele}, gene::Symbol)
     gene ∉ [:A, :B, :C] && error("gene must be either :A, :B, or :C")
     fasta_path = joinpath(@__DIR__, "..", "data", "HLA_alleles", 
