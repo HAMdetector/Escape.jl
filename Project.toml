@@ -5,6 +5,8 @@ version = "0.1.0"
 
 [deps]
 BioSequences = "7e6ae17a-c86d-528c-b3b9-7f778a29fe59"
+LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
+MetaGraphs = "626554b9-1ddb-594c-aa3c-2596fe9399a5"
 StanInterface = "e89815f6-a2f7-11e8-0a3f-6d3140f294c6"
 Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
