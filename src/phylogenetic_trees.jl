@@ -8,6 +8,13 @@ function PhylogeneticTree(newick_string::String)
     graph = MetaDiGraph()
     add_vertex!(graph)
     set_prop!(graph, 1, :name, "root")
+
+    components = newick_components(newick_string)
+    for component in components
+        add_to_graph!(graph, 1, component)
+    end
+
+    return PhylogeneticTree(graph)
 end
 
 function add_to_graph!(graph::AbstractMetaGraph, vertex::Int, s::String)
@@ -62,4 +69,38 @@ function newick_components(s::String)
 
     push!(components, strip(component))
     return components
+end
+
+function newick_string(tree::PhylogeneticTree)
+    n = neighbors(tree.graph, 1)
+    length(n) == 0 && return "();"
+    length(n) == 1 && return "(" * newick_string(tree.graph, n[1]) * ");"
+
+    newick = "(" * newick_string(tree.graph, neighbors(tree.graph, 1)[1])
+    for n in neighbors(tree.graph, 1)[2:end]
+        newick *= ","
+        newick *= newick_string(tree.graph, n)
+    end
+    newick *= ");"
+end
+
+function newick_string(graph::AbstractMetaGraph, v::Int)
+    name = get_prop(graph, v, :name)
+    name = ismissing(name) ? "" : name
+    branch_length = get_prop(graph, inneighbors(graph, v)[1], v, :branch_length)
+    branch_length = ismissing(branch_length) ? "" : string(branch_length)
+    
+    if length(neighbors(graph, v)) == 0
+        return string(name, branch_length != "" ? ":" : "", branch_length)
+    else
+        newick = "(" * newick_string(graph, neighbors(graph, v)[1])
+        for n in neighbors(graph, v)[2:end]
+            newick *= ","
+            newick *= newick_string(graph, n)
+        end
+        newick *= ")" * name
+        newick = !ismissing(length) ? newick * ":$branch_length" : newick
+    end
+
+    return newick
 end
