@@ -1,4 +1,4 @@
-export PhylogeneticTree
+export PhylogeneticTree, newick_string, leaves, isleaf, set_property!, get_property
 
 struct PhylogeneticTree
     graph::MetaDiGraph
@@ -15,6 +15,39 @@ function PhylogeneticTree(newick_string::String)
     end
 
     return PhylogeneticTree(graph)
+end
+
+function PhylogeneticTree(data::HLAData)
+    temp_fasta = tempname() * ".fasta"
+    temp_name = split(tempname(), "/")[3]
+    numbered_fasta(data, temp_fasta)
+
+    model = "PROTGAMMAAUTO"
+    @suppress Base.run(`raxmlHPC -s $temp_fasta -m $model -p 53 
+                        -n $(temp_name) -w $(tempdir())`)
+    unrooted_tree_path = joinpath(tempdir(), "RAxML_result.$(temp_name)")
+    @suppress Base.run(`raxmlHPC -f I -m $model -t $unrooted_tree_path 
+                        -w $(tempdir()) -n $(temp_name * "_rooted") -T 4`)
+
+    final_tree_path = joinpath(tempdir(), "RAxML_rootedTree.$(temp_name * "_rooted")")
+    return PhylogeneticTree(readline(final_tree_path))
+end
+
+function numbered_fasta(data::HLAData, filepath::String)
+    original_fasta = data.fasta_file
+    reader = BioSequences.FASTA.Reader(open(original_fasta, "r"))
+    writer = BioSequences.FASTA.Writer(open(filepath, "w"))
+
+    for (i, record) in enumerate(reader)
+        identifier = string(i)
+        sequence = BioSequences.FASTA.sequence(record)
+        new_record = BioSequences.FASTA.Record(identifier, sequence)
+
+        write(writer, new_record)
+    end
+
+    close(reader)
+    close(writer)
 end
 
 function add_to_graph!(graph::AbstractMetaGraph, vertex::Int, s::String)
@@ -103,4 +136,37 @@ function newick_string(graph::AbstractMetaGraph, v::Int)
     end
 
     return newick
+end
+
+function isleaf(v::Int, tree::PhylogeneticTree)
+    v ∈ leaves(tree) && return true
+    return false
+end
+
+function leaves(tree::PhylogeneticTree)
+    return map(x -> x[1], attracting_components(tree.graph))
+end
+
+function get_property(tree::PhylogeneticTree, v::Int, property::Symbol)
+    has_prop(tree.graph, v, property) || return missing
+    return get_prop(tree.graph, v, property)
+end
+
+function set_property!(tree::PhylogeneticTree, v::Int, property::Symbol, value)
+    set_prop!(tree.graph, v, property, value)
+end
+
+function annotate!(tree::PhylogeneticTree, data::HLAData, replacement::Replacement)
+    msg = string("Number of leaves ($(length(leaves(tree)))) does not match",
+                 " number of sequences ($(length(data.hla_types))) in the .fasta file")
+    length(data.hla_types) == length(leaves(tree)) || throw DimensionMismatch(msg)
+    data.name == replacement.protein || error("Replacement does not match HLA data.")
+
+    reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
+    for record in reader
+        sequence = BioSequences.FASTA.Sequence(record)
+        symbol = string(sequence[replacement.replacement])
+        symbol = symbol in ("-", "X") ? missing : symbol
+         
+    end
 end
