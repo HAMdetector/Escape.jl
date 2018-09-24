@@ -1,7 +1,8 @@
 module Escape
 
 import BioSequences, StatsFuns
-using StanInterface, LightGraphs, MetaGraphs, RCall, Suppressor
+using StanInterface, LightGraphs, MetaGraphs, RCall, Suppressor, Optim, DataFrames,
+      JuMP, Ipopt, LinearAlgebra, AutoGrad
 
 include("alleles.jl")
 include("replacement.jl")

@@ -1,4 +1,5 @@
-export PhylogeneticTree, newick_string, leaves, isleaf, set_property!, get_property
+export PhylogeneticTree, newick_string, leaves, isleaf, set_property!, get_property,
+       annotate!
 
 struct PhylogeneticTree
     graph::MetaDiGraph
@@ -157,16 +158,37 @@ function set_property!(tree::PhylogeneticTree, v::Int, property::Symbol, value)
 end
 
 function annotate!(tree::PhylogeneticTree, data::HLAData, replacement::Replacement)
-    msg = string("Number of leaves ($(length(leaves(tree)))) does not match",
-                 " number of sequences ($(length(data.hla_types))) in the .fasta file")
-    length(data.hla_types) == length(leaves(tree)) || throw DimensionMismatch(msg)
     data.name == replacement.protein || error("Replacement does not match HLA data.")
+    matching(tree, data)
 
     reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
-    for record in reader
-        sequence = BioSequences.FASTA.Sequence(record)
-        symbol = string(sequence[replacement.replacement])
-        symbol = symbol in ("-", "X") ? missing : symbol
-         
+    for (i, record) in enumerate(reader)
+        sequence = BioSequences.FASTA.sequence(record)
+        symbol = Char(sequence[replacement.position])
+
+        v = filter(x -> get_property(tree, x, :name) == string(i), leaves(tree))[1]
+
+        if symbol in ('-', 'X')
+            set_property!(tree, v, :state, missing)
+        elseif symbol == replacement.replacement
+            set_property!(tree, v, :state, "1")
+        else
+            set_property!(tree, v, :state, "0")
+        end
     end
+end
+
+function matching(tree::PhylogeneticTree, data::HLAData)
+    n_leaves = length(leaves(tree))
+    n_sequences = length(data.hla_types)
+    leaf_names = Set(map(x -> get_property(tree, x, :name), leaves(tree)))
+
+    msg = string("Number of leaves ($n_leaves) does not match number of sequences ",
+                 "($(n_sequences)) in the fasta file $(data.fasta_file).")
+    n_leaves == n_sequences || throw(DimensionMismatch(msg))
+
+    msg = """:name property of leaves must be "1", "2", ..., "$n_leaves"."""
+    leaf_names == Set(string.(1:n_leaves)) || error(msg)
+
+    return true
 end

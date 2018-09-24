@@ -108,3 +108,33 @@ end
     set_property!(tree, 1, :name, "new name")
     @test get_property(tree, 1, :name) == "new name"
 end
+
+@testset "annotate!(::PhylogeneticTree, ::HLAData, ::Replacement)" begin
+    fasta_path = joinpath(@__DIR__, "data", "test.fasta")
+    r = Replacement("test", 2, 'S')
+    hla_data = HLAData("test", fasta_path, rand(HLAType, 5))
+    tree = PhylogeneticTree(hla_data)
+
+    annotation = Dict("1" => "0", "2" => "0", "3" => "1", "4" => "1", "5" => "1")
+    annotate!(tree, hla_data, r)
+
+    for k in keys(annotation)
+        v = findfirst(x -> get_property(tree, x, :name) == k, leaves(tree))
+        @test get_property(tree, v, :state) == annotation[k]
+    end
+end
+
+@testset "matching(::PhylogeneticTree, ::HLAData)" begin
+    fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
+    hla_data = HLAData("test", fasta_path, rand(HLAType, 6))
+    tree = PhylogeneticTree(hla_data)
+
+    @test Escape.matching(tree, hla_data)
+
+    set_property!(tree, leaves(tree)[2], :name, "test")
+    @test_throws ErrorException Escape.matching(tree, hla_data)
+
+    short_hla_data = HLAData("short", joinpath(@__DIR__, "data", "test.fasta"),
+                             rand(HLAType, 5))
+    @test_throws DimensionMismatch Escape.matching(tree, short_hla_data)
+end
