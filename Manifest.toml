@@ -4,12 +4,6 @@ git-tree-sha1 = "2b6845cea546604fb4dca4e31414a6a59d39ddcd"
 uuid = "ec485272-7323-5ecc-a04f-4719b315124d"
 version = "0.0.4"
 
-[[AutoGrad]]
-deps = ["Libdl", "LinearAlgebra", "Pkg", "Printf", "Random", "SpecialFunctions", "Statistics", "Test", "TimerOutputs"]
-git-tree-sha1 = "08e682158fded13192e95a4ee678f5b67660f7d9"
-uuid = "6710c13c-97f1-543f-91c5-74e8f7d95b35"
-version = "1.1.1"
-
 [[Automa]]
 deps = ["DataStructures", "Printf", "Test", "TranscodingStreams"]
 git-tree-sha1 = "1b1defa8b36d44dd22c715b5c884c8f795eea7fe"
@@ -38,10 +32,10 @@ uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
 version = "0.5.1"
 
 [[BioCore]]
-deps = ["Automa", "BufferedStreams", "Pkg"]
-git-tree-sha1 = "56d1c93d2faae59fc7e8ab93a9bdc9acc87d04a4"
+deps = ["Automa", "BufferedStreams", "Pkg", "YAML"]
+git-tree-sha1 = "2a6d63b80ceb08f73485f8f03c1b3b2caaa5398d"
 uuid = "37cfa864-2cd6-5c12-ad9e-b6597d696c81"
-version = "2.0.2"
+version = "2.0.4"
 
 [[BioSequences]]
 deps = ["Automa", "BioCore", "BioSymbols", "BufferedStreams", "Combinatorics", "DataStructures", "IndexableBitVectors", "IntervalTrees", "LinearAlgebra", "Pkg", "Printf", "Random", "Test", "Twiddle"]
@@ -73,16 +67,16 @@ git-tree-sha1 = "6362c49130b5888f5628bc197ee5f17aec7d2a88"
 uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 version = "0.4.0"
 
-[[Clp]]
-deps = ["BinaryProvider", "Compat", "Libdl", "LinQuadOptInterface", "MathProgBase"]
-git-tree-sha1 = "ca6db51e01ac0b35e5093b49bebb066c270fb2cc"
-uuid = "e2554f3b-3117-50c0-817c-e040a3ddf72d"
-version = "0.5.0"
-
 [[CodecZlib]]
 deps = ["BinaryProvider", "Libdl", "Pkg", "Test", "TranscodingStreams"]
 git-tree-sha1 = "83cb3d65c37ea1364c2d5bf7bcea41843ba645dc"
 uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
+version = "0.5.0"
+
+[[Codecs]]
+deps = ["Test"]
+git-tree-sha1 = "70885e5e038cba1c4c17a84ad6c40756e10a4fb5"
+uuid = "19ecbf4d-ef7c-5e4b-b54a-0a0ff23c5aed"
 version = "0.5.0"
 
 [[Combinatorics]]
@@ -108,12 +102,6 @@ deps = ["Compat", "JSON", "VersionParsing"]
 git-tree-sha1 = "85b5bf3ffcf4f39abe019dab1dd00a0aead8d882"
 uuid = "8f4d0f93-b110-5947-807f-2305c1781a2d"
 version = "1.0.2"
-
-[[Crayons]]
-deps = ["Pkg", "Test"]
-git-tree-sha1 = "3017c662a988bcb8a3f43306a793617c6524d476"
-uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
-version = "1.0.0"
 
 [[DataFrames]]
 deps = ["CategoricalArrays", "CodecZlib", "Compat", "DataStreams", "Dates", "InteractiveUtils", "IteratorInterfaceExtensions", "LinearAlgebra", "Missings", "Pkg", "Printf", "Random", "Reexport", "SortingAlgorithms", "Statistics", "StatsBase", "TableTraits", "Tables", "Test", "TranscodingStreams", "Unicode", "WeakRefStrings"]
@@ -209,15 +197,15 @@ version = "1.0.0"
 
 [[Ipopt]]
 deps = ["BinDeps", "BinaryProvider", "Compat", "Libdl", "MathOptInterface", "MathProgBase"]
-git-tree-sha1 = "4335f96fb2382f86362a9a7827b0476624938a9b"
+git-tree-sha1 = "81de221de9d180d326b525c19eebb5ca7d88bf0b"
 uuid = "b6b21f68-93f8-5de0-b562-5493be1d77c9"
-version = "0.4.1"
+version = "0.4.2"
 
 [[IterTools]]
 deps = ["Pkg", "SparseArrays", "Test"]
-git-tree-sha1 = "ed0787e62dc46b8d8c7c3db54391d71e0da5fefd"
+git-tree-sha1 = "3eb252416e1a5215530420cdd22b46208bb9d4c7"
 uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
-version = "1.0.0"
+version = "1.1.0"
 
 [[IteratorInterfaceExtensions]]
 deps = ["Test"]
@@ -239,11 +227,11 @@ version = "0.19.0"
 
 [[JuMP]]
 deps = ["Calculus", "Compat", "ForwardDiff", "MathProgBase", "Pkg", "ReverseDiffSparse"]
-git-tree-sha1 = "a35f76384233e73e90b30d81ca061f705b7b4a8f"
+git-tree-sha1 = "3716c8cae07d5056e7b9981d2d4dde239bd9c1d1"
 repo-rev = "release-0.18"
 repo-url = "https://github.com/JuliaOpt/JuMP.jl.git"
 uuid = "4076af6c-e467-56ae-b986-b466b2749572"
-version = "0.18.3+"
+version = "0.18.4+"
 
 [[LibGit2]]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
@@ -256,12 +244,6 @@ deps = ["ArnoldiMethod", "Base64", "CodecZlib", "DataStructures", "DelimitedFile
 git-tree-sha1 = "446a9cf208ec401ae67e517de4eeceaf2cd5cdac"
 uuid = "093fc24a-ae57-5d10-9952-331d41423f4d"
 version = "1.1.0"
-
-[[LinQuadOptInterface]]
-deps = ["Compat", "MathOptInterface", "Pkg"]
-git-tree-sha1 = "777c9d1c64b1fc5bd20b2b7b13b746c2c757df0d"
-uuid = "f8899e07-120b-5979-ab1d-7b97bb9e1a48"
-version = "0.4.0"
 
 [[LineSearches]]
 deps = ["LinearAlgebra", "NLSolversBase", "NaNMath", "Parameters", "Printf", "Test"]
@@ -454,9 +436,7 @@ version = "0.7.1"
 
 [[StanInterface]]
 deps = ["BinDeps", "DelimitedFiles", "Distributed"]
-git-tree-sha1 = "91ec343f54b3bdb164d3d9823327c16199a0920e"
-repo-rev = "master"
-repo-url = "http://132.252.170.166:8000/DanielHa/StanInterface.jl.git"
+path = "/home/habermann/sync/StanInterface"
 uuid = "e89815f6-a2f7-11e8-0a3f-6d3140f294c6"
 version = "0.1.0"
 
@@ -510,12 +490,6 @@ version = "0.1.9"
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
-[[TimerOutputs]]
-deps = ["Crayons", "Printf", "Test", "Unicode"]
-git-tree-sha1 = "89a9bd610d6bfd62a7c2b85112762b99b979fe5f"
-uuid = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
-version = "0.4.0"
-
 [[TranscodingStreams]]
 deps = ["DelimitedFiles", "Pkg", "Random", "Test"]
 git-tree-sha1 = "a34a2d588e2d2825602bf14a24216d5c8b0921ec"
@@ -558,3 +532,9 @@ deps = ["Test"]
 git-tree-sha1 = "808380e0a0483e134081cc54150be4177959b5f4"
 uuid = "1b915085-20d7-51cf-bf83-8f477d6f5128"
 version = "0.3.1"
+
+[[YAML]]
+deps = ["Codecs", "Compat", "Pkg"]
+git-tree-sha1 = "3bde77cee95cce0c0b9b18813d85e18e8ed4f415"
+uuid = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
+version = "0.3.2"
