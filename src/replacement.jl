@@ -1,4 +1,4 @@
-export Replacement
+export Replacement, replacements
 
 struct Replacement
     protein::String
