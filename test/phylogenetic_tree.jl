@@ -119,7 +119,7 @@ end
     annotate!(tree, hla_data, r)
 
     for k in keys(annotation)
-        v = findfirst(x -> get_property(tree, x, :name) == k, leaves(tree))
+        v = filter(x -> get_property(tree, x, :name) == k, leaves(tree))[1]
         @test get_property(tree, v, :state) == annotation[k]
     end
 end

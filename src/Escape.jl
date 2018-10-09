@@ -1,15 +1,19 @@
 module Escape
 
-import BioSequences, StatsFuns
-using StanInterface, LightGraphs, MetaGraphs, RCall, Suppressor, Optim, DataFrames,
-      JuMP, Ipopt, LinearAlgebra, AutoGrad
+import BioSequences, StatsFuns, StatsBase
+using StanInterface, LightGraphs, MetaGraphs, RCall, Suppressor,
+      JuMP, Ipopt, LinearAlgebra, Calculus
 
 include("alleles.jl")
-include("replacement.jl")
+include("abstract_hlamodel.jl")
 include("dataset.jl")
-include("bernoulli_model.jl")
-include("phylogenetic_trees.jl")
+include("replacement.jl")
+include("phylogenetic_tree.jl")
+include("rate_matrix.jl")
+include("substitution_models.jl")
 include("phylogenetic_background.jl")
+include("bernoulli_model.jl")
+include("bernoulli_phylogeny_model.jl")
 include("plots.jl")
 
 end
