@@ -20,7 +20,7 @@ end
 function run(model::BernoulliPhylogenyModel, tree::PhylogeneticTree, 
              replacement::Replacement, data::HLAData)
 
-    stan_path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli_phylogeny.stan")
+    stan_path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli_phylogeny")
     sf = stan(stan_path, stan_input(model, tree, replacement, data), 
               chains = model.chains, iter = model.iter)
     alleles = unique_alleles(data.hla_types)
