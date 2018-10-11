@@ -19,11 +19,11 @@ end
     hla_data = HLAData("test", fasta_path, hla_types)
 
     replacement = Replacement("test", 2, 'S')
-    @test Escape.targets(replacement, hla_data) == [0, 0, 1, 1, 1]
+    @test Escape.targets(hla_data, replacement) == [0, 0, 1, 1, 1]
 
     replacement = Replacement("test", 2, 'G')
-    @test Escape.targets(replacement, hla_data) == [1, 1, 0, 0, 0]
+    @test Escape.targets(hla_data, replacement) == [1, 1, 0, 0, 0]
 
     replacement = Replacement("test", 3, 'A')
-    @test all(Escape.targets(replacement, hla_data) .=== [missing, 1, 1, 1, 1])
+    @test all(Escape.targets(hla_data, replacement) .=== [missing, 1, 1, 1, 1])
 end

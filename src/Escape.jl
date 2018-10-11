@@ -1,8 +1,9 @@
 module Escape
 
 import BioSequences, StatsFuns, StatsBase
+using LinearAlgebra, Calculus, Statistics
 using StanInterface, LightGraphs, MetaGraphs, RCall, Suppressor,
-      JuMP, Ipopt, LinearAlgebra, Calculus, Statistics
+      JuMP, Ipopt
 
 include("alleles.jl")
 include("abstract_hlamodel.jl")

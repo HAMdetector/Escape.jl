@@ -4,7 +4,7 @@
     @test BernoulliPhylogenyModel().iter == 2000
 end
 
-@testset "stan_input(::BernoulliModel, ::PhylogeneticTree, ::Replacement, ::HLData)"  begin
+@testset "stan_input(::BernoulliModel, ::HLData, ::Replacement, ::PhylogeneticTree)"  begin
     hla_types = [HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
@@ -16,8 +16,8 @@ end
     replacement = Replacement("test", 2, 'S')
     annotate!(tree, hla_data, replacement)
 
-    input = Escape.stan_input(BernoulliPhylogenyModel(), tree, replacement, hla_data)
-    p = Escape.state_probabilities(tree, TwoStateGTR)
+    input = Escape.stan_input(BernoulliPhylogenyModel(), hla_data, replacement, tree)
+    p = @suppress Escape.state_probabilities(tree, TwoStateGTR)
     phylogeny_effect = [p[s]["1"] for s in string.(1:5)]
 
     @test input == Dict("n_entries" => 5, "n_alleles" => 3, 
@@ -26,13 +26,13 @@ end
                         "phylogeny_effect" => phylogeny_effect)
 end
 
-@testset "run(::BernoulliModel, ::Replacement, ::HLAData)" begin
+@testset "run(::BernoulliModel, ::HLAData, ::Replacement)" begin
     hla_types = rand(HLAType, 5)
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_data = HLAData("test", fasta_path, hla_types)
     replacement = Replacement("test", 2, 'S')
     
-    @test @suppress Escape.run(BernoulliPhylogenyModel(), replacement, hla_data) isa 
+    @test @suppress Escape.run(BernoulliPhylogenyModel(), hla_data, replacement) isa 
         BernoulliPhylogenyResult
 end
 
@@ -43,6 +43,6 @@ end
     tree = PhylogeneticTree(hla_data)
     replacement = Replacement("test", 2, 'S')
     
-    @test @suppress Escape.run(BernoulliPhylogenyModel(), tree, replacement, hla_data) isa 
+    @test @suppress Escape.run(BernoulliPhylogenyModel(), hla_data, replacement, tree) isa 
         BernoulliPhylogenyResult
 end

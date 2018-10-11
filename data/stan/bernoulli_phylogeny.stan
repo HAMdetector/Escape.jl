@@ -8,14 +8,15 @@ data {
 
 parameters {
   real intercept;
-  real phylogeny_coefficient;
+  real<lower=0> phylogeny_coefficient;
   vector[n_alleles] beta_hla;
 }
 
 model {
   intercept ~ student_t(3, 0, 5);
   beta_hla ~ student_t(7, 0, 3);
-
+  phylogeny_coefficient ~ student_t(7, 0, 3);
+  
   y ~ bernoulli_logit(intercept + logit(phylogeny_effect) * phylogeny_coefficient + 
                       hla_matrix * beta_hla);
 }

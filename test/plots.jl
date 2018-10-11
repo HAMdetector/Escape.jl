@@ -32,11 +32,3 @@ end
     @test isfile(temp_path)
     rm(temp_path)
 end
-
-# @testset "plot(::PhylogeneticTree)" begin
-#     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
-#     hla_data = HLAData("test", fasta_path, rand(HLAType, 5))
-
-#     tree = PhylogeneticTree(hla_data)
-#     @test plot(tree) isa Escape.GGPlot
-# end

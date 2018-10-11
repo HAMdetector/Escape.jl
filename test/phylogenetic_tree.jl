@@ -132,9 +132,9 @@ end
     @test Escape.matching(tree, hla_data)
 
     set_property!(tree, leaves(tree)[2], :name, "test")
-    @test_throws ErrorException Escape.matching(tree, hla_data)
+    @test Escape.matching(tree, hla_data) isa ErrorException
 
     short_hla_data = HLAData("short", joinpath(@__DIR__, "data", "test.fasta"),
                              rand(HLAType, 5))
-    @test_throws DimensionMismatch Escape.matching(tree, short_hla_data)
+    @test Escape.matching(tree, short_hla_data) isa DimensionMismatch
 end

@@ -12,17 +12,17 @@ end
 
 BernoulliModel(; chains = 4, iter = 2000) = BernoulliModel(chains, iter)
 
-function run(model::BernoulliModel, replacement::Replacement, data::HLAData)
-    stan_path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli")
-    sf = stan(stan_path, stan_input(model, replacement, data), chains = model.chains,
-              iter = model.iter)
-    alleles = unique_alleles(data.hla_types)
+function run(model::BernoulliModel, data::HLAData, replacement::Replacement)
+    path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli")
+    input = stan_input(model, data, replacement)
+    sf = stan(path, input, chains = model.chains, iter = model.iter)
+    alleles = sort(unique_alleles(data.hla_types))
 
     return BernoulliResult(sf, alleles)
 end
 
-function stan_input(model::BernoulliModel, replacement::Replacement, data::HLAData)
-    y = targets(replacement, data)
+function stan_input(model::BernoulliModel, data::HLAData, replacement::Replacement)
+    y = targets(data, replacement)
     m = hla_matrix(data.hla_types)
 
     stan_input = Dict("y" => collect(skipmissing(y)), "hla_matrix" => m[.!ismissing.(y), :],
@@ -30,11 +30,13 @@ function stan_input(model::BernoulliModel, replacement::Replacement, data::HLADa
                       "n_alleles" => size(m)[2])
 end
 
-function targets(replacement::Replacement, data::HLAData)
+function targets(data::HLAData, replacement::Replacement)
     reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
     t = Vector{Union{Missing, Int}}()
+
     for record in reader
         symbol = Char(BioSequences.FASTA.sequence(record)[replacement.position])
+
         if symbol ∈ ('X', '-')
             push!(t, missing)
         elseif symbol == replacement.replacement
