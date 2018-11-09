@@ -17,7 +17,7 @@ end
     annotate!(tree, hla_data, replacement)
 
     input = Escape.stan_input(BernoulliPhylogenyModel(), hla_data, replacement, tree)
-    p = @suppress Escape.state_probabilities(tree, TwoStateGTR)
+    p = Escape.state_probabilities(tree, TwoStateGTR)
     phylogeny_effect = [p[s]["1"] for s in string.(1:5)]
 
     @test input == Dict("n_entries" => 5, "n_alleles" => 3, 
