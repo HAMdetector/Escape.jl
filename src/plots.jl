@@ -17,8 +17,7 @@ function save(plot::GGPlot, path::String; width = 14, height = 8.65)
 end
 
 # WIP
-function plot(tree::PhylogeneticTree; model = TwoStateGTR,
-              title::String = "")
+function plot(tree::PhylogeneticTree; model = TwoStateGTR, title::String = "")
     temp_file = tempname()
     write(temp_file, newick_string(tree))
     n_leaves = length(leaves(tree))

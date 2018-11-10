@@ -1,6 +1,6 @@
 export BernoulliPhylogenyModel, BernoulliPhylogenyResult
 
-struct BernoulliPhylogenyModel <: HLAModel
+struct BernoulliPhylogenyModel <: HLAPhylogenyModel
     chains::Int
     iter::Int
 end

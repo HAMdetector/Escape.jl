@@ -162,6 +162,7 @@ function annotate!(tree::PhylogeneticTree, data::HLAData, replacement::Replaceme
     matching(tree, data) isa Exception && throw(matching(tree, data))
 
     reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
+
     for (i, record) in enumerate(reader)
         sequence = BioSequences.FASTA.sequence(record)
         symbol = Char(sequence[replacement.position])

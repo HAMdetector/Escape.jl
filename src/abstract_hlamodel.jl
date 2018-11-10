@@ -1,7 +1,9 @@
-export HLAModel, HLAModelResult, classification_accuracy
+export HLAModel, HLAModelResult, HLAPhylogenyModel, classification_accuracy
 
 abstract type HLAModel end
 abstract type HLAModelResult end
+
+abstract type HLAPhylogenyModel <: HLAModel end
 
 function classification_accuracy(result::HLAModelResult)
     n_entries = result.sf.data["n_entries"]

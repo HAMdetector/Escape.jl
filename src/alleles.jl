@@ -153,7 +153,7 @@ function Base.rand(::Type{HLAType}, d::Int)
     return [rand(HLAType) for i in 1:d]
 end
 
-function unique_alleles(hla_types; depth::Int = 1)
+function unique_alleles(hla_types::Vector{HLAType}; depth::Int = 1)
     alleles = Vector{HLAAllele}()
     
     for hla_type in hla_types
