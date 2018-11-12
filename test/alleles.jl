@@ -6,7 +6,16 @@ end
 
 @testset "HLAType(::NTuple{6, HLAAllele})" begin
     @test HLAType(parse_allele("A13", "A21", "B51", "B57", "C03", "C07")) isa HLAType
-    @test_throws ErrorException HLAType(parse_allele("A13", "B07"))
+    @test_throws MethodError HLAType(parse_allele("A13", "B07"))
+end
+
+@testset "Base.in(::HLAAllele, ::HLAType)" begin
+    hla_type = HLAType(parse_allele("A13", "A21:01", "B51", "B57", "C03", "C07"))
+    @test parse_allele("A13") in hla_type
+    @test parse_allele("A21:01") in hla_type
+    @test parse_allele("B51") ∈ hla_type
+    @test parse_allele("B52") ∉ hla_type
+    @test parse_allele("A21") in hla_type
 end
 
 @testset "Base.:(==)(::HLAAllele, ::HLAAllele)" begin
@@ -85,4 +94,12 @@ end
                  HLAType(parse_allele("A13", "A27", "B03", "B51", "C07", "C07"))]
     @test length(Escape.unique_alleles(hla_types)) == 8
     @test allunique(Escape.unique_alleles(hla_types))
+end
+
+@testset "hla_accuracy(::HLAAllele)" begin
+    @test hla_accuracy(parse_allele("A11")) == 1
+    @test hla_accuracy(parse_allele("A11:01")) == 2
+    @test hla_accuracy(parse_allele("B57:01:01")) == 3
+    @test hla_accuracy(parse_allele("B57:01:01:01")) == 4
+    @test hla_accuracy(parse_allele("B57:01:01:01N")) == 5
 end

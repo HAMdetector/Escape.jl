@@ -16,17 +16,21 @@ function run(model::BernoulliModel, data::HLAData, replacement::Replacement)
     path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli")
     input = stan_input(model, data, replacement)
     sf = stan(path, input, chains = model.chains, iter = model.iter)
-    alleles = sort(unique_alleles(data.hla_types))
+    alleles = sort(unique_alleles(filter(x -> missing ∉ x, data.hla_types)))
 
     return BernoulliResult(sf, alleles)
 end
 
 function stan_input(model::BernoulliModel, data::HLAData, replacement::Replacement)
     y = targets(data, replacement)
-    m = hla_matrix(data.hla_types)
+    
+    complete_cases = findall(i -> !ismissing(y[i]) && missing ∉ data.hla_types[i], 
+        1:length(y))
+    y = y[complete_cases]
+    m = hla_matrix(data.hla_types[complete_cases])
 
-    stan_input = Dict("y" => collect(skipmissing(y)), "hla_matrix" => m[.!ismissing.(y), :],
-                      "n_entries" => length(collect(skipmissing(y))), 
+    stan_input = Dict("y" => y, "hla_matrix" => m,
+                      "n_entries" => length(y), 
                       "n_alleles" => size(m)[2])
 end
 

@@ -1,6 +1,7 @@
-export AbstractHLAData, HLAData
+export AbstractHLAData, HLAData, AbstractHLADataset, HLADataset
 
 abstract type AbstractHLAData end
+abstract type AbstractHLADataset end
 
 struct HLAData <: AbstractHLAData
     name::String
@@ -21,8 +22,13 @@ struct HLAData <: AbstractHLAData
     end
 end 
 
+struct HLADataset <: AbstractHLADataset
+    name::String
+    data::Vector{<: AbstractHLAData}
+end
+
 function hla_matrix(data::Vector{HLAType})
-    alleles = sort(unique_alleles(data))
+    alleles = limit_hla_accuracy.(sort(unique_alleles(data)))
     m = zeros(Int, length(data), length(alleles))
 
     for i in eachindex(data)

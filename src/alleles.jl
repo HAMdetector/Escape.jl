@@ -1,8 +1,8 @@
-export HLAAllele, HLAType, parse_allele, is_valid_allele, limit_hla_accuracy
+export HLAAllele, HLAType, parse_allele, is_valid_allele, limit_hla_accuracy, hla_accuracy
 
 struct HLAAllele
-    gene::Union{T} where T <: AbstractString
-    field_1::Union{T} where T <: AbstractString
+    gene::T where T <: AbstractString
+    field_1::T where T <: AbstractString
     field_2::Union{Missing, T} where T <: AbstractString
     field_3::Union{Missing, T} where T <: AbstractString
     field_4::Union{Missing, T} where T <: AbstractString
@@ -10,20 +10,44 @@ struct HLAAllele
 end
 
 struct HLAType
-    alleles::NTuple{6, HLAAllele}
+    alleles::NTuple{6, Union{HLAAllele, Missing}}
 
-    function HLAType(alleles)
-        genes = Tuple(allele.gene for allele in alleles)
+    function HLAType(alleles::NTuple{6, Union{HLAAllele, Missing}})
+        genes = tuple(ismissing(allele) ? missing : allele.gene for allele in alleles)
 
         for gene in ("A", "B", "C")
             c = count(genes .== gene) 
-            if c != 2
-                error("HLA type must contain 2 $gene alleles, got $(c)")
+            if c > 2
+                error("HLA type must contain at most 2 $gene alleles, got $(c)")
             end
         end
 
         new(alleles)
     end
+end
+
+function HLAType(::Missing)
+    HLAType((missing, missing, missing, missing, missing, missing))
+end
+
+function Base.in(::Missing, hla_type::HLAType)
+    if any(ismissing.(hla_type.alleles))
+        return true
+    end
+    
+    return false
+end
+
+function Base.in(allele::HLAAllele, hla_type::HLAType)
+    for a in hla_type.alleles
+        ismissing(a) && continue
+
+        if allele == limit_hla_accuracy(a, depth = hla_accuracy(allele))
+            return true
+        end
+    end
+
+    return false
 end
 
 """
@@ -180,4 +204,14 @@ function limit_hla_accuracy(s::HLAAllele; depth::Int = 1)
     end
 
     return HLAAllele(HLA_components...)
+end
+
+function hla_accuracy(s::HLAAllele)
+    for (i, field) in enumerate(fieldnames(HLAAllele)[3:end])
+        if ismissing(getfield(s, field))
+            return i
+        end
+    end
+
+    return 5
 end
