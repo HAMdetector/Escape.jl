@@ -26,5 +26,6 @@ function replacements(data::HLAData; mincount::Int = 5)
     end
 
     close(reader)
+    
     return replacements
 end
