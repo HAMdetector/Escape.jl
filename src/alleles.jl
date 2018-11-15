@@ -182,6 +182,7 @@ function unique_alleles(hla_types::Vector{HLAType}; depth::Int = 1)
     
     for hla_type in hla_types
         for allele in hla_type.alleles
+            ismissing(allele) && continue
             hla_type = limit_hla_accuracy(allele, depth = depth)
 
             if hla_type ∉ alleles
@@ -191,6 +192,10 @@ function unique_alleles(hla_types::Vector{HLAType}; depth::Int = 1)
     end
 
     return alleles
+end
+
+function limit_hla_accuracy(::Missing; depth::Int = 1)
+    return missing
 end
 
 function limit_hla_accuracy(s::HLAAllele; depth::Int = 1)

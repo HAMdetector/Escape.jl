@@ -34,6 +34,7 @@ function hla_matrix(data::Vector{HLAType})
     for i in eachindex(data)
         hla_type = data[i]
         for allele in hla_type.alleles
+            ismissing(allele) && continue
             allele = limit_hla_accuracy(allele)
             m[i, findfirst(x -> x == allele, alleles)] += 1
         end

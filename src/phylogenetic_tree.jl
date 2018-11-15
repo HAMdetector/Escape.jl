@@ -25,10 +25,11 @@ function PhylogeneticTree(data::HLAData)
 
     model = "PROTGAMMAAUTO"
     @suppress Base.run(`raxmlHPC -s $temp_fasta -m $model -p 53 
-                        -n $(temp_name) -w $(tempdir())`)
+                        -n $(temp_name) -w $(tempdir()) -T $(Threads.nthreads())`)
     unrooted_tree_path = joinpath(tempdir(), "RAxML_result.$(temp_name)")
     @suppress Base.run(`raxmlHPC -f I -m $model -t $unrooted_tree_path 
-                        -w $(tempdir()) -n $(temp_name * "_rooted") -T 4`)
+                        -w $(tempdir()) -n $(temp_name * "_rooted") 
+                        -T $(Threads.nthreads())`)
 
     final_tree_path = joinpath(tempdir(), "RAxML_rootedTree.$(temp_name * "_rooted")")
     return PhylogeneticTree(readline(final_tree_path))
