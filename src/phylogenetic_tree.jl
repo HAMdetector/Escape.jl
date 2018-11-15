@@ -20,7 +20,7 @@ end
 
 function PhylogeneticTree(data::HLAData)
     temp_fasta = tempname() * ".fasta"
-    temp_name = split(tempname(), "/")[3]
+    temp_name = basename(tempname())
     numbered_fasta(data, temp_fasta)
 
     model = "PROTGAMMAAUTO"
