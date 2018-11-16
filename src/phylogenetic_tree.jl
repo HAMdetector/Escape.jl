@@ -18,7 +18,7 @@ function PhylogeneticTree(newick_string::String)
     return PhylogeneticTree(graph)
 end
 
-function PhylogeneticTree(data::HLAData)
+function PhylogeneticTree(data::AbstractHLAData)
     temp_fasta = tempname() * ".fasta"
     temp_name = basename(tempname())
     numbered_fasta(data, temp_fasta)
@@ -35,7 +35,7 @@ function PhylogeneticTree(data::HLAData)
     return PhylogeneticTree(readline(final_tree_path))
 end
 
-function numbered_fasta(data::HLAData, filepath::String)
+function numbered_fasta(data::AbstractHLAData, filepath::String)
     original_fasta = data.fasta_file
     reader = BioSequences.FASTA.Reader(open(original_fasta, "r"))
     writer = BioSequences.FASTA.Writer(open(filepath, "w"))
@@ -158,7 +158,7 @@ function set_property!(tree::PhylogeneticTree, v::Int, property::Symbol, value)
     set_prop!(tree.graph, v, property, value)
 end
 
-function annotate!(tree::PhylogeneticTree, data::HLAData, replacement::Replacement)
+function annotate!(tree::PhylogeneticTree, data::AbstractHLAData, replacement::Replacement)
     data.name == replacement.protein || error("Replacement does not match HLA data.")
     matching(tree, data) isa Exception && throw(matching(tree, data))
 
@@ -180,7 +180,7 @@ function annotate!(tree::PhylogeneticTree, data::HLAData, replacement::Replaceme
     end
 end
 
-function matching(tree::PhylogeneticTree, data::HLAData)
+function matching(tree::PhylogeneticTree, data::AbstractHLAData)
     n_leaves = length(leaves(tree))
     n_sequences = length(data.hla_types)
     leaf_names = Set(map(x -> get_property(tree, x, :name), leaves(tree)))

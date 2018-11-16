@@ -7,7 +7,8 @@ using StanInterface, LightGraphs, MetaGraphs, RCall, Suppressor,
 
 include("alleles.jl")
 include("abstract_hlamodel.jl")
-include("dataset.jl")
+include("hla_data.jl")
+include("hla_dataset.jl")
 include("dataset_rousseau.jl")
 include("replacement.jl")
 include("phylogenetic_tree.jl")

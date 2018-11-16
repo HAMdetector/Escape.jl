@@ -29,3 +29,23 @@ function replacements(data::HLAData; mincount::Int = 5)
     
     return replacements
 end
+
+function targets(replacement::Replacement, data::AbstractHLAData)
+    reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
+    t = Vector{Union{Missing, Int}}()
+
+    for record in reader
+        symbol = Char(BioSequences.FASTA.sequence(record)[replacement.position])
+
+        if symbol ∈ ('X', '-')
+            push!(t, missing)
+        elseif symbol == replacement.replacement
+            push!(t, 1)
+        else
+            push!(t, 0)
+        end
+    end
+
+    close(reader)
+    return t
+end
