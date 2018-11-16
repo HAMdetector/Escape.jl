@@ -37,8 +37,11 @@ function phylogenetic_tree(data::AbstractHLAData)
 end
 
 function numbered_fasta(data::AbstractHLAData, filepath::String)
-    original_fasta = data.fasta_file
-    reader = BioSequences.FASTA.Reader(open(original_fasta, "r"))
+    numbered_fasta(data.fasta_file, filepath)
+end
+
+function numbered_fasta(fasta_file::String, filepath::String)
+    reader = BioSequences.FASTA.Reader(open(fasta_file, "r"))
     writer = BioSequences.FASTA.Writer(open(filepath, "w"))
 
     for (i, record) in enumerate(reader)
@@ -50,7 +53,7 @@ function numbered_fasta(data::AbstractHLAData, filepath::String)
     end
 
     close(reader)
-    close(writer)
+    close(writer) 
 end
 
 function add_to_graph!(graph::AbstractMetaGraph, vertex::Int, s::String)
