@@ -30,6 +30,22 @@ function HLAType(::Missing)
     HLAType((missing, missing, missing, missing, missing, missing))
 end
 
+function hla_matrix(data::Vector{HLAType})
+    alleles = limit_hla_accuracy.(sort(unique_alleles(data)))
+    m = zeros(Int, length(data), length(alleles))
+
+    for i in eachindex(data)
+        hla_type = data[i]
+        for allele in hla_type.alleles
+            ismissing(allele) && continue
+            allele = limit_hla_accuracy(allele)
+            m[i, findfirst(x -> x == allele, alleles)] += 1
+        end
+    end
+
+    return m
+end
+
 function Base.in(::Missing, hla_type::HLAType)
     if any(ismissing.(hla_type.alleles))
         return true

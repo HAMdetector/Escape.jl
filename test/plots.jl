@@ -28,7 +28,7 @@ end
     temp_path = tempname() * "test.pdf"
 
     @test !isfile(temp_path)
-    save(p, temp_path)
+    Escape.save(p, temp_path)
     @test isfile(temp_path)
     rm(temp_path)
 end

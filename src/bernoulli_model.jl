@@ -22,7 +22,7 @@ function run(model::BernoulliModel, data::HLAData, replacement::Replacement)
 end
 
 function stan_input(model::BernoulliModel, data::HLAData, replacement::Replacement)
-    y = targets(data, replacement)
+    y = targets(replacement, data)
     
     complete_cases = findall(i -> !ismissing(y[i]) && missing ∉ data.hla_types[i], 
         1:length(y))
@@ -32,24 +32,4 @@ function stan_input(model::BernoulliModel, data::HLAData, replacement::Replaceme
     stan_input = Dict("y" => y, "hla_matrix" => m,
                       "n_entries" => length(y), 
                       "n_alleles" => size(m)[2])
-end
-
-function targets(data::HLAData, replacement::Replacement)
-    reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
-    t = Vector{Union{Missing, Int}}()
-
-    for record in reader
-        symbol = Char(BioSequences.FASTA.sequence(record)[replacement.position])
-
-        if symbol ∈ ('X', '-')
-            push!(t, missing)
-        elseif symbol == replacement.replacement
-            push!(t, 1)
-        else
-            push!(t, 0)
-        end
-    end
-
-    close(reader)
-    return t
 end

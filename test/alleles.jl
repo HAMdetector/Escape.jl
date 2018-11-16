@@ -9,6 +9,13 @@ end
     @test_throws MethodError HLAType(parse_allele("A13", "B07"))
 end
 
+@testset "hla_matrix(::Vector{NTuple{6, HLAAllele}})" begin
+    hla_types = [HLAType(parse_allele("A11", "A03", "B7", "B7", "C7", "C7")),
+                 HLAType(parse_allele("A33", "A03", "B7", "B7", "C7", "C7"))]
+
+    @test Escape.hla_matrix(hla_types) == [1 1 0 2 2; 1 0 1 2 2]
+end
+
 @testset "Base.in(::HLAAllele, ::HLAType)" begin
     hla_type = HLAType(parse_allele("A13", "A21:01", "B51", "B57", "C03", "C07"))
     @test parse_allele("A13") in hla_type

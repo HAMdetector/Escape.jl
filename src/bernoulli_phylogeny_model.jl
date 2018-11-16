@@ -32,7 +32,7 @@ end
 function stan_input(model::BernoulliPhylogenyModel, data::HLAData, replacement::Replacement, 
                     tree::PhylogeneticTree)
 
-    y = targets(data, replacement)
+    y = targets(replacement, data)
     m = hla_matrix(data.hla_types)
     ctree = deepcopy(tree)
     annotate!(ctree, data, replacement)
