@@ -12,7 +12,7 @@ end
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01"))]
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_data = HLAData("test", fasta_path, hla_types)
-    tree = PhylogeneticTree(hla_data)
+    tree = phylogenetic_tree(hla_data)
     replacement = Replacement("test", 2, 'S')
     annotate!(tree, hla_data, replacement)
 
@@ -40,7 +40,7 @@ end
     hla_types = rand(HLAType, 5)
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_data = HLAData("test", fasta_path, hla_types)
-    tree = PhylogeneticTree(hla_data)
+    tree = phylogenetic_tree(hla_data)
     replacement = Replacement("test", 2, 'S')
     
     @test @suppress Escape.run(BernoulliPhylogenyModel(), hla_data, replacement, tree) isa 

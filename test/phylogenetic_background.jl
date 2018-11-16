@@ -1,5 +1,5 @@
 @testset "L(::PhylogeneticTree, ::RateMatrix)" begin
-    tree = PhylogeneticTree("(A:0.3, ((B:0.1, C:0.1):0.1, D:0.2):0.1);")
+    tree = phylogenetic_tree("(A:0.3, ((B:0.1, C:0.1):0.1, D:0.2):0.1);")
     annotation = Dict("A" => "A", "B" => "A", "C" => "A", "D" => "A")
 
     for leaf in leaves(tree)

@@ -13,7 +13,7 @@ end
 BernoulliPhylogenyModel(; chains = 4, iter = 2000) = BernoulliPhylogenyModel(chains, iter)
 
 function run(model::BernoulliPhylogenyModel, data::HLAData, replacement::Replacement)
-    tree = PhylogeneticTree(data)
+    tree = phylogenetic_tree(data)
     run(model, data, replacement, tree)
 end
 
