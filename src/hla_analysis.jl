@@ -1,4 +1,4 @@
-export AbstractHLAAnalysis, HLAAnalysis
+export AbstractHLAAnalysis, HLAAnalysis, AbstractHLAAnalysisResult, HLAAnalysisResult
 
 abstract type AbstractHLAAnalysis end
 abstract type AbstractHLAAnalysisResult end
@@ -45,6 +45,6 @@ function run(analysis::AbstractHLAAnalysis, dir::String)
     end
 
     analysis_result = HLAAnalysisResult(analysis, root)
-    FileIO.save(joinpath(analysis_result.path, "analysis.jld2"),
+    FileIO.save(joinpath(analysis_result.path, "analysis_result.jld2"),
                 Dict("analysis_result" => analysis_result))
 end
