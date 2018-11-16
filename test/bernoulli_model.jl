@@ -27,5 +27,5 @@ end
     hla_data = HLAData("test", fasta_path, hla_types)
     replacement = Replacement("test", 2, 'S')
     
-    @test @suppress Escape.run(BernoulliModel(), hla_data, replacement) isa BernoulliResult
+    @test Escape.run(BernoulliModel(), hla_data, replacement) isa BernoulliResult
 end

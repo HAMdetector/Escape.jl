@@ -13,7 +13,7 @@ end
 BernoulliModel(; chains = 4, iter = 2000) = BernoulliModel(chains, iter)
 
 function run(model::BernoulliModel, data::HLAData, replacement::Replacement)
-    path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli")
+    path = joinpath(dirname(@__DIR__), "data", "stan", "bernoulli")
     input = stan_input(model, data, replacement)
     sf = stan(path, input, chains = model.chains, iter = model.iter)
     alleles = sort(unique_alleles(filter(x -> missing ∉ x, data.hla_types)))
