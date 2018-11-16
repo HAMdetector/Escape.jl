@@ -27,7 +27,7 @@ function run(analysis::AbstractHLAAnalysis, dir::String)
 
         r = replacements(data)
         if analysis.model isa HLAPhylogenyModel
-            tree = PhylogeneticTree(data)
+            tree = phylogenetic_tree(data)
         end
 
         @sync @distributed for replacement in r

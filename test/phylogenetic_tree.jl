@@ -1,5 +1,5 @@
-@testset "PhylogeneticTree(::String)" begin
-    tree = PhylogeneticTree("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5);")
+@testset "phylogenetic_tree(::String)" begin
+    tree = phylogenetic_tree("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5);")
     names = [get_prop(tree.graph, x, :name) for x in 1:6]
     branch_lengths = [get_prop(tree.graph, e, :branch_length) for
                         e in collect(edges(bfs_tree(tree.graph, 1)))[1:end]]
@@ -7,12 +7,12 @@
     @test branch_lengths == [0.1, 0.2, 0.5, 0.3, 0.4]
 end
 
-@testset "PhylogeneticTree(::HLAData)" begin
+@testset "phylogenetic_tree(::AbstractHLAData)" begin
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_types = rand(HLAType, 5)
     hla_data = HLAData("test", fasta_path, hla_types)
 
-    @test PhylogeneticTree(hla_data) isa PhylogeneticTree
+    @test phylogenetic_tree(hla_data) isa PhylogeneticTree
 end
 
 @testset "add_to_graph!(::AbstractMetaGraph, ::Int, ::String)" begin
@@ -65,14 +65,14 @@ end
               "((B:0.2,(C:0.3,D:0.4)E:0.5)A:0.1);", 
               "(B:6.0,(A:5.0,C:3.0,E:4.0):5.0,D:11.0);"]
     for n in newick
-        @test Escape.newick_string(PhylogeneticTree(n)) == n
+        @test Escape.newick_string(phylogenetic_tree(n)) == n
     end
 end
 
 @testset "leaves(::PhylogeneticTree)" begin
     fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
     hla_data = HLAData("test", fasta_path, rand(HLAType, 6))
-    tree = PhylogeneticTree(hla_data)
+    tree = phylogenetic_tree(hla_data)
 
     @test leaves(tree) == [2,4,6,8,10,11]
 end
@@ -80,7 +80,7 @@ end
 @testset "isleaf(v::Int, tree::Phylogenetic)" begin
     fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
     hla_data = HLAData("test", fasta_path, rand(HLAType, 6))
-    tree = PhylogeneticTree(hla_data)
+    tree =phylogenetic_tree(hla_data)
 
     @test isleaf(2, tree)
     @test !isleaf(1, tree)
@@ -90,7 +90,7 @@ end
 @testset "get_property(::PhylogeneticTree, ::Int, ::Symbol)" begin
     fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
     hla_data = HLAData("test", fasta_path, rand(HLAType, 6))
-    tree = PhylogeneticTree(hla_data)
+    tree = phylogenetic_tree(hla_data)
 
     @test get_property(tree, 1, :name) == "root"
     @test get_property(tree, 2, :name) == get_prop(tree.graph, 2, :name)
@@ -102,7 +102,7 @@ end
 @testset "set_property!(::PhylogeneticTree, ::Int, ::Symbol)" begin
     fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
     hla_data = HLAData("test", fasta_path, rand(HLAType, 6))
-    tree = PhylogeneticTree(hla_data)
+    tree = phylogenetic_tree(hla_data)
 
     @test get_property(tree, 1, :name) == "root"
     set_property!(tree, 1, :name, "new name")
@@ -113,7 +113,7 @@ end
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     r = Replacement("test", 2, 'S')
     hla_data = HLAData("test", fasta_path, rand(HLAType, 5))
-    tree = PhylogeneticTree(hla_data)
+    tree = phylogenetic_tree(hla_data)
 
     annotation = Dict("1" => "0", "2" => "0", "3" => "1", "4" => "1", "5" => "1")
     annotate!(tree, hla_data, r)
@@ -127,7 +127,7 @@ end
 @testset "matching(::PhylogeneticTree, ::HLAData)" begin
     fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
     hla_data = HLAData("test", fasta_path, rand(HLAType, 6))
-    tree = PhylogeneticTree(hla_data)
+    tree = phylogenetic_tree(hla_data)
 
     @test Escape.matching(tree, hla_data)
 

@@ -1,11 +1,11 @@
-export PhylogeneticTree, newick_string, leaves, isleaf, set_property!, get_property,
-       annotate!
+export PhylogeneticTree, phylogenetic_tree, newick_string, leaves, isleaf, set_property!, 
+       get_property, annotate!
 
 struct PhylogeneticTree
     graph::MetaDiGraph
 end
 
-function PhylogeneticTree(newick_string::String)
+function phylogenetic_tree(newick_string::String)
     graph = MetaDiGraph()
     add_vertex!(graph)
     set_prop!(graph, 1, :name, "root")
@@ -18,7 +18,7 @@ function PhylogeneticTree(newick_string::String)
     return PhylogeneticTree(graph)
 end
 
-function PhylogeneticTree(data::AbstractHLAData)
+function phylogenetic_tree(data::AbstractHLAData)
     temp_fasta = tempname() * ".fasta"
     temp_name = basename(tempname())
     numbered_fasta(data, temp_fasta)
@@ -32,7 +32,8 @@ function PhylogeneticTree(data::AbstractHLAData)
                         -T $(Threads.nthreads())`)
 
     final_tree_path = joinpath(tempdir(), "RAxML_rootedTree.$(temp_name * "_rooted")")
-    return PhylogeneticTree(readline(final_tree_path))
+    
+    return phylogenetic_tree(readline(final_tree_path))
 end
 
 function numbered_fasta(data::AbstractHLAData, filepath::String)

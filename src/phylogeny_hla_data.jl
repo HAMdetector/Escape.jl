@@ -25,3 +25,7 @@ struct PhylogenyHLAData <: AbstractHLAData
         new(name, fasta_file, hla_types, tree) 
     end
 end
+
+function phylogenetic_tree(data::PhylogenyHLAData)
+    return data.tree
+end
