@@ -11,7 +11,7 @@ end
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01"))]
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
-    hla_data = HLAData("test", fasta_path, hla_types)
+    hla_data = HLAData("test", fasta_path, hla_types, missing)
     replacement = Replacement("test", 2, 'S')
 
     input = Escape.stan_input(BernoulliModel(), hla_data, replacement)
@@ -24,7 +24,7 @@ end
 @testset "run(::BernoulliModel, ::HLAData, ::Replacement)" begin
     hla_types = rand(HLAType, 5)
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
-    hla_data = HLAData("test", fasta_path, hla_types)
+    hla_data = HLAData("test", fasta_path, hla_types, missing)
     replacement = Replacement("test", 2, 'S')
     
     @test @suppress Escape.run(BernoulliModel(), hla_data, replacement) isa BernoulliResult
