@@ -12,13 +12,15 @@ end
 
 BernoulliPhylogenyModel(; chains = 4, iter = 2000) = BernoulliPhylogenyModel(chains, iter)
 
-function run(model::BernoulliPhylogenyModel, data::HLAData, replacement::Replacement)
+function run(model::BernoulliPhylogenyModel, data::AbstractHLAData, 
+             replacement::Replacement)
+    
     tree = phylogenetic_tree(data)
     run(model, data, replacement, tree)
 end
 
-function run(model::BernoulliPhylogenyModel, data::HLAData, replacement::Replacement, 
-             tree::PhylogeneticTree)
+function run(model::BernoulliPhylogenyModel, data::AbstractHLAData, 
+             replacement::Replacement, tree::PhylogeneticTree)
 
     path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli_phylogeny")
     input = stan_input(model, data, replacement, tree)
@@ -29,8 +31,8 @@ function run(model::BernoulliPhylogenyModel, data::HLAData, replacement::Replace
 end
 
 
-function stan_input(model::BernoulliPhylogenyModel, data::HLAData, replacement::Replacement, 
-                    tree::PhylogeneticTree)
+function stan_input(model::BernoulliPhylogenyModel, data::AbstractHLAData, 
+                    replacement::Replacement, tree::PhylogeneticTree)
 
     y = targets(replacement, data)
     m = hla_matrix(data.hla_types)

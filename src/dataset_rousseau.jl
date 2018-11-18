@@ -30,11 +30,11 @@ function HLADataset(::Val{:Rousseau})
 
     gag_file = joinpath(dirname(@__DIR__), "data", "test_sequences", "gag_rousseau.fasta")
     gag_hla_types = extract_hla_types(gag_file)
-    gag_hla_data = HLAData("gag", gag_file, gag_hla_types)
+    gag_hla_data = HLAData("gag", gag_file, gag_hla_types, missing)
 
     nef_file = joinpath(dirname(@__DIR__), "data", "test_sequences", "nef_rousseau.fasta")
     nef_hla_types = extract_hla_types(nef_file)
-    nef_hla_data = HLAData("nef", nef_file, nef_hla_types)
+    nef_hla_data = HLAData("nef", nef_file, nef_hla_types, missing)
 
     HLADataset("Rousseau", [gag_hla_data, nef_hla_data])
 end

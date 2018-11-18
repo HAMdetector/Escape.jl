@@ -6,7 +6,7 @@ struct Replacement
     replacement::Char
 end
 
-function replacements(data::HLAData; mincount::Int = 5)
+function replacements(data::AbstractHLAData; mincount::Int = 5)
     replacements = Vector{Replacement}()
 
     reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))

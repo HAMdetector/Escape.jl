@@ -19,6 +19,8 @@ function phylogenetic_tree(newick_string::String)
 end
 
 function phylogenetic_tree(data::AbstractHLAData)
+    !ismissing(data.tree) && return data.tree
+
     temp_fasta = tempname() * ".fasta"
     temp_name = basename(tempname())
     numbered_fasta(data, temp_fasta)
@@ -121,6 +123,8 @@ function newick_string(tree::PhylogeneticTree)
         newick *= newick_string(tree.graph, n)
     end
     newick *= ");"
+
+    return newick
 end
 
 function newick_string(graph::AbstractMetaGraph, v::Int)
@@ -192,6 +196,25 @@ function matching(tree::PhylogeneticTree, data::AbstractHLAData)
     msg = string("Number of leaves ($n_leaves) does not match number of sequences ",
                  "($(n_sequences)) in the fasta file $(data.fasta_file).")
     n_leaves == n_sequences || return DimensionMismatch(msg)
+
+    msg = """:name property of leaves must be "1", "2", ..., "$n_leaves"."""
+    leaf_names == Set(string.(1:n_leaves)) || return ErrorException(msg)
+
+    return true
+end
+
+function matching(tree::PhylogeneticTree, fasta_file::AbstractString)
+    n_leaves = length(leaves(tree))
+    
+    reader = BioSequences.FASTA.Reader(open(fasta_file, "r"))
+    fasta_length = length(collect(reader))
+    close(reader) 
+
+    leaf_names = Set(map(x -> get_property(tree, x, :name), leaves(tree)))
+
+    msg = string("Number of leaves ($n_leaves) does not match number of sequences ",
+                 "($fasta_length) in the fasta file $fasta_file.")
+    n_leaves == fasta_length || return DimensionMismatch(msg)
 
     msg = """:name property of leaves must be "1", "2", ..., "$n_leaves"."""
     leaf_names == Set(string.(1:n_leaves)) || return ErrorException(msg)
