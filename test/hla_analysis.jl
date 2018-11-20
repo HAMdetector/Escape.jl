@@ -11,11 +11,14 @@ end
                             parse_allele("B53"), parse_allele("B56"),
                             missing, missing))
     hla_types[6] = HLAType((missing, missing, missing, missing, missing, missing))
-    hla_data_1 = HLAData("protein_1", fasta_path, hla_types, missing)
-    hla_data_2 = HLAData("protein_2", fasta_path, rand(HLAType, 15), missing)
+    tree_path = joinpath(dirname(@__DIR__), "test", "data", "phylogeny.tree")
+    tree = phylogenetic_tree(readline(tree_path))
+
+    hla_data_1 = HLAData("protein_1", fasta_path, hla_types, tree)
+    hla_data_2 = HLAData("protein_2", fasta_path, rand(HLAType, 15), tree)
 
     dataset = HLADataset("Test", [hla_data_1, hla_data_2])
-    analysis = HLAAnalysis("testrun", BernoulliPhylogenyModel(), dataset)
+    analysis = HLAAnalysis("testrun", BernoulliPhylogenyModel(1, 500), dataset)
 
     testrun_dir = joinpath(dirname(@__DIR__), "test", "data")
 
@@ -25,4 +28,25 @@ end
     result = FileIO.load(joinpath(testrun_dir, "testrun", "analysis_result.jld2"), 
                          "analysis_result")
     @test result isa HLAAnalysisResult
+end
+
+@testset "analysis_result(::AbstractString)" begin
+    result_path = joinpath(dirname(@__DIR__), "test", "data", "testrun")
+    @test analysis_result(result_path) isa HLAAnalysisResult
+end
+
+@testset "result_files(::AbstractHLAAnalysisResult)" begin
+    result_path = joinpath(dirname(@__DIR__), "test", "data", "testrun")
+    result = analysis_result(result_path)
+
+    @test all(endswith.(Escape.result_files(result), ".jld2"))
+end
+
+@testset "Base.iterate(::AbstractHLAAnalysisResult, state)" begin
+    result_path = joinpath(dirname(@__DIR__), "test", "data", "testrun")
+    result = analysis_result(result_path)
+
+    for model_result in result
+        @test model_result isa BernoulliPhylogenyResult
+    end
 end

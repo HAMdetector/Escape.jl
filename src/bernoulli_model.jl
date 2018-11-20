@@ -8,6 +8,7 @@ end
 struct BernoulliResult <: HLAModelResult
     sf::Stanfit
     alleles::Vector{HLAAllele}
+    replacement::Replacement
 end
 
 BernoulliModel(; chains = 4, iter = 2000) = BernoulliModel(chains, iter)
@@ -18,7 +19,7 @@ function run(model::BernoulliModel, data::HLAData, replacement::Replacement)
     sf = stan(path, input, chains = model.chains, iter = model.iter)
     alleles = sort(unique_alleles(filter(x -> missing ∉ x, data.hla_types)))
 
-    return BernoulliResult(sf, alleles)
+    return BernoulliResult(sf, alleles, replacement)
 end
 
 function stan_input(model::BernoulliModel, data::HLAData, replacement::Replacement)

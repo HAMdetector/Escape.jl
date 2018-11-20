@@ -1,4 +1,7 @@
-using Test, Escape, BioSequences, Suppressor, LightGraphs, MetaGraphs, RCall, JLD2, FileIO
+using Test, Escape, BioSequences, Suppressor, LightGraphs, MetaGraphs, RCall, JLD2, FileIO,
+      StanInterface
+
+import LightGraphs.SimpleGraphs
 
 include("alleles.jl")
 include("hla_data.jl")

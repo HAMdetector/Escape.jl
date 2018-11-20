@@ -8,6 +8,7 @@ end
 struct BernoulliPhylogenyResult <: HLAModelResult
     sf::Stanfit
     alleles::Vector{HLAAllele}
+    replacement::Replacement
 end
 
 BernoulliPhylogenyModel(; chains = 4, iter = 2000) = BernoulliPhylogenyModel(chains, iter)
@@ -27,7 +28,7 @@ function run(model::BernoulliPhylogenyModel, data::AbstractHLAData,
     sf = stan(path, input, chains = model.chains, iter = model.iter)
     alleles = sort(unique_alleles(data.hla_types))
 
-    return BernoulliPhylogenyResult(sf, alleles)
+    return BernoulliPhylogenyResult(sf, alleles, replacement)
 end
 
 

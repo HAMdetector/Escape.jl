@@ -138,3 +138,13 @@ end
                              rand(HLAType, 5), missing)
     @test Escape.matching(tree, short_hla_data) isa DimensionMismatch
 end
+
+@testset "load PhylogeneticTree from .jld2" begin
+    tree = phylogenetic_tree("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5);")
+    tree_path = joinpath(dirname(@__DIR__), "test", "data", "tree.jld2")
+
+    FileIO.save(tree_path, Dict("tree" => tree))
+    loaded_tree = FileIO.load(tree_path, "tree")
+
+    @test loaded_tree isa PhylogeneticTree
+end
