@@ -2,7 +2,7 @@ module Escape
 
 import BioSequences, StatsFuns, StatsBase
 using LinearAlgebra, Calculus, Statistics, DelimitedFiles, Distributed
-using StanInterface, LightGraphs, MetaGraphs, RCall, Suppressor,
+using StanInterface, LightGraphs, MetaGraphs, RCall, Suppressor, DataFrames,
       JuMP, Ipopt, JLD2, FileIO
 
 include("alleles.jl")

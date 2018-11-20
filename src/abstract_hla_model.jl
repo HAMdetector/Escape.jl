@@ -14,3 +14,30 @@ function classification_accuracy(result::HLAModelResult)
     
     return Float64(count(estimated .== observed) / n_entries)
 end
+
+function relevant_alleles(result::HLAModelResult)
+    posteriors = allele_posteriors(result)
+    filter!(x -> !(posterior_interval(x.second)[1] < 0 <= posterior_interval(x.second)[2]),
+            posteriors)
+
+    return posteriors
+end
+
+function allele_posteriors(result::HLAModelResult)
+    posterior = extract(result.sf)
+    
+    alleles = Vector{Pair{HLAAllele, Vector{Float64}}}()
+    for (i, allele) in enumerate(result.alleles)
+        push!(alleles, allele => posterior["beta_hla.$i"])
+    end
+
+    return alleles
+end
+
+function posterior_interval(v::Vector{T}; cutoff::Real = 0.95) where T <: Real
+    sorted = sort(v)
+    i1 = round(Int, (1 - cutoff) * length(v))
+    i2 = round(Int, cutoff * length(v))
+
+    return (sorted[i1], sorted[i2])
+end
