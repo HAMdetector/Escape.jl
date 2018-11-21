@@ -68,10 +68,10 @@ uuid = "49dc2e85-a5d0-5ad3-a950-438e2897f1b9"
 version = "0.4.1"
 
 [[CategoricalArrays]]
-deps = ["Compat", "Future", "JSON", "Missings", "Printf", "Reexport"]
-git-tree-sha1 = "6362c49130b5888f5628bc197ee5f17aec7d2a88"
+deps = ["Compat", "Future", "Missings", "Printf", "Reexport", "Requires"]
+git-tree-sha1 = "64651a0315fc342e7e35d03d67b2da920937c9be"
 uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
-version = "0.4.0"
+version = "0.5.0"
 
 [[CodecZlib]]
 deps = ["BinaryProvider", "Libdl", "Test", "TranscodingStreams"]
@@ -345,9 +345,9 @@ version = "0.9.5"
 
 [[Parameters]]
 deps = ["Markdown", "OrderedCollections", "REPL", "Test"]
-git-tree-sha1 = "40f540ec96e50c0b2b9efdb11b5e4d0c63f90923"
+git-tree-sha1 = "eec0fe16344cc14aa2e6251874ab30d62aff4f7c"
 uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
-version = "0.10.1"
+version = "0.10.2"
 
 [[Permutations]]
 deps = ["Combinatorics", "Compat", "LinearAlgebra", "Random"]
@@ -489,8 +489,10 @@ uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
 version = "0.7.2"
 
 [[StanInterface]]
-deps = ["BinDeps", "DelimitedFiles", "Distributed"]
-path = "/home/habermann/sync/StanInterface"
+deps = ["BinDeps", "DelimitedFiles", "Distributed", "SharedArrays", "Suppressor", "Test"]
+git-tree-sha1 = "fbcda94b1047849b5edbc7ef0c99d513152a8846"
+repo-rev = "master"
+repo-url = "http://132.252.170.166:8000/DanielHa/StanInterface.jl.git"
 uuid = "e89815f6-a2f7-11e8-0a3f-6d3140f294c6"
 version = "0.1.0"
 

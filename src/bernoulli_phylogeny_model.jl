@@ -21,11 +21,12 @@ function run(model::BernoulliPhylogenyModel, data::AbstractHLAData,
 end
 
 function run(model::BernoulliPhylogenyModel, data::AbstractHLAData, 
-             replacement::Replacement, tree::PhylogeneticTree)
+             replacement::Replacement, tree::PhylogeneticTree; 
+             wp::WorkerPool = WorkerPool())
 
     path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli_phylogeny")
     input = stan_input(model, data, replacement, tree)
-    sf = stan(path, input, chains = model.chains, iter = model.iter)
+    sf = stan(path, input, chains = model.chains, iter = model.iter, wp = wp)
     alleles = sort(unique_alleles(data.hla_types))
 
     return BernoulliPhylogenyResult(sf, alleles, replacement)
