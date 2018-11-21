@@ -1,2 +1,4 @@
 test/data/testrun/*
 deps/build.log
+data/stan/bernoulli_phylogeny
+data/stan/bernoulli
