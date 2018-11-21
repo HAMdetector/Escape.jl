@@ -30,9 +30,10 @@ function run(analysis::AbstractHLAAnalysis, dir::String)
 
         @sync @distributed for replacement in r
             if analysis.model isa HLAPhylogenyModel
-                result = run(analysis.model, data, replacement, phylogenetic_tree(data))
+                result = run(analysis.model, data, replacement, phylogenetic_tree(data);
+                             wp = WorkerPool([myid()]))
             else
-                result = run(analysis.model, data, replacement)
+                result = run(analysis.model, data, replacement; wp = WorkerPool([myid()]))
             end
 
             filename = string(replacement.protein, "_", replacement.position, 

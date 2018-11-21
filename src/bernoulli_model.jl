@@ -13,10 +13,11 @@ end
 
 BernoulliModel(; chains = 4, iter = 2000) = BernoulliModel(chains, iter)
 
-function run(model::BernoulliModel, data::HLAData, replacement::Replacement)
+function run(model::BernoulliModel, data::HLAData, replacement::Replacement;
+             wp::WorkerPool = WorkerPool())
     path = joinpath(dirname(@__DIR__), "data", "stan", "bernoulli")
     input = stan_input(model, data, replacement)
-    sf = stan(path, input, chains = model.chains, iter = model.iter)
+    sf = stan(path, input, chains = model.chains, iter = model.iter, wp = wp)
     alleles = sort(unique_alleles(filter(x -> missing ∉ x, data.hla_types)))
 
     return BernoulliResult(sf, alleles, replacement)
