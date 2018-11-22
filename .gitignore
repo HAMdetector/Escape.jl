@@ -1,4 +1,6 @@
 test/data/testrun/*
+test/data/tree.jld2
+
 deps/build.log
 data/stan/bernoulli_phylogeny
 data/stan/bernoulli
