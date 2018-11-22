@@ -62,8 +62,10 @@ function analysis_result(dirpath::AbstractString)
 end
 
 function summary(result::AbstractHLAAnalysisResult)
-    df = DataFrame(name = String[], position = Int[], replacement = String[],
-                   lower = Float64[], upper = Float64[], p_minus = Float64[])
+    df = DataFrame(name = String[], allele = String[], position = Int[], 
+                   replacement = String[], lower = Float64[], upper = Float64[], 
+                   p_minus = Float64[])
+
     for (i, model_result) in enumerate(result)
         println(i)
         alleles = relevant_alleles(model_result)
@@ -72,7 +74,7 @@ function summary(result::AbstractHLAAnalysisResult)
         for (allele, posterior) in alleles
             lower, upper = posterior_interval(posterior)
             p_minus = count(posterior .<= 0) / length(posterior)
-            push!(df, [replacement.protein, replacement.position, 
+            push!(df, [replacement.protein, string(allele), replacement.position, 
                        string(replacement.replacement), lower, upper, p_minus])
         end
     end
