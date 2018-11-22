@@ -64,8 +64,9 @@ end
 function summary(result::AbstractHLAAnalysisResult)
     df = DataFrame(name = String[], position = Int[], replacement = String[],
                    lower = Float64[], upper = Float64[], p_minus = Float64[])
-    for model_result in result
-        alleles = allele_posteriors(model_result)
+    for (i, model_result) in enumerate(result)
+        println(i)
+        alleles = relevant_alleles(model_result)
         replacement = model_result.replacement
 
         for (allele, posterior) in alleles
