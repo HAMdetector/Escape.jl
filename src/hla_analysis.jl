@@ -39,13 +39,18 @@ function run(analysis::AbstractHLAAnalysis, dir::String)
             filename = string(replacement.protein, "_", replacement.position, 
                 replacement.replacement, ".jld2")
             
-            FileIO.save(joinpath(data_dir, filename), Dict("result" => result))
+            
+            jldopen(joinpath(data_dir, filename), true, true, true, IOStream) do file
+                file["result"] = result
+            end
         end
     end
 
     analysis_result = HLAAnalysisResult(analysis, root)
-    FileIO.save(joinpath(analysis_result.path, "analysis_result.jld2"),
-                Dict("analysis_result" => analysis_result))
+    jldopen(joinpath(analysis_result.path, "analysis_result.jld2"), 
+            true, true, true, IOStream) do file
+        file["analysis_result"] = analysis_result
+    end
 end
 
 function analysis_result(dirpath::AbstractString)
