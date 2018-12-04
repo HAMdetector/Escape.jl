@@ -25,4 +25,7 @@ end
     replacement = Replacement("test", 10, 'S')
     @test all(Escape.targets(replacement, hla_data) .=== 
         [missing, missing, 1, missing, missing])
+
+    replacement = Replacement("test", 13, 'S')
+    @test all(Escape.targets(replacement, hla_data) .=== [missing, missing, 1, 1, 1])
 end
