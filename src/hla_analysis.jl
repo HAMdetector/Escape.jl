@@ -15,12 +15,13 @@ struct HLAAnalysisResult <: AbstractHLAAnalysisResult
     path::String
 end
 
-function run(analysis::AbstractHLAAnalysis, dir::String)
+function run(analysis::HLAAnalysis, dir::String)
     isdir(dir) || error("$dir must be a directory.")
     to_filename(x::String) = replace(lowercase(x), ' ' => '_')
-    
+
     root = joinpath(dir, to_filename(analysis.name))
     mkdir(root)
+    analysis = rebase_analysis(analysis, root)
 
     for data in analysis.dataset.data
         data_dir = joinpath(root, to_filename(data.name))
@@ -46,17 +47,32 @@ function run(analysis::AbstractHLAAnalysis, dir::String)
         end
     end
 
-    analysis_result = HLAAnalysisResult(analysis, root)
+    analysis_result = HLAAnalysisResult(analysis, root) 
     jldopen(joinpath(analysis_result.path, "analysis_result.jld2"), 
             true, true, true, IOStream) do file
         file["analysis_result"] = analysis_result
     end
 end
 
+function rebase_analysis(analysis::HLAAnalysis, dir::String)
+    dataset = deepcopy(analysis.dataset)
+    isdir(joinpath(dir, "data")) || mkdir(joinpath(dir, "data"))
+
+    for data in analysis.dataset.data
+        source = data.fasta_file.path
+        destination = joinpath(dir, "data", basename(source))
+        cp(source, destination, force = true)
+
+        data.fasta_file.path = destination
+    end
+
+    return HLAAnalysis(analysis.name, analysis.model, dataset)
+end
+
 function analysis_result(dirpath::AbstractString)
-    isdir(dirpath) || error("directory $filepath does not exist.")
+    isdir(dirpath) || error("directory $dirpath does not exist.")
     result_path = joinpath(dirpath, "analysis_result.jld2")
-    isfile(result_path) || error("$dirpath does not contain a analysis_result.jld2 file")
+    isfile(result_path) || error("$dirpath does not contain an analysis_result.jld2 file")
 
     return load(result_path, "analysis_result")
 end

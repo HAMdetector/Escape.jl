@@ -1,10 +1,4 @@
-@testset "HLAAnalysis(::String, ::HLAModel, ::Vector{HLADataset})" begin
-    @test HLAAnalysis("Bernoulli", BernoulliModel(), HLADataset("Rousseau")) isa HLAAnalysis
-    @test HLAAnalysis("BernoulliPhylogeny", BernoulliPhylogenyModel(),
-        HLADataset("Rousseau")) isa AbstractHLAAnalysis
-end
-
-@testset "run(::AbstractHLAAnalysis, ::String)" begin
+function test_analysis()
     fasta_path = joinpath(dirname(@__DIR__), "test",  "data", "test_large.fasta")
     hla_types = rand(HLAType, 15)
     hla_types[5] = HLAType((parse_allele("A11"), parse_allele("A13"),
@@ -18,7 +12,17 @@ end
     hla_data_2 = HLAData("protein_2", fasta_path, rand(HLAType, 15), tree)
 
     dataset = HLADataset("Test", [hla_data_1, hla_data_2])
-    analysis = HLAAnalysis("testrun", BernoulliPhylogenyModel(1, 500), dataset)
+    analysis = HLAAnalysis("testrun", BernoulliPhylogenyModel(1, 100), dataset)
+end
+
+@testset "HLAAnalysis(::String, ::HLAModel, ::Vector{HLADataset})" begin
+    @test HLAAnalysis("Bernoulli", BernoulliModel(), HLADataset("Rousseau")) isa HLAAnalysis
+    @test HLAAnalysis("BernoulliPhylogeny", BernoulliPhylogenyModel(),
+        HLADataset("Rousseau")) isa AbstractHLAAnalysis
+end
+
+@testset "run(::AbstractHLAAnalysis, ::String)" begin
+    analysis = test_analysis()
 
     testrun_dir = joinpath(dirname(@__DIR__), "test", "data")
 
@@ -33,6 +37,32 @@ end
 @testset "analysis_result(::AbstractString)" begin
     result_path = joinpath(dirname(@__DIR__), "test", "data", "testrun")
     @test analysis_result(result_path) isa HLAAnalysisResult
+end
+
+@testset "rebase_analysis(::HLAAnalysis, ::String)" begin
+    initial_dir = mkdir(tempname())
+    destination_dir = mkdir(tempname())
+
+    # 1st run
+    analysis = test_analysis()
+    @suppress Escape.run(analysis, initial_dir)
+    @test isdir(initial_dir)
+
+    mv(initial_dir, destination_dir, force = true)
+    rm(initial_dir, force = true, recursive = true)
+
+    # 2nd run from moved directory
+    @test !isdir(initial_dir)
+    result = Escape.analysis_result(joinpath(destination_dir, "testrun"))
+    new_analysis = result.analysis
+    new_destination_dir = mkdir(tempname())
+
+    @suppress Escape.run(new_analysis, new_destination_dir)
+    result = Escape.analysis_result(joinpath(new_destination_dir, "testrun"))
+    @test result isa HLAAnalysisResult
+    
+    rm(destination_dir, force = true, recursive = true)
+    rm(new_destination_dir, force = true, recursive = true)
 end
 
 @testset "result_files(::AbstractHLAAnalysisResult)" begin
