@@ -16,7 +16,7 @@ function replacements(data::AbstractHLAData; mincount::Int = 5)
         reader = BioSequences.FASTA.Reader(open(data.fasta_file.path, "r"))
         counts = [Char(BioSequences.FASTA.sequence(record)[i]) for record in reader] |>
             StatsBase.countmap 
-        filter!(x -> x.first ∉ ('-', 'X') && x.second >= mincount, counts)
+        filter!(x -> x.first != 'X' && x.second >= mincount, counts)
         
         if length(counts) > 1
             for (k, v) in counts
@@ -37,10 +37,10 @@ function targets(replacement::Replacement, data::AbstractHLAData)
     for record in reader
         symbol = Char(BioSequences.FASTA.sequence(record)[replacement.position])
 
-        if symbol ∈ ('X', '-')
-            push!(t, missing)
-        elseif symbol == replacement.replacement
+        if symbol == replacement.replacement
             push!(t, 1)
+        elseif symbol ∈ ('X', '-')
+            push!(t, missing)
         else
             push!(t, 0)
         end

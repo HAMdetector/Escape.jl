@@ -178,10 +178,10 @@ function annotate!(tree::PhylogeneticTree, data::AbstractHLAData, replacement::R
 
         v = filter(x -> get_property(tree, x, :name) == string(i), leaves(tree))[1]
 
-        if symbol in ('-', 'X')
-            set_property!(tree, v, :state, missing)
-        elseif symbol == replacement.replacement
+        if symbol == replacement.replacement
             set_property!(tree, v, :state, "1")
+        elseif symbol in ('-', 'X')
+            set_property!(tree, v, :state, missing)
         else
             set_property!(tree, v, :state, "0")
         end
