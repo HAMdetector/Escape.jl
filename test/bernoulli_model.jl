@@ -1,5 +1,5 @@
 @testset "BernoulliModel(::Int, ::Int)" begin
-    @test BernoulliModel(4, 2000) isa BernoulliModel
+    @test BernoulliModel(iter = 2000, chains = 4) isa BernoulliModel
     @test BernoulliModel() isa BernoulliModel
     @test BernoulliModel().iter == 2000
 end

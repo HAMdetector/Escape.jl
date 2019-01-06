@@ -1,5 +1,5 @@
 @testset "BernoulliPhylogenyModel(::Int, ::Int)" begin
-    @test BernoulliPhylogenyModel(4, 2000) isa BernoulliPhylogenyModel
+    @test BernoulliPhylogenyModel(2000, 4) isa BernoulliPhylogenyModel
     @test BernoulliPhylogenyModel() isa BernoulliPhylogenyModel
     @test BernoulliPhylogenyModel().iter == 2000
 end
@@ -27,7 +27,7 @@ end
                         "phylogeny_effect" => phylogeny_effect)
 end
 
-@testset "run(::BernoulliModel, ::HLAData, ::Replacement)" begin
+@testset "run(::BernoulliPhylogenyModel, ::HLAData, ::Replacement)" begin
     hla_types = rand(HLAType, 5)
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_data = HLAData("test", fasta_path, hla_types, missing)
@@ -37,7 +37,7 @@ end
         BernoulliPhylogenyResult
 end
 
-@testset "run(::BernoulliModel, ::Phylogenetictree, ::Replacement, ::HLAData)" begin
+@testset "run(::BernoulliPhylogenyModel, ::Phylogenetictree, ::Replacement, ::HLAData)" begin
     hla_types = rand(HLAType, 5)
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_data = HLAData("test", fasta_path, hla_types, missing)
@@ -46,4 +46,28 @@ end
     
     @test @suppress Escape.run(BernoulliPhylogenyModel(), hla_data, replacement, tree) isa 
         BernoulliPhylogenyResult
+end
+
+@testset "BernoulliPhylogenyModel with finnish horseshoe prior" begin
+    hla_types = rand(HLAType, 5)
+    fasta_path = joinpath(@__DIR__, "data", "test.fasta")
+    hla_data = HLAData("test", fasta_path, hla_types, missing)
+    tree = phylogenetic_tree(hla_data)
+    replacement = Replacement("test", 2, 'S')
+
+    model = BernoulliPhylogenyModel(prior = :finnish_horseshoe)
+    result = @suppress Escape.run(model, hla_data, replacement, tree) 
+    @test result isa BernoulliPhylogenyResult
+end
+
+@testset "BernoulliPhylogenyModel with broad t prior" begin
+    hla_types = rand(HLAType, 5)
+    fasta_path = joinpath(@__DIR__, "data", "test.fasta")
+    hla_data = HLAData("test", fasta_path, hla_types, missing)
+    tree = phylogenetic_tree(hla_data)
+    replacement = Replacement("test", 2, 'S')
+
+    model = BernoulliPhylogenyModel(prior = :broad_t)
+    result = @suppress Escape.run(model, hla_data, replacement, tree) 
+    @test result isa BernoulliPhylogenyResult
 end

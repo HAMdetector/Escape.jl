@@ -1,5 +1,5 @@
 using Test, Escape, BioSequences, Suppressor, LightGraphs, MetaGraphs, RCall, JLD2, FileIO,
-      StanInterface
+      StanInterface, Distributed
 
 import LightGraphs.SimpleGraphs
 

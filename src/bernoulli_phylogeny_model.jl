@@ -1,8 +1,17 @@
 export BernoulliPhylogenyModel, BernoulliPhylogenyResult
 
 struct BernoulliPhylogenyModel <: HLAPhylogenyModel
-    chains::Int
+    prior::Symbol
     iter::Int
+    chains::Int
+
+    function BernoulliPhylogenyModel(prior, iter, chains)
+        if prior ∉ (:broad_t, :finnish_horseshoe)
+            error("prior must be one :broad_t or :finnish_horseshoe, got $prior.")
+        end
+
+        new(prior, iter, chains)
+    end
 end
 
 struct BernoulliPhylogenyResult <: HLAModelResult
@@ -11,7 +20,13 @@ struct BernoulliPhylogenyResult <: HLAModelResult
     replacement::Replacement
 end
 
-BernoulliPhylogenyModel(; chains = 4, iter = 2000) = BernoulliPhylogenyModel(chains, iter)
+function BernoulliPhylogenyModel(iter::Int, chains::Int)
+    return BernoulliPhylogenyModel(:finnish_horseshoe, iter, chains)
+end
+
+function BernoulliPhylogenyModel(; prior = :finnish_horseshoe, iter = 2000, chains = 4)
+    return BernoulliPhylogenyModel(prior, iter, chains)
+end
 
 function run(model::BernoulliPhylogenyModel, data::AbstractHLAData, 
              replacement::Replacement)
@@ -23,10 +38,15 @@ end
 function run(model::BernoulliPhylogenyModel, data::AbstractHLAData, 
              replacement::Replacement, tree::PhylogeneticTree; 
              wp::WorkerPool = WorkerPool())
+    if model.prior == :broad_t
+        path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli_phylogeny")
+    elseif model.prior == :finnish_horseshoe
+        path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli_phylogeny_hs")
+    end
 
-    path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli_phylogeny")
     input = stan_input(model, data, replacement, tree)
-    sf = stan(path, input, chains = model.chains, iter = model.iter, wp = wp)
+    sf = stan(path, input, chains = model.chains, iter = model.iter, wp = wp,
+              stan_args = "adapt delta=0.95")
     alleles = sort(unique_alleles(data.hla_types))
 
     return BernoulliPhylogenyResult(sf, alleles, replacement)
