@@ -12,7 +12,7 @@ function test_analysis()
     hla_data_2 = HLAData("protein_2", fasta_path, rand(HLAType, 15), tree)
 
     dataset = HLADataset("Test", [hla_data_1, hla_data_2])
-    analysis = HLAAnalysis("testrun", BernoulliPhylogenyModel(1, 100), dataset)
+    analysis = HLAAnalysis("testrun", BernoulliPhylogenyModel(100, 1), dataset)
 end
 
 @testset "HLAAnalysis(::String, ::HLAModel, ::Vector{HLADataset})" begin
