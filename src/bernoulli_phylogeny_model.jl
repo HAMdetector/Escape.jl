@@ -63,6 +63,7 @@ function stan_input(model::BernoulliPhylogenyModel, data::AbstractHLAData,
 
     p = state_probabilities(ctree, TwoStateGTR)
     phylogeny_effect = [p[s]["1"] for s in string.(1:length(y))]
+    phylogeny_effect = [min(max(0.01, x), 0.99) for x in phylogeny_effect]
 
     stan_input = Dict("y" => collect(skipmissing(y)), "hla_matrix" => m[.!ismissing.(y), :],
                       "n_entries" => length(collect(skipmissing(y))), 

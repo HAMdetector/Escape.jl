@@ -14,7 +14,7 @@ end
 
 BernoulliModel(; iter = 2000, chains = 4) = BernoulliModel(:finnish_horseshoe, iter, chains)
 
-function run(model::BernoulliModel, data::HLAData, replacement::Replacement;
+function run(model::BernoulliModel, data::AbstractHLAData, replacement::Replacement;
              wp::WorkerPool = WorkerPool())
     if model.prior == :finnish_horseshoe
         path = joinpath(dirname(@__DIR__), "data", "stan", "bernoulli_hs")
@@ -30,7 +30,7 @@ function run(model::BernoulliModel, data::HLAData, replacement::Replacement;
     return BernoulliResult(sf, alleles, replacement)
 end
 
-function stan_input(model::BernoulliModel, data::HLAData, replacement::Replacement)
+function stan_input(model::BernoulliModel, data::AbstractHLAData, replacement::Replacement)
     y = targets(replacement, data)
     m = hla_matrix(data.hla_types)
 
