@@ -1,4 +1,4 @@
-using Test, Escape, BioSequences, Suppressor, LightGraphs, MetaGraphs, RCall, JLD2, FileIO,
+using Test, Escape, BioSequences, Suppressor, LightGraphs, MetaGraphs, JLD2, FileIO,
       StanInterface, Distributed
 
 import LightGraphs.SimpleGraphs
