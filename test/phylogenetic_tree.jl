@@ -141,10 +141,12 @@ end
 
 @testset "load PhylogeneticTree from .jld2" begin
     tree = phylogenetic_tree("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5);")
-    tree_path = joinpath(dirname(@__DIR__), "test", "data", "tree.jld2")
+    path, io = mktemp()
 
-    FileIO.save(tree_path, Dict("tree" => tree))
-    loaded_tree = FileIO.load(tree_path, "tree")
+    FileIO.save(path * ".jld2", Dict("tree" => tree))
+    loaded_tree = FileIO.load(path * ".jld2", "tree")
+    close(io)
+    rm(path)
 
     @test loaded_tree isa PhylogeneticTree
 end
