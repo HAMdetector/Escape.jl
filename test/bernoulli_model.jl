@@ -4,7 +4,7 @@
     @test BernoulliModel().iter == 2000
 end
 
-@testset "stan_input(::BernoulliModel, ::HLData, ::Replacement)"  begin
+@testset "stan_input(::BernoulliModel, ::HLAData, ::Replacement)"  begin
     hla_types = [HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
