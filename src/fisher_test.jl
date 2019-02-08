@@ -1,4 +1,4 @@
-export FisherTest
+export FisherTest, FisherTestResult
 
 struct FisherTest end
 
