@@ -83,7 +83,6 @@ function summary(result::AbstractHLAAnalysisResult)
                    p_minus = Float64[])
 
     for (i, model_result) in enumerate(result)
-        println(i)
         alleles = relevant_alleles(model_result)
         replacement = model_result.replacement
 
