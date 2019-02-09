@@ -8,10 +8,12 @@ struct FisherTestResult
     log_odds::Dict{HLAAllele, Float64}
 end
 
-function Escape.run(model::FisherTest, data::AbstractHLAData, replacement::Replacement)
+function Escape.run(model::FisherTest, data::AbstractHLAData, replacement::Replacement;
+                    depth::Int = 1)
     y = targets(replacement, data)
-    m = hla_matrix(data.hla_types)
-    alleles = sort(unique_alleles(filter(x -> missing ∉ x, data.hla_types)))
+    m = hla_matrix(data.hla_types; depth = depth)
+
+    alleles = sort(unique_alleles(filter(x -> missing ∉ x, data.hla_types), depth = depth))
 
     counts = Dict{HLAAllele, Array{Int, 2}}()
     p_values = Dict{HLAAllele, Float64}()

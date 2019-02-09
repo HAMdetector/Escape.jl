@@ -26,12 +26,12 @@ end
 function allele_posteriors(result::HLAModelResult)
     posterior = extract(result.sf)
     
-    alleles = Vector{Pair{HLAAllele, Vector{Float64}}}()
+    d = Dict{HLAAllele, Vector{Float64}}()
     for (i, allele) in enumerate(result.alleles)
-        push!(alleles, allele => posterior["beta_hla.$i"])
+        d[allele] = posterior["beta_hla.$i"]
     end
 
-    return alleles
+    return d
 end
 
 function posterior_interval(v::Vector{T}; cutoff::Real = 0.95) where T <: Real
