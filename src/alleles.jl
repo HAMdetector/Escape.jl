@@ -30,16 +30,17 @@ function HLAType(::Missing)
     HLAType((missing, missing, missing, missing, missing, missing))
 end
 
-function hla_matrix(data::Vector{HLAType})
-    alleles = limit_hla_accuracy.(sort(unique_alleles(data)))
+function hla_matrix(data::Vector{HLAType}; depth::Int = 1)
+    alleles = sort(unique_alleles(data, depth = depth))
     m = zeros(Int, length(data), length(alleles))
 
     for i in eachindex(data)
         hla_type = data[i]
         for allele in hla_type.alleles
-            ismissing(allele) && continue
-            allele = limit_hla_accuracy(allele)
-            m[i, findfirst(x -> x == allele, alleles)] += 1
+            a = limit_hla_accuracy(allele, depth = depth)
+            (ismissing(a) || hla_accuracy(a) != depth) && continue
+
+            m[i, findfirst(x -> x == a, alleles)] += 1
         end
     end
 
@@ -198,11 +199,11 @@ function unique_alleles(hla_types::Vector{HLAType}; depth::Int = 1)
     
     for hla_type in hla_types
         for allele in hla_type.alleles
-            ismissing(allele) && continue
-            hla_type = limit_hla_accuracy(allele, depth = depth)
+            a = limit_hla_accuracy(allele, depth = depth)
+            (ismissing(a) || hla_accuracy(a) != depth) && continue
 
-            if hla_type ∉ alleles
-                push!(alleles, hla_type)
+            if a ∉ alleles
+                push!(alleles, a)
             end
         end
     end
