@@ -9,11 +9,11 @@ end
 function replacements(data::AbstractHLAData; mincount::Int = 5)
     replacements = Vector{Replacement}()
 
-    reader = BioSequences.FASTA.Reader(open(data.fasta_file.path, "r"))
+    reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
     N = minimum(length(BioSequences.FASTA.sequence(record)) for record in reader)
 
     for i in 1:N
-        reader = BioSequences.FASTA.Reader(open(data.fasta_file.path, "r"))
+        reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
         counts = [Char(BioSequences.FASTA.sequence(record)[i]) for record in reader] |>
             StatsBase.countmap 
         filter!(x -> x.first ∉ ('X', '*') && x.second >= mincount, counts)
@@ -31,7 +31,7 @@ function replacements(data::AbstractHLAData; mincount::Int = 5)
 end
 
 function targets(replacement::Replacement, data::AbstractHLAData)
-    reader = BioSequences.FASTA.Reader(open(data.fasta_file.path, "r"))
+    reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
     t = Vector{Union{Missing, Int}}()
 
     for record in reader

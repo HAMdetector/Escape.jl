@@ -25,16 +25,16 @@ end
 end
 
 @testset "fisher_exact_test(::Vector{Bool}, ::Vector{Bool}" begin
-    a = Bool[1, 1, 1, 0, 0, 0, 0, 0, 0, 0] # y's
-    b = Bool[1, 0, 0, 1, 1, 1, 0, 0, 0, 0] # alleles
+    a = Bool[1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1] # y's
+    b = Bool[0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0] # alleles
 
     #             with allele  without allele           
-    # with y    |      1              2
-    # without y |      3              4                            
-    expected_result = [1 2; 3 4]
+    # with y    |      1              7
+    # without y |      4              2                            
+    expected_result = [1 7; 4 2]
     counts, p, beta = Escape.fisher_exact_test(a, b)
 
-    @test counts == [1 2; 3 4]
-    @test p == pvalue(FisherExactTest(1, 2, 3, 4))
-    @test beta == log(FisherExactTest(1, 2, 3, 4).ω)
+    @test counts == [1 7; 4 2]
+    @test p == pvalue(FisherExactTest(1, 7, 4, 2), method = :minlike)
+    @test beta == log(FisherExactTest(1, 7, 4, 2).ω)
 end

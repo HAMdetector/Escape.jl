@@ -30,12 +30,7 @@ function run(analysis::HLAAnalysis, dir::String)
         r = replacements(data)
 
         @sync @distributed for replacement in r
-            if analysis.model isa HLAPhylogenyModel
-                result = run(analysis.model, data, replacement, phylogenetic_tree(data);
-                             wp = WorkerPool([myid()]))
-            else
-                result = run(analysis.model, data, replacement; wp = WorkerPool([myid()]))
-            end
+            result = run(analysis.model, data, replacement; wp = WorkerPool([myid()]))
 
             filename = string(replacement.protein, "_", replacement.position, 
                 replacement.replacement, ".jld2")
@@ -59,11 +54,11 @@ function rebase_analysis(analysis::HLAAnalysis, dir::String)
     isdir(joinpath(dir, "data")) || mkdir(joinpath(dir, "data"))
 
     for data in analysis.dataset.data
-        source = data.fasta_file.path
+        source = data.fasta_file
         destination = joinpath(dir, "data", basename(source))
         cp(source, destination, force = true)
 
-        data.fasta_file.path = destination
+        data.fasta_file = destination
     end
 
     return HLAAnalysis(analysis.name, analysis.model, dataset)

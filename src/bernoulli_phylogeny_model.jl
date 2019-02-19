@@ -29,22 +29,19 @@ function BernoulliPhylogenyModel(; prior = :finnish_horseshoe, iter = 2000, chai
 end
 
 function run(model::BernoulliPhylogenyModel, data::AbstractHLAData, 
-             replacement::Replacement)
-    
-    tree = phylogenetic_tree(data)
-    run(model, data, replacement, tree)
-end
-
-function run(model::BernoulliPhylogenyModel, data::AbstractHLAData, 
-             replacement::Replacement, tree::PhylogeneticTree; 
-             wp::WorkerPool = WorkerPool())
+             replacement::Replacement; wp::WorkerPool = WorkerPool())
     if model.prior == :broad_t
         path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli_phylogeny")
     elseif model.prior == :finnish_horseshoe
         path = joinpath(@__DIR__, "..", "data", "stan", "bernoulli_phylogeny_hs")
     end
 
-    input = stan_input(model, data, replacement, tree)
+    if ismissing(data.tree)
+        input = stan_input(model, data, replacement, phylogenetic_tree(data))
+    else
+        input = stan_input(model, data, replacement, data.tree)
+    end
+    
     sf = stan(path, input, chains = model.chains, iter = model.iter, wp = wp,
               stan_args = "adapt delta=0.95")
     alleles = sort(unique_alleles(data.hla_types))

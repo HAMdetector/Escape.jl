@@ -1,19 +1,15 @@
 export HLAData
 
-mutable struct FastaFile
-    path::String
-end
-
-struct HLAData <: AbstractHLAData
+mutable struct HLAData <: AbstractHLAData
     name::String
-    fasta_file::FastaFile
+    fasta_file::String
     hla_types::Vector{HLAType}
     tree::Union{PhylogeneticTree, Missing}
 
-    function HLAData(name::String, fasta_file::FastaFile, hla_types::Vector{HLAType},
+    function HLAData(name::String, fasta_file::String, hla_types::Vector{HLAType},
             tree::Union{PhylogeneticTree, Missing})
         
-        reader = BioSequences.FASTA.Reader(open(fasta_file.path, "r"))
+        reader = BioSequences.FASTA.Reader(open(fasta_file, "r"))
         fasta_length = length(collect(reader))
         close(reader)
 
@@ -23,17 +19,15 @@ struct HLAData <: AbstractHLAData
         end
 
         if !ismissing(tree)
-            matching(tree, fasta_file.path) isa Exception && 
-                throw(matching(tree, fasta_file.path))
+            matching(tree, fasta_file) isa Exception && 
+                throw(matching(tree, fasta_file))
         end
         
         new(name, fasta_file, hla_types, tree)
     end
 end
 
-function HLAData(name::String, fasta_path::String, hla_types::Vector{HLAType},
-                 tree::Union{PhylogeneticTree, Missing})
-    fasta_file = FastaFile(fasta_path)
+function HLAData(name::String, fasta_path::String, hla_types::Vector{HLAType})
     
-    return HLAData(name, fasta_file, hla_types, tree)
+    return HLAData(name, fasta_path, hla_types, missing)
 end

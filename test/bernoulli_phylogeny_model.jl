@@ -37,26 +37,16 @@ end
         BernoulliPhylogenyResult
 end
 
-@testset "run(::BernoulliPhylogenyModel, ::Phylogenetictree, ::Replacement, ::HLAData)" begin
-    hla_types = rand(HLAType, 5)
-    fasta_path = joinpath(@__DIR__, "data", "test.fasta")
-    hla_data = HLAData("test", fasta_path, hla_types, missing)
-    tree = phylogenetic_tree(hla_data)
-    replacement = Replacement("test", 2, 'S')
-    
-    @test @suppress Escape.run(BernoulliPhylogenyModel(), hla_data, replacement, tree) isa 
-        BernoulliPhylogenyResult
-end
-
 @testset "BernoulliPhylogenyModel with finnish horseshoe prior" begin
     hla_types = rand(HLAType, 5)
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_data = HLAData("test", fasta_path, hla_types, missing)
-    tree = phylogenetic_tree(hla_data)
+    hla_data.tree = phylogenetic_tree(hla_data)
+
     replacement = Replacement("test", 2, 'S')
 
     model = BernoulliPhylogenyModel(prior = :finnish_horseshoe)
-    result = @suppress Escape.run(model, hla_data, replacement, tree) 
+    result = @suppress Escape.run(model, hla_data, replacement) 
     @test result isa BernoulliPhylogenyResult
 end
 
@@ -64,10 +54,10 @@ end
     hla_types = rand(HLAType, 5)
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_data = HLAData("test", fasta_path, hla_types, missing)
-    tree = phylogenetic_tree(hla_data)
+    hla_data.tree = phylogenetic_tree(hla_data)
     replacement = Replacement("test", 2, 'S')
 
     model = BernoulliPhylogenyModel(prior = :broad_t)
-    result = @suppress Escape.run(model, hla_data, replacement, tree) 
+    result = @suppress Escape.run(model, hla_data, replacement) 
     @test result isa BernoulliPhylogenyResult
 end

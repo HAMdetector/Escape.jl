@@ -45,5 +45,5 @@ function fisher_exact_test(a::AbstractVector{Bool}, b::AbstractVector{Bool})
 
     f = FisherExactTest(c[1,1], c[1,2], c[2,1], c[2,2])
 
-    return (counts = c, p = pvalue(f), beta = log(f.ω))
+    return (counts = c, p = pvalue(f, method = :minlike), beta = log(f.ω))
 end

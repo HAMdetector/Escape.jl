@@ -39,7 +39,7 @@ function phylogenetic_tree(data::AbstractHLAData)
 end
 
 function numbered_fasta(data::AbstractHLAData, filepath::String)
-    numbered_fasta(data.fasta_file.path, filepath)
+    numbered_fasta(data.fasta_file, filepath)
 end
 
 function numbered_fasta(fasta_file::String, filepath::String)
@@ -170,7 +170,7 @@ function annotate!(tree::PhylogeneticTree, data::AbstractHLAData, replacement::R
     data.name == replacement.protein || error("Replacement does not match HLA data.")
     matching(tree, data) isa Exception && throw(matching(tree, data))
 
-    reader = BioSequences.FASTA.Reader(open(data.fasta_file.path, "r"))
+    reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
 
     for (i, record) in enumerate(reader)
         sequence = BioSequences.FASTA.sequence(record)
@@ -194,7 +194,7 @@ function matching(tree::PhylogeneticTree, data::AbstractHLAData)
     leaf_names = Set(map(x -> get_property(tree, x, :name), leaves(tree)))
 
     msg = string("Number of leaves ($n_leaves) does not match number of sequences ",
-                 "($(n_sequences)) in the fasta file $(data.fasta_file.path).")
+                 "($(n_sequences)) in the fasta file $(data.fasta_file).")
     n_leaves == n_sequences || return DimensionMismatch(msg)
 
     msg = """:name property of leaves must be "1", "2", ..., "$n_leaves"."""
