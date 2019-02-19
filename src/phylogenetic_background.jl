@@ -44,22 +44,22 @@ function infer_rate_matrix(tree::PhylogeneticTree, model::Type{TwoStateGTR})
 
     states = ["0", "1"]
 
-    m = Model(solver = IpoptSolver(print_level = 0))
+    m = Model(with_optimizer(Ipopt.Optimizer, print_level = 0))
     JuMP.register(m, :l, 3, l, ∇l)
     @variable(m, α, start = 1)
     @variable(m, π_1, start = 0.5)
     @variable(m, π_2, start = 0.5)
 
-    @NLconstraint(m, π_1 >= 0.001)
-    @NLconstraint(m, π_2 >= 0.001)
-    @NLconstraint(m, α >= 0.001)
-    @NLconstraint(m, π_1 + π_2 == 1)
+    @constraint(m, π_1 >= 0.001)
+    @constraint(m, π_2 >= 0.001)
+    @constraint(m, α >= 0.001)
+    @constraint(m, π_1 + π_2 == 1)
     @NLconstraint(m, 2*α*π_1*π_2 == 1)
 
     @NLobjective(m, Max, l(α, π_1, π_2))
-    solve(m)
+    optimize!(m)
 
-    estimate = TwoStateGTR(α = getvalue(α), π_1 = getvalue(π_1), π_2 = getvalue(π_2))
+    estimate = TwoStateGTR(α = JuMP.value(α), π_1 = JuMP.value(π_1), π_2 = JuMP.value(π_2))
     return rate_matrix(estimate, states)
 end
 
