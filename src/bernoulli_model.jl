@@ -20,6 +20,8 @@ function run(model::BernoulliModel, data::AbstractHLAData, replacement::Replacem
         path = joinpath(dirname(@__DIR__), "data", "stan", "bernoulli_hs")
     elseif model.prior == :broad_t
         path = joinpath(dirname(@__DIR__), "data", "stan", "bernoulli")
+    elseif model.prior == :narrow_t
+        path = joinpath(dirname(@__DIR__), "data", "stan", "bernoulli_narrow_t")
     end
 
     input = stan_input(model, data, replacement)

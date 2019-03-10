@@ -1,6 +1,16 @@
 export AbstractHLAAnalysis, HLAAnalysis, AbstractHLAAnalysisResult, HLAAnalysisResult,
        analysis_result
 
+using LightGraphs
+using MetaGraphs
+
+Base.require(Main, :LightGraphs)
+Base.require(Main, :MetaGraphs)
+
+# Base.eval(Main, :(using LightGraphs.SimpleGraphs))
+# Base.eval(Main, :(using LightGraphs))
+# Base.eval(Main, :(using MetaGraphs))
+
 abstract type AbstractHLAAnalysis end
 abstract type AbstractHLAAnalysisResult end
 
@@ -68,8 +78,10 @@ function analysis_result(dirpath::AbstractString)
     isdir(dirpath) || error("directory $dirpath does not exist.")
     result_path = joinpath(dirpath, "analysis_result.jld2")
     isfile(result_path) || error("$dirpath does not contain an analysis_result.jld2 file")
+    
+    result = JLD2.load(File(format"JLD2", result_path), "analysis_result")
 
-    return load(result_path, "analysis_result")
+    return HLAAnalysisResult(result.analysis, dirpath)
 end
 
 function summary(result::AbstractHLAAnalysisResult)
