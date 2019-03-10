@@ -6,7 +6,7 @@ struct BernoulliPhylogenyModel <: HLAPhylogenyModel
     chains::Int
 
     function BernoulliPhylogenyModel(prior, iter, chains)
-        if prior ∉ (:broad_t, :finnish_horseshoe)
+        if prior ∉ (:broad_t, :finnish_horseshoe, :narrow_t)
             error("prior must be one :broad_t or :finnish_horseshoe, got $prior.")
         end
 
