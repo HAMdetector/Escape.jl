@@ -16,7 +16,7 @@ function replacements(data::AbstractHLAData; mincount::Int = 10)
         reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
         counts = [Char(BioSequences.FASTA.sequence(record)[i]) for record in reader] |>
             StatsBase.countmap 
-        filter!(x -> x.first ∉ ('X', '*') && x.second >= mincount, counts)
+        filter!(x -> x.first ∉ ('X', '*', '-') && x.second >= mincount, counts)
         
         if length(counts) > 1
             for (k, v) in counts
