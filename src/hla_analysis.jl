@@ -1,31 +1,19 @@
-export AbstractHLAAnalysis, HLAAnalysis, AbstractHLAAnalysisResult, HLAAnalysisResult,
-       analysis_result
+export HLAAnalysis, HLAAnalysisResult, analysis_result
 
-using LightGraphs
-using MetaGraphs
+import LightGraphs.SimpleGraphs
 
-Base.require(Main, :LightGraphs)
-Base.require(Main, :MetaGraphs)
-
-# Base.eval(Main, :(using LightGraphs.SimpleGraphs))
-# Base.eval(Main, :(using LightGraphs))
-# Base.eval(Main, :(using MetaGraphs))
-
-abstract type AbstractHLAAnalysis end
-abstract type AbstractHLAAnalysisResult end
-
-struct HLAAnalysis <: AbstractHLAAnalysis
+struct HLAAnalysis{T <: HLAModel}
     name::String
-    model::HLAModel
+    model::T
     dataset::AbstractHLADataset
 end
 
-struct HLAAnalysisResult <: AbstractHLAAnalysisResult
-    analysis::AbstractHLAAnalysis
+struct HLAAnalysisResult{T <: HLAModel}
+    analysis::HLAAnalysis{T}
     path::String
 end
 
-function run(analysis::HLAAnalysis, dir::String)
+function run(analysis::HLAAnalysis{T}, dir::String; mincount::Int = 10) where T <: HLAModel
     isdir(dir) || error("$dir must be a directory.")
     to_filename(x::String) = replace(lowercase(x), ' ' => '_')
 
@@ -37,7 +25,7 @@ function run(analysis::HLAAnalysis, dir::String)
         data_dir = joinpath(root, to_filename(data.name))
         mkdir(data_dir)
 
-        r = replacements(data)
+        r = replacements(data, mincount = mincount)
 
         @sync @distributed for replacement in r
             result = run(analysis.model, data, replacement; wp = WorkerPool([myid()]))
@@ -52,14 +40,14 @@ function run(analysis::HLAAnalysis, dir::String)
         end
     end
 
-    analysis_result = HLAAnalysisResult(analysis, root) 
+    analysis_result = HLAAnalysisResult{T}(analysis, root) 
     jldopen(joinpath(analysis_result.path, "analysis_result.jld2"), 
             true, true, true, IOStream) do file
         file["analysis_result"] = analysis_result
     end
 end
 
-function rebase_analysis(analysis::HLAAnalysis, dir::String)
+function rebase_analysis(analysis::HLAAnalysis{T}, dir::String) where T <: HLAModel
     dataset = deepcopy(analysis.dataset)
     isdir(joinpath(dir, "data")) || mkdir(joinpath(dir, "data"))
 
@@ -84,7 +72,7 @@ function analysis_result(dirpath::AbstractString)
     return HLAAnalysisResult(result.analysis, dirpath)
 end
 
-function summary(result::AbstractHLAAnalysisResult)
+function summary(result::HLAAnalysisResult{T}) where T <: HLAModel
     df = DataFrame(name = String[], allele = String[], position = Int[], 
                    replacement = String[], lower = Float64[], upper = Float64[], 
                    p_minus = Float64[])
@@ -104,7 +92,35 @@ function summary(result::AbstractHLAAnalysisResult)
     return df
 end
 
-function Base.iterate(result::AbstractHLAAnalysisResult, state = 1)
+function summary(result::HLAAnalysisResult{FisherTest})
+    df = DataFrame(name = String[], allele = String[], position = Int[],
+                   replacement = String[], p = Float64[])
+    
+    p_values = Float64[]
+    for (i, model_result) in enumerate(result)
+        p_values = vcat(p_values, collect(values(model_result.p_values)))
+    end
+    sort!(p_values)
+
+    p_adjusted = adjust(p_values, BenjaminiHochberg())
+    threshold = p_values[findfirst(x -> x >= 0.05, p_adjusted)]
+
+    for (i, model_result) in enumerate(result)
+        alleles = keys(model_result.p_values)
+        replacement = model_result.replacement
+
+        for allele in alleles
+            if model_result.p_values[allele] <= threshold
+                push!(df, [replacement.protein, string(allele), replacement.position,
+                           string(replacement.replacement), model_result.p_values[allele]])
+            end
+        end
+    end
+
+    return df
+end
+
+function Base.iterate(result::HLAAnalysisResult{T}, state = 1) where T <: HLAModel
     files = result_files(result)
     state > length(files) && return nothing
 
@@ -112,7 +128,7 @@ function Base.iterate(result::AbstractHLAAnalysisResult, state = 1)
     return (model_result, state + 1)
 end
 
-function result_files(result::AbstractHLAAnalysisResult)
+function result_files(result::HLAAnalysisResult{T}) where T <: HLAModel
     data_dirs = joinpath.(result.path, first(walkdir(result.path))[2])
     files = Vector{String}()
 
