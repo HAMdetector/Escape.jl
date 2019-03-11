@@ -18,16 +18,16 @@ end
 @testset "HLAAnalysis(::String, ::HLAModel, ::Vector{HLADataset})" begin
     @test HLAAnalysis("Bernoulli", BernoulliModel(), HLADataset("Rousseau")) isa HLAAnalysis
     @test HLAAnalysis("BernoulliPhylogeny", BernoulliPhylogenyModel(),
-        HLADataset("Rousseau")) isa AbstractHLAAnalysis
+        HLADataset("Rousseau")) isa HLAAnalysis{BernoulliPhylogenyModel}
 end
 
-@testset "run(::AbstractHLAAnalysis, ::String)" begin
+@testset "run(::HLAAnalysis, ::String)" begin
     analysis = test_analysis()
 
     testrun_dir = joinpath(dirname(@__DIR__), "test", "data")
 
     rm(joinpath(testrun_dir, "testrun"), force = true, recursive = true)
-    @suppress Escape.run(analysis, testrun_dir)
+    @suppress Escape.run(analysis, testrun_dir, mincount = 5)
     @test isdir(testrun_dir)
     result = FileIO.load(joinpath(testrun_dir, "testrun", "analysis_result.jld2"), 
                          "analysis_result")
@@ -45,7 +45,7 @@ end
 
     # 1st run
     analysis = test_analysis()
-    @suppress Escape.run(analysis, initial_dir)
+    @suppress Escape.run(analysis, initial_dir, mincount = 5)
     @test isdir(initial_dir)
 
     mv(initial_dir, destination_dir, force = true)
@@ -57,7 +57,7 @@ end
     new_analysis = result.analysis
     new_destination_dir = mkdir(tempname())
 
-    @suppress Escape.run(new_analysis, new_destination_dir)
+    @suppress Escape.run(new_analysis, new_destination_dir, mincount = 5)
     result = Escape.analysis_result(joinpath(new_destination_dir, "testrun"))
     @test result isa HLAAnalysisResult
     
@@ -65,16 +65,16 @@ end
     rm(new_destination_dir, force = true, recursive = true)
 end
 
-@testset "result_files(::AbstractHLAAnalysisResult)" begin
+@testset "result_files(::HLAAnalysisResult)" begin
     result_path = joinpath(dirname(@__DIR__), "test", "data", "testrun")
     result = analysis_result(result_path)
 
     @test all(endswith.(Escape.result_files(result), ".jld2"))
 end
 
-@testset "Base.iterate(::AbstractHLAAnalysisResult, state)" begin
-    result_path = joinpath(dirname(@__DIR__), "test", "data", "testrun")
-    result = analysis_result(result_path)
+@testset "Base.iterate(::HLAAnalysisResult, state)" begin
+    result = FileIO.load(joinpath(@__DIR__, "data", "testrun", "analysis_result.jld2"), 
+                         "analysis_result")
 
     for model_result in result
         @test model_result isa BernoulliPhylogenyResult
