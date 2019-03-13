@@ -95,7 +95,7 @@ end
 
 function summary(result::HLAAnalysisResult{FisherTest})
     df = DataFrame(name = String[], allele = String[], position = Int[],
-                   replacement = String[], p = Float64[])
+                   replacement = String[], log_odds = Float64[], p = Float64[])
     
     p_values = Float64[]
     for (i, model_result) in enumerate(result)
@@ -113,7 +113,8 @@ function summary(result::HLAAnalysisResult{FisherTest})
         for allele in alleles
             if model_result.p_values[allele] <= threshold
                 push!(df, [replacement.protein, string(allele), replacement.position,
-                           string(replacement.replacement), model_result.p_values[allele]])
+                           string(replacement.replacement), model_result.log_odds[allele],
+                           model_result.p_values[allele]])
             end
         end
     end
