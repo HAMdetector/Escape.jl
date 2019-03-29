@@ -24,8 +24,12 @@ model {
 generated quantities {
   real y_rep[n_entries];
   real theta;
+  vector[n_entries] log_lik;
   
   for (i in 1:n_entries) {
+    log_lik[i] = bernoulli_logit_lpmf(y[i] | intercept + 
+      logit(phylogeny_effect) * phylogeny_coefficient + hla_matrix * beta_hla);
+
     y_rep[i] = bernoulli_rng(inv_logit(intercept + 
         logit(phylogeny_effect[i]) * phylogeny_coefficient + hla_matrix[i,] * beta_hla));
   }
