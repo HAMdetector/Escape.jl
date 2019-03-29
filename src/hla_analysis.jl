@@ -1,8 +1,5 @@
 export HLAAnalysis, HLAAnalysisResult, analysis_result
 
-@reexport using LightGraphs.SimpleGraphs
-@reexport using MetaGraphs
-
 struct HLAAnalysis{T <: HLAModel}
     name::String
     model::T
