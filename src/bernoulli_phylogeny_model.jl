@@ -43,7 +43,19 @@ function run(model::BernoulliPhylogenyModel, data::AbstractHLAData,
     end
     
     sf = stan(path, input, chains = model.chains, iter = model.iter, wp = wp,
-              stan_args = "adapt delta=0.95")
+              stan_args = "adapt delta=0.97")
+    
+    # filter relevant parameters to save space
+    keep = ["intercept", "phylogeny_coefficient", "beta_hla", "log_lik", "y_rep",
+            "lp__"]
+    for r in sf.result
+        for k in keys(r)
+            if !any(startswith.(k, keep))
+                delete!(r, k)
+            end
+        end
+    end
+
     alleles = sort(unique_alleles(data.hla_types))
 
     return BernoulliPhylogenyResult(sf, alleles, replacement)
