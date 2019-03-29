@@ -27,6 +27,18 @@ function run(model::BernoulliModel, data::AbstractHLAData, replacement::Replacem
     input = stan_input(model, data, replacement)
     sf = stan(path, input, chains = model.chains, iter = model.iter, wp = wp,
               stan_args = "adapt delta=0.97")
+
+    # filter relevant parameters to save space
+    keep = ["intercept", "phylogeny_coefficient", "beta_hla", "log_lik", "y_rep",
+            "lp__"]
+    for r in sf.result
+        for k in keys(r)
+            if !any(startswith.(k, keep))
+                delete!(r, k)
+            end
+        end
+    end
+
     alleles = sort(unique_alleles(filter(x -> missing ∉ x, data.hla_types), depth = depth))
 
     return BernoulliResult(sf, alleles, replacement)
