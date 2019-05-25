@@ -6,11 +6,11 @@ using StanInterface, LightGraphs, MetaGraphs, Suppressor, DataFrames,
       JuMP, Ipopt, JLD2, FileIO, HypothesisTests, MultipleTesting
 
 include("alleles.jl")
-include("abstract_hla_model.jl")
 include("abstract_hla_data.jl")
+include("replacement.jl")
+include("abstract_hla_model.jl")
 include("hla_dataset.jl")
 include("dataset_rousseau.jl")
-include("replacement.jl")
 include("phylogenetic_tree.jl")
 include("hla_data.jl")
 include("rate_matrix.jl")

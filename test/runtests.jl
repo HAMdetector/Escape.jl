@@ -4,6 +4,7 @@ using Test, Escape, BioSequences, Suppressor, LightGraphs, MetaGraphs, JLD2, Fil
 import LightGraphs.SimpleGraphs
 
 include("alleles.jl")
+include("abstract_hla_model.jl")
 include("hla_data.jl")
 include("hla_dataset.jl")
 include("dataset_rousseau.jl")
