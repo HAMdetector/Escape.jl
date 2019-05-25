@@ -1,9 +1,20 @@
-export HLAModel, HLAModelResult, HLAPhylogenyModel, classification_accuracy
+export HLAModel, HLAModelResult, HLAPhylogenyModel, stan_input, classification_accuracy
 
 abstract type HLAModel end
 abstract type HLAModelResult end
 
 abstract type HLAPhylogenyModel <: HLAModel end
+
+
+function stan_input(model::HLAModel, data::AbstractHLAData, replacement::Replacement;
+                    depth::Int = 1)
+    y = targets(replacement, data)
+    m = hla_matrix(data.hla_types, depth = depth)
+
+    stan_input = Dict("y" => collect(skipmissing(y)), "hla_matrix" => m[.!ismissing.(y), :],
+                      "n_entries" => length(collect(skipmissing(y))), 
+                      "n_alleles" => size(m)[2])
+end
 
 function classification_accuracy(result::HLAModelResult)
     n_entries = result.sf.data["n_entries"]
