@@ -44,6 +44,10 @@ function run(model::BernoulliModel, data::AbstractHLAData, replacement::Replacem
     return BernoulliResult(sf, alleles, replacement)
 end
 
+function model_path(model::BernoulliModel)
+    return joinpath(@__DIR__, "..", "bernoulli_hs")
+end
+
 function stan_input(model::BernoulliModel, data::AbstractHLAData, replacement::Replacement;
                     depth::Int = 1)
     y = targets(replacement, data)
