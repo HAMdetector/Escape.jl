@@ -5,6 +5,9 @@ abstract type HLAModelResult end
 
 abstract type HLAPhylogenyModel <: HLAModel end
 
+function model_path(model::HLAModel)
+    error("method model_path(::$(typeof(model))) not defined.")
+end
 
 function stan_input(model::HLAModel, data::AbstractHLAData, replacement::Replacement;
                     depth::Int = 1)
