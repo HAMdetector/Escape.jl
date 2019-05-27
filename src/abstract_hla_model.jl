@@ -23,7 +23,7 @@ function run(model::HLAModel, data::AbstractHLAData, replacement::Replacement;
               stan_args = "adapt delta=0.97")
 
     # filter relevant parameters to save space
-    keep = ["intercept", "phylogeny_coefficient", "beta_hla", "log_lik", "y_rep"]
+    keep = ["phylogeny_coefficient", "beta_hla", "log_lik", "y_rep"]
     for r in sf.result
         for k in keys(r)
             if !any(startswith.(k, keep))
@@ -39,6 +39,29 @@ end
 
 function model_path(model::HLAModel)
     error("method model_path(::$(typeof(model))) not defined.")
+end
+
+function stan_input(model::HLAPhylogenyModel, data::AbstractHLAData,
+                    replacement::Replacement; depth::Int = 1)
+
+    y = targets(replacement, data)
+    m = hla_matrix(data.hla_types, depth = depth)
+
+    if ismissing(data.tree)
+        ctree = phylogenetic_tree(data)
+    else
+        ctree = deepcopy(data.tree)
+    end
+
+    annotate!(ctree, data, replacement)
+
+    p = state_probabilities(ctree, TwoStateGTR)
+    phylogeny_effect = [p[s]["1"] for s in string.(1:length(y))]
+    phylogeny_effect = [min(max(0.01, x), 0.99) for x in phylogeny_effect]
+
+    stan_input = Dict("y" => collect(skipmissing(y)), "hla_matrix" => m[.!ismissing.(y), :],
+                      "n_entries" => length(collect(skipmissing(y))), 
+                      "n_alleles" => size(m)[2], "phylogeny_effect" => phylogeny_effect)
 end
 
 function stan_input(model::HLAModel, data::AbstractHLAData, replacement::Replacement;
