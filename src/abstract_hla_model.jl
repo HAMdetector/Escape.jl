@@ -5,6 +5,38 @@ abstract type HLAModelResult end
 
 abstract type HLAPhylogenyModel <: HLAModel end
 
+struct GenericHLAModelResult{T<:HLAModel} <: HLAModelResult
+    model::T
+    sf::Stanfit
+    alleles::Vector{HLAAllele}
+    replacement::Replacement
+end
+
+function run(model::HLAModel, data::AbstractHLAData, replacement::Replacement;
+             iter::Int = 2000, chains::Int = 4, wp::WorkerPool = WorkerPool(), 
+             depth::Int = 1)
+    
+    input = stan_input(model, data, replacement, depth = depth)
+    path = model_path(model)
+
+    sf = stan(path, input, iter = iter, chains = chains, wp = wp, 
+              stan_args = "adapt delta=0.97")
+
+    # filter relevant parameters to save space
+    keep = ["intercept", "phylogeny_coefficient", "beta_hla", "log_lik", "y_rep"]
+    for r in sf.result
+        for k in keys(r)
+            if !any(startswith.(k, keep))
+                delete!(r, k)
+            end
+        end
+    end
+
+    alleles = sort(unique_alleles(filter(x -> missing ∉ x, data.hla_types), depth = depth))
+
+    return GenericHLAModelResult(model, sf, alleles, replacement)
+end
+
 function model_path(model::HLAModel)
     error("method model_path(::$(typeof(model))) not defined.")
 end
