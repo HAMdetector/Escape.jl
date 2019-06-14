@@ -61,7 +61,8 @@ function stan_input(model::HLAPhylogenyModel, data::AbstractHLAData,
 
     stan_input = Dict("y" => collect(skipmissing(y)), "hla_matrix" => m[.!ismissing.(y), :],
                       "n_entries" => length(collect(skipmissing(y))), 
-                      "n_alleles" => size(m)[2], "phylogeny_effect" => phylogeny_effect)
+                      "n_alleles" => size(m)[2], 
+                      "phylogeny_effect" => phylogeny_effect[.!ismissing.(y)])
 end
 
 function stan_input(model::HLAModel, data::AbstractHLAData, replacement::Replacement;
