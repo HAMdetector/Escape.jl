@@ -90,9 +90,10 @@ function summary(result::HLAAnalysisResult{T}) where T <: HLAModel
     return df
 end
 
-function summary(result::HLAAnalysisResult{FisherTest})
+function summary(result::HLAAnalysisResult{FisherTest}; threshold::Float64 = 0.05)
     df = DataFrame(name = String[], allele = String[], position = Int[],
-                   replacement = String[], log_odds = Float64[], p = Float64[])
+                   replacement = String[], log_odds = Float64[], p = Float64[],
+                   p_adjusted = Float64[])
     
     p_values = Float64[]
     for (i, model_result) in enumerate(result)
@@ -101,17 +102,17 @@ function summary(result::HLAAnalysisResult{FisherTest})
     sort!(p_values)
 
     p_adjusted = adjust(p_values, BenjaminiHochberg())
-    threshold = p_values[findfirst(x -> x >= 0.05, p_adjusted)]
+    d = Dict(zip(p_values, p_adjusted))
 
     for (i, model_result) in enumerate(result)
         alleles = keys(model_result.p_values)
         replacement = model_result.replacement
 
         for allele in alleles
-            if model_result.p_values[allele] <= threshold
+            if model_result.p_values[allele] <= 0.05
                 push!(df, [replacement.protein, string(allele), replacement.position,
                            string(replacement.replacement), model_result.log_odds[allele],
-                           model_result.p_values[allele]])
+                           model_result.p_values[allele], d[model_result.p_values[allele]]])
             end
         end
     end
