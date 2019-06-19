@@ -87,8 +87,7 @@ end
 
 function relevant_alleles(result::HLAModelResult)
     posteriors = allele_posteriors(result)
-    filter!(x -> !(posterior_interval(x.second)[1] < 0 <= posterior_interval(x.second)[2]),
-            posteriors)
+    filter!(x -> !(0.05 < count(x.second .>= 0) / length(x.second) < 0.95), posteriors)
 
     return posteriors
 end
