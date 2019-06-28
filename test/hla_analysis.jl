@@ -80,3 +80,17 @@ end
         @test model_result isa BernoulliPhylogenyResult
     end
 end
+
+@testset "getindex(::HLAAnalysisResult, collection)" begin
+    result = FileIO.load(joinpath(@__DIR__, "data", "testrun", "analysis_result.jld2"), 
+                        "analysis_result")
+
+    for model_result in result[1:2]
+        @test model_result isa BernoulliPhylogenyResult
+    end
+    
+    for model_result in result[[1,3]]
+        @test model_result isa BernoulliPhylogenyResult
+    end
+end
+

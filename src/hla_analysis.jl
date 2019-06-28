@@ -11,6 +11,10 @@ struct HLAAnalysisResult{T <: HLAModel}
     path::String
 end
 
+struct HLAAnalysisIterator
+    files::Vector{String}
+end
+
 function run(analysis::HLAAnalysis{T}, dir::String; mincount::Int = 10) where T <: HLAModel
     isdir(dir) || error("$dir must be a directory.")
     to_filename(x::String) = replace(lowercase(x), ' ' => '_')
@@ -120,13 +124,6 @@ function summary(result::HLAAnalysisResult{FisherTest}; threshold::Float64 = 0.0
     return df
 end
 
-function Base.iterate(result::HLAAnalysisResult{T}, state = 1) where T <: HLAModel
-    files = result_files(result)
-    state > length(files) && return nothing
-
-    model_result = FileIO.load(files[state], "result")
-    return (model_result, state + 1)
-end
 
 function result_files(result::HLAAnalysisResult{T}) where T <: HLAModel
     data_dirs = joinpath.(result.path, first(walkdir(result.path))[2])
@@ -139,4 +136,28 @@ function result_files(result::HLAAnalysisResult{T}) where T <: HLAModel
     end
 
     return files
+end
+
+function Base.iterate(I::HLAAnalysisIterator, state = 1) where T <: HLAModel
+    state > length(I.files) && return nothing
+
+    model_result = FileIO.load(I.files[state], "result")
+    return (model_result, state + 1)
+end
+
+function Base.getindex(I::HLAAnalysisIterator, i::Int)
+    return FileIO.load(I.files[i], "result")
+end
+
+function Base.getindex(result::HLAAnalysisResult, collection)
+    files = result_files(result)
+
+    return HLAAnalysisIterator(files[collection])
+end
+
+function Base.iterate(result::HLAAnalysisResult, state = 1)
+    files = result_files(result)
+    state > length(files) && return nothing
+    
+    return (HLAAnalysisIterator(files)[state], state + 1)
 end
