@@ -30,7 +30,7 @@ function run(model::BernoulliModel, data::AbstractHLAData, replacement::Replacem
 
     # filter relevant parameters to save space
     keep = ["intercept", "phylogeny_coefficient", "beta_hla", "log_lik", "y_rep",
-            "lp__"]
+            "theta", "lp__"]
     for r in sf.result
         for k in keys(r)
             if !any(startswith.(k, keep))
