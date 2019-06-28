@@ -23,7 +23,7 @@ function run(model::HLAModel, data::AbstractHLAData, replacement::Replacement;
               stan_args = "adapt delta=0.97")
 
     # filter relevant parameters to save space
-    keep = ["phylogeny_coefficient", "beta_hla", "log_lik", "y_rep"]
+    keep = ["phylogeny_coefficient", "beta_hla", "log_lik", "y_rep", "theta"]
     for r in sf.result
         for k in keys(r)
             if !any(startswith.(k, keep))
