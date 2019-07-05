@@ -1,10 +1,11 @@
 module Escape
 
-import BioSequences, StatsFuns, StatsBase
+import StatsFuns, CSV
 import SimpleGraphs.SimpleGraphs
 using LinearAlgebra, Calculus, Statistics, DelimitedFiles, Distributed
 using StanInterface, LightGraphs, MetaGraphs, Suppressor, DataFrames,
-      JuMP, Ipopt, JLD2, FileIO, HypothesisTests, MultipleTesting
+      JuMP, Ipopt, JLD2, FileIO, HypothesisTests, MultipleTesting, BioSequences,
+      StatsBase
 
 include("alleles.jl")
 include("abstract_hla_data.jl")
@@ -17,6 +18,7 @@ include("hla_data.jl")
 include("rate_matrix.jl")
 include("substitution_models.jl")
 include("phylogenetic_background.jl")
+include("epitope_prediction.jl")
 include("bernoulli_model.jl")
 include("bernoulli_phylogeny_model.jl")
 include("fisher_test.jl")
