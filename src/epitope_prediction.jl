@@ -52,6 +52,8 @@ function epitope_prediction_fasta(filepath::String)
 
     Base.run(pipeline(`$netmhc_rootdir/netMHC $filepath -a $alleles`, stdout = temp_output))
     df = parse_netmhc(temp_output)
+    dropmissing!(df)
+    
     rm(temp_output)
 
     return df
@@ -80,6 +82,8 @@ function epitope_prediction(epitope::String)
     Base.run(pipeline(`$netmhc_rootdir/netMHC -p $temp_input -a $alleles`, 
                       stdout = temp_output))
     df = parse_netmhc(temp_output)
+    dropmissing!(df)
+
     rm(temp_output)
     rm(temp_input)
 
