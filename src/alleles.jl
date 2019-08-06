@@ -1,12 +1,12 @@
 export HLAAllele, HLAType, parse_allele, is_valid_allele, limit_hla_accuracy, hla_accuracy
 
 struct HLAAllele
-    gene::T where T <: AbstractString
-    field_1::T where T <: AbstractString
-    field_2::Union{Missing, T} where T <: AbstractString
-    field_3::Union{Missing, T} where T <: AbstractString
-    field_4::Union{Missing, T} where T <: AbstractString
-    suffix::Union{Missing, T} where T <: AbstractString
+    gene::String
+    field_1::String
+    field_2::Union{Missing, String}
+    field_3::Union{Missing, String}
+    field_4::Union{Missing, String}
+    suffix::Union{Missing, String}
 end
 
 struct HLAType
