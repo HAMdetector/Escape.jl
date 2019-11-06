@@ -29,8 +29,8 @@ end
     rm(joinpath(testrun_dir, "testrun"), force = true, recursive = true)
     @suppress Escape.run(analysis, testrun_dir, mincount = 5)
     @test isdir(testrun_dir)
-    result = FileIO.load(joinpath(testrun_dir, "testrun", "analysis_result.jld2"), 
-                         "analysis_result")
+
+    result = deserialize(joinpath(testrun_dir, "testrun", "analysis_result.jls"))
     @test result isa HLAAnalysisResult
 end
 
@@ -69,12 +69,11 @@ end
     result_path = joinpath(dirname(@__DIR__), "test", "data", "testrun")
     result = analysis_result(result_path)
 
-    @test all(endswith.(Escape.result_files(result), ".jld2"))
+    @test all(endswith.(Escape.result_files(result), ".jls"))
 end
 
 @testset "Base.iterate(::HLAAnalysisResult, state)" begin
-    result = FileIO.load(joinpath(@__DIR__, "data", "testrun", "analysis_result.jld2"), 
-                         "analysis_result")
+    result = deserialize(joinpath(@__DIR__, "data", "testrun", "analysis_result.jls"))
 
     for model_result in result
         @test model_result isa BernoulliPhylogenyResult
@@ -82,8 +81,7 @@ end
 end
 
 @testset "getindex(::HLAAnalysisResult, collection)" begin
-    result = FileIO.load(joinpath(@__DIR__, "data", "testrun", "analysis_result.jld2"), 
-                        "analysis_result")
+    result = deserialize(joinpath(@__DIR__, "data", "testrun", "analysis_result.jls"))
 
     for model_result in result[1:2]
         @test model_result isa BernoulliPhylogenyResult

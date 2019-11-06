@@ -1,5 +1,6 @@
 test/data/testrun/*
 test/data/tree.jld2
+test/data/tree.jls
 
 deps/build.log
 data/stan/bernoulli_phylogeny_hs
