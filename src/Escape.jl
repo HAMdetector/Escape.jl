@@ -5,7 +5,7 @@ import SimpleGraphs.SimpleGraphs
 using LinearAlgebra, Calculus, Statistics, DelimitedFiles, Distributed
 using StanInterface, LightGraphs, MetaGraphs, Suppressor, DataFrames,
       JuMP, Ipopt, JLD2, FileIO, HypothesisTests, MultipleTesting, BioSequences,
-      StatsBase
+      StatsBase, Serialization
 
 include("alleles.jl")
 include("abstract_hla_data.jl")

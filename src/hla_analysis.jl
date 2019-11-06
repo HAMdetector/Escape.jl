@@ -33,20 +33,16 @@ function run(analysis::HLAAnalysis{T}, dir::String; mincount::Int = 10) where T 
             result = run(analysis.model, data, replacement; wp = WorkerPool([myid()]))
 
             filename = string(replacement.protein, "_", replacement.position, 
-                replacement.replacement, ".jld2")
+                replacement.replacement, ".jls")
             
-            
-            jldopen(joinpath(data_dir, filename), true, true, true, IOStream) do file
-                file["result"] = result
-            end
+            serialize(joinpath(data_dir, filename), result)
         end
     end
 
-    analysis_result = HLAAnalysisResult{T}(analysis, root) 
-    jldopen(joinpath(analysis_result.path, "analysis_result.jld2"), 
-            true, true, true, IOStream) do file
-        file["analysis_result"] = analysis_result
-    end
+    analysis_result = HLAAnalysisResult{T}(analysis, root)
+    serialize(joinpath(analysis_result.path, "analysis_result.jls"), analysis_result)
+
+    return analysis_result
 end
 
 function rebase_analysis(analysis::HLAAnalysis{T}, dir::String) where T <: HLAModel
@@ -66,10 +62,10 @@ end
 
 function analysis_result(dirpath::AbstractString)
     isdir(dirpath) || error("directory $dirpath does not exist.")
-    result_path = joinpath(dirpath, "analysis_result.jld2")
-    isfile(result_path) || error("$dirpath does not contain an analysis_result.jld2 file")
+    result_path = joinpath(dirpath, "analysis_result.jls")
+    isfile(result_path) || error("$dirpath does not contain an analysis_result.jls file")
     
-    result = JLD2.load(File(format"JLD2", result_path), "analysis_result")
+    result = deserialize(result_path)
 
     return HLAAnalysisResult(result.analysis, dirpath)
 end
@@ -131,7 +127,7 @@ function result_files(result::HLAAnalysisResult{T}) where T <: HLAModel
 
     for data_dir in data_dirs
         for file in readdir(data_dir)
-            endswith(file, ".jld2") && push!(files, joinpath(data_dir, file))
+            endswith(file, ".jls") && push!(files, joinpath(data_dir, file))
         end
     end
 
@@ -141,12 +137,12 @@ end
 function Base.iterate(I::HLAAnalysisIterator, state = 1) where T <: HLAModel
     state > length(I.files) && return nothing
 
-    model_result = FileIO.load(I.files[state], "result")
+    model_result = deserialize(I.files[state])
     return (model_result, state + 1)
 end
 
 function Base.getindex(I::HLAAnalysisIterator, i::Int)
-    return FileIO.load(I.files[i], "result")
+    return deserialize(I.files[i])
 end
 
 function Base.getindex(result::HLAAnalysisResult, collection)

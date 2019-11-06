@@ -139,12 +139,12 @@ end
     @test Escape.matching(tree, short_hla_data) isa DimensionMismatch
 end
 
-@testset "load PhylogeneticTree from .jld2" begin
+@testset "load PhylogeneticTree from .jls" begin
     tree = phylogenetic_tree("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5);")
     path, io = mktemp()
 
-    FileIO.save(path * ".jld2", Dict("tree" => tree))
-    loaded_tree = FileIO.load(path * ".jld2", "tree")
+    serialize(path * ".jls", tree)
+    loaded_tree = deserialize(path * ".jls")
     close(io)
     rm(path)
 
