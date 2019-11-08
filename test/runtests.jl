@@ -1,5 +1,5 @@
 using Test, Escape, BioSequences, Suppressor, LightGraphs, MetaGraphs, JLD2, FileIO,
-      StanInterface, Distributed, HypothesisTests, Serialization
+      StanInterface, Distributed, HypothesisTests, Serialization, DataFrames
 
 import LightGraphs.SimpleGraphs
 
@@ -12,6 +12,7 @@ include("replacement.jl")
 include("phylogenetic_tree.jl")
 include("rate_matrix.jl")
 include("phylogenetic_background.jl")
+include("epitope_prediction.jl")
 include("bernoulli_model.jl")
 include("bernoulli_phylogeny_model.jl")
 include("fisher_test.jl")
