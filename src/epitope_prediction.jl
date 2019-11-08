@@ -1,13 +1,13 @@
-const netmhc_rootdir = joinpath(@__DIR__, "..", "data", "netMHC-4.0")
+const NETMHC_ROOTDIR = joinpath(@__DIR__, "..", "data", "netMHC-4.0")
 
 function epitope_prediction(replacement::Replacement, data::HLAData)
     position = replacement.position
     fasta_file = data.fasta_file
 
-    return epitope_prediction(fasta_file, position)
+    return epitope_prediction_fasta(fasta_file, position)
 end
 
-function epitope_prediction(filepath::String, position::Int)
+function epitope_prediction_fasta(filepath::String, position::Int)
     epitope_start = max(1, position - 8)
 
     epitopes = []
@@ -26,7 +26,7 @@ function epitope_prediction(filepath::String, position::Int)
     close(reader)
 
     consensus = let
-        consensus_symbol(x) = sort(collect(countmap(x)), by = x->x[2], rev = true)[1][1]
+        consensus_symbol(x) = sort(collect(countmap(x)), by = x -> x[2], rev = true)[1][1]
         epitope_symbols(epitopes, i) = filter(x -> x != '-', [x[i] for x in epitopes])
         c = [consensus_symbol(epitope_symbols(epitopes, i)) for i in 1:length(epitopes[1])]
         string(c...)
@@ -39,7 +39,7 @@ function epitope_prediction_fasta(filepath::String)
     temp_output = tempname()
 
     alleles = let
-        alleles = split(read(`$netmhc_rootdir/netMHC -listMHC`, String), "\n")
+        alleles = split(read(`$NETMHC_ROOTDIR/netMHC -listMHC`, String), "\n")
         filter!(x -> startswith(x, "HLA"), alleles)
 
         s = ""
@@ -50,7 +50,7 @@ function epitope_prediction_fasta(filepath::String)
         s[1:end-1]
     end
 
-    Base.run(pipeline(`$netmhc_rootdir/netMHC $filepath -a $alleles`, stdout = temp_output))
+    Base.run(pipeline(`$NETMHC_ROOTDIR/netMHC $filepath -a $alleles`, stdout = temp_output))
     df = parse_netmhc(temp_output)
     dropmissing!(df)
     
@@ -68,7 +68,7 @@ function epitope_prediction(epitope::String)
     close(io)
 
     alleles = let
-        alleles = split(read(`$netmhc_rootdir/netMHC -listMHC`, String), "\n")
+        alleles = split(read(`$NETMHC_ROOTDIR/netMHC -listMHC`, String), "\n")
         filter!(x -> startswith(x, "HLA"), alleles)
 
         s = ""
@@ -79,7 +79,7 @@ function epitope_prediction(epitope::String)
         s[1:end-1]
     end
 
-    Base.run(pipeline(`$netmhc_rootdir/netMHC -p $temp_input -a $alleles`, 
+    Base.run(pipeline(`$NETMHC_ROOTDIR/netMHC -p $temp_input -a $alleles`, 
                       stdout = temp_output))
     df = parse_netmhc(temp_output)
     dropmissing!(df)

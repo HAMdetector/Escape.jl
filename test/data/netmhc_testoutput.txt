@@ -1,0 +1,44 @@
+# /home/habermann/sync/Escape/data/netMHC-4.0/Linux_x86_64/bin/netMHC -p peptide -a HLA-A1101
+# Thu Nov  7 16:19:55 2019
+# User: habermann
+# PWD : /home/habermann/sync/Escape/data/netMHC-4.0
+# Host: Linux thinkpad 5.3.7-132.current x86_64
+# -p       1                    Switch on if input is a list of peptides (Peptide format)
+# -a       HLA-A1101            HLA allele name
+# Command line parameters set to:
+#	[-a line]            HLA-A1101            HLA allele name
+#	[-f filename]                             Input file (by default in FASTA format)
+#	[-p]                 1                    Switch on if input is a list of peptides (Peptide format)
+#	[-l string]          9                    Peptide length (multiple lengths separated by comma e.g. 8,9,10)
+#	[-s]                 0                    Sort output on decreasing affinity
+#	[-rth float]         0.500000             Threshold for high binding peptides (%Rank)
+#	[-rlt float]         2.000000             Threshold for low binding peptides (%Rank)
+#	[-listMHC]           0                    Print list of alleles included in netMHC
+#	[-xls]               0                    Save output to xls file
+#	[-xlsfile filename]  NetMHC_out.xls       File name for xls output
+#	[-t float]           -99.900002           Threshold for output
+#	[-thrfmt filename]   /home/habermann/sync/Escape/data/netMHC-4.0/Linux_x86_64/data/threshold/%s.thr Format for threshold filenames
+#	[-hlalist filename]  /home/habermann/sync/Escape/data/netMHC-4.0/Linux_x86_64/data/allelelist File with covered HLA names
+#	[-rdir filename]     /home/habermann/sync/Escape/data/netMHC-4.0/Linux_x86_64 Home directory for NetMHC
+#	[-tdir filename]     /tmp                 Temporary directory (Default $$)
+#	[-syn filename]      /home/habermann/sync/Escape/data/netMHC-4.0/Linux_x86_64/data/synlists/%s.synlist Format of synlist file
+#	[-v]                 0                    Verbose mode
+#	[-dirty]             0                    Dirty mode, leave tmp dir+files
+#	[-inptype int]       0                    Input type [0] FASTA [1] Peptide
+#	[-version filename]  /home/habermann/sync/Escape/data/netMHC-4.0/Linux_x86_64/data/version File with version information
+#	[-w]                 0                    w option for webface
+
+# NetMHC version 4.0
+
+# Input is in PEPTIDE format
+# Rank Threshold for Strong binding peptides   0.500
+# Rank Threshold for Weak binding peptides   2.000
+-----------------------------------------------------------------------------------
+  pos          HLA      peptide         Core Offset  I_pos  I_len  D_pos  D_len        iCore        Identity 1-log50k(aff) Affinity(nM)    %Rank  BindLevel
+-----------------------------------------------------------------------------------
+    0    HLA-A1101    ARGDEFFPE    ARGDEFFPE      0      0      0      0      0    ARGDEFFPE         PEPLIST         0.039     32746.51    40.00
+-----------------------------------------------------------------------------------
+
+Protein PEPLIST. Allele HLA-A1101. Number of high binders 0. Number of weak binders 0. Number of peptides 1
+
+-----------------------------------------------------------------------------------
