@@ -1,6 +1,6 @@
 module Escape
 
-import StatsFuns, CSV
+import StatsFuns
 import SimpleGraphs.SimpleGraphs
 using LinearAlgebra, Calculus, Statistics, DelimitedFiles, Distributed
 using StanInterface, LightGraphs, MetaGraphs, Suppressor, DataFrames,
