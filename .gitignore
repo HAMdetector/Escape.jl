@@ -5,7 +5,9 @@ test/data/tree.jls
 deps/build.log
 data/stan/bernoulli_phylogeny_hs
 data/stan/bernoulli_hs
+data/stan/bernoulli_narrow_t
 data/stan/bernoulli_phylogeny
+data/stan/bernoulli_narrow_t
 data/stan/bernoulli
 data/netMHC-4.0/*
 Manifest.toml
