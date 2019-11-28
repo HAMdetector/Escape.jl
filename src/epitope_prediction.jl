@@ -1,71 +1,33 @@
 const NETMHC_ROOTDIR = joinpath(@__DIR__, "..", "data", "netMHC-4.0")
 
-function epitope_prediction(replacement::Replacement, data::HLAData)
-    position = replacement.position
-    fasta_file = data.fasta_file
-
-    return epitope_prediction_fasta(fasta_file, position)
-end
-
-function epitope_prediction_fasta(filepath::String, position::Int)
-    epitope_start = max(1, position - 8)
-
-    epitopes = []
-    reader = BioSequences.FASTA.Reader(open(filepath, "r"))
-    
-    for record in reader
-        sequence = BioSequences.FASTA.sequence(record)
-        epitope_stop = min(position + 8, length(sequence))
-
-        epitope = string(sequence[epitope_start:epitope_stop])
-        epitope = replace(epitope, 'X' => '-')
-
-        push!(epitopes, epitope)
-    end
-
-    close(reader)
-
-    consensus = let
-        consensus_symbol(x) = sort(collect(countmap(x)), by = x -> x[2], rev = true)[1][1]
-        epitope_symbols(epitopes, i) = filter(x -> x != '-', [x[i] for x in epitopes])
-        c = [consensus_symbol(epitope_symbols(epitopes, i)) for i in 1:length(epitopes[1])]
-        string(c...)
-    end
-
-    return epitope_prediction(consensus)
-end
-
-function epitope_prediction_fasta(filepath::String)
-    temp_output = tempname()
-
-    alleles = let
-        alleles = split(read(`$NETMHC_ROOTDIR/netMHC -listMHC`, String), "\n")
-        filter!(x -> startswith(x, "HLA"), alleles)
-
-        s = ""
-        for allele in alleles
-            s = s * "$allele,"
-        end
-
-        s[1:end-1]
-    end
-
-    Base.run(pipeline(`$NETMHC_ROOTDIR/netMHC $filepath -a $alleles`, stdout = temp_output))
-    df = parse_netmhc(temp_output)
-    dropmissing!(df)
-    
-    rm(temp_output)
+function epitope_prediction(data::AbstractHLAData; rank_threshold::Real = 2)
+    df = epitope_prediction_fasta(data.fasta_file, rank_threshold = rank_threshold)
 
     return df
 end
 
-function epitope_prediction(epitope::String)
+function epitope_prediction(epitope::String; rank_threshold::Real = 100.0)
+    temp_input = tempname()
+    io = open(temp_input, "w")
+    write(io, ">epitope\n")
+    write(io, replace(epitope, "X" => "-"))
+    close(io)
+
+    df = epitope_prediction_fasta(temp_input, rank_threshold = rank_threshold)
+    rm(temp_input)
+
+    return df
+end
+
+function epitope_prediction_fasta(filepath::String; rank_threshold::Real = 100.0)
     temp_input = tempname()
     temp_output = tempname()
+    consensus = consensus_sequence(filepath)
 
     io = open(temp_input, "w")
-    write(io, epitope)
-    close(io)
+    write(io, ">consensus\n")
+    write(io, string(replace(consensus, "X" => "-")...))
+    close(io) 
 
     alleles = let
         alleles = split(read(`$NETMHC_ROOTDIR/netMHC -listMHC`, String), "\n")
@@ -79,7 +41,7 @@ function epitope_prediction(epitope::String)
         s[1:end-1]
     end
 
-    Base.run(pipeline(`$NETMHC_ROOTDIR/netMHC -p $temp_input -a $alleles`, 
+    Base.run(pipeline(`$NETMHC_ROOTDIR/netMHC $temp_input -a $alleles -l 8,9,10,11`, 
                       stdout = temp_output))
     df = parse_netmhc(temp_output)
     dropmissing!(df)
@@ -90,21 +52,49 @@ function epitope_prediction(epitope::String)
     return sort(df, :rank)
 end
 
-function parse_netmhc(filepath::String)
+function parse_netmhc(filepath::String; rank_threshold::Real = 100.0)
     df = DataFrame([Union{Missing, T} for T in [HLAAllele, String, Int, Float64, Float64]],
-                   [:allele, :epitope, :offset, :affinity, :rank])
+                   [:allele, :epitope, :position, :affinity, :rank])
     for line in readlines(filepath)
         if !any(occursin.(["pos", "#", "Protein", "---"], line)) & (line != "")
             components = split(line, r"\s+")
+            
             allele = parse_allele(components[3])
             epitope = components[5]
-            offset = parse(Int, components[6])
+            position = parse(Int, components[2]) + 1
             affinity = parse(Float64, components[14])
             rank = parse(Float64, components[15])
             
-            push!(df, [allele, epitope, offset, affinity, rank])
+            if rank <= rank_threshold
+                push!(df, [allele, epitope, position, affinity, rank])
+            end
         end
     end
 
     return df
+end
+
+function consensus_sequence(filepath::String)
+    consensus = Vector{String}(undef, fasta_length(filepath))
+    reader = FASTA.Reader(open(filepath, "r"))
+
+    for i in 1:fasta_length(filepath)
+        reader = FASTA.Reader(open(filepath, "r"))
+        sequence = [string(FASTA.sequence(record)[i]) for record in reader]
+        close(reader)
+
+        counts = countmap(sequence)
+        consensus[i] = findfirst(x -> x == maximum(values(counts)), counts)
+    end
+
+    return consensus
+end
+
+function fasta_length(filepath::String)
+    reader = FASTA.Reader(open(filepath, "r"))
+    fasta_length = maximum([length(sequence(r)) for r in reader])
+
+    close(reader)
+
+    return fasta_length
 end
