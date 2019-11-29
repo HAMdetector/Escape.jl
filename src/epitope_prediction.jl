@@ -64,7 +64,7 @@ function parse_netmhc(filepath::String; rank_threshold::Real = 100.0)
             position = parse(Int, components[2]) + 1
             affinity = parse(Float64, components[14])
             rank = parse(Float64, components[15])
-            
+        
             if rank <= rank_threshold
                 push!(df, [allele, epitope, position, affinity, rank])
             end
