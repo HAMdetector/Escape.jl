@@ -1,3 +1,5 @@
+export EpitopeMap
+
 struct EpitopeMap 
     name::String
     epitopes::Vector{String}
