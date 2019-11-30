@@ -43,7 +43,7 @@ function epitope_prediction_fasta(filepath::String; rank_threshold::Real = 100.0
 
     Base.run(pipeline(`$NETMHC_ROOTDIR/netMHC $temp_input -a $alleles -l 8,9,10,11`, 
                       stdout = temp_output))
-    df = parse_netmhc(temp_output)
+    df = parse_netmhc(temp_output, rank_threshold = rank_threshold)
     dropmissing!(df)
 
     rm(temp_output)
