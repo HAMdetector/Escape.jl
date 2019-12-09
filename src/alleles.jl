@@ -47,6 +47,24 @@ function hla_matrix(data::Vector{HLAType}; depth::Int = 1)
     return m
 end
 
+function hla_matrix_standardized(data::Vector{HLAType}; depth::Int = 1)
+    alleles = sort(unique_alleles(data, depth = depth))
+    m = zeros(Float64, length(data), length(alleles))
+
+    for (i, allele) in enumerate(alleles)
+        frequency = count(x -> allele in x, data) / length(data)
+        for (j, hla_type) in enumerate(data)
+            if allele in hla_type
+                m[j, i] = 1 - frequency
+            else
+                m[j, i] = -frequency
+            end
+        end
+    end
+
+    return m
+end
+
 function Base.in(::Missing, hla_type::HLAType)
     if any(ismissing.(hla_type.alleles))
         return true
