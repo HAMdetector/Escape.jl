@@ -1,3 +1,30 @@
+function phylogeny_probabilities(
+    replacement::Replacement, data::AbstractHLAData, tree::PhylogeneticTree
+    )
+
+    y = targets(replacement, data)
+    ctree = deepcopy(tree)
+    annotate!(ctree, data, replacement)
+
+    p = state_probabilities(ctree, TwoStateGTR)
+    phylogeny_effect = [p[s]["1"] for s in string.(1:length(y))]
+    phylogeny_effect = [min(max(0.01, x), 0.99) for x in phylogeny_effect]
+
+    return phylogeny_effect
+end
+
+function phylogeny_probabilities(replacement::Replacement, data::AbstractHLAData)
+    y = targets(replacement, data)
+    ctree = deepcopy(data.tree)
+    annotate!(ctree, data, replacement)
+
+    p = state_probabilities(ctree, TwoStateGTR)
+    phylogeny_effect = [p[s]["1"] for s in string.(1:length(y))]
+    phylogeny_effect = [min(max(0.01, x), 0.99) for x in phylogeny_effect]
+
+    return phylogeny_effect
+end
+
 function state_probabilities(tree::PhylogeneticTree, model::Type{TwoStateGTR})
     p = Dict{String, Dict{String, Float64}}()
     r = infer_rate_matrix(tree, model)

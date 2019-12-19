@@ -21,7 +21,7 @@ function run(model::CombinedNormalPooled, data::AbstractHLAData; iter::Int = 100
 end
 
 function stan_input(model::CombinedNormalPooled, data::AbstractHLAData; depth::Int = 1)
-    m = hla_matrix(data.hla_types; depth = 1)
+    m = hla_matrix(data.hla_types; depth = depth)
     r = replacements(data)
     N_obs = size(m)[1]
     N_alleles = size(m)[2]
