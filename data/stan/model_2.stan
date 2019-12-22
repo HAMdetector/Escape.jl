@@ -34,6 +34,7 @@ data {
     int R;
     int ys[R, N + 1];
     real y_mean[R];
+    real hla_mean[D];
     real xs[R, N * D];
     real p0;
 }
@@ -67,7 +68,7 @@ transformed parameters {
             real scale_global = (p0 / (D - p0)) * 
                 (1 / sqrt(((y_mean[i] * (1 - y_mean[i])))) / sqrt(1.0 * N));
 
-            lambda[i] = aux1_local[i] .* sqrt(aux2_local[i]);
+            lambda[i] = aux1_local[i] .* sqrt(aux2_local[i]); // implies cauchy distribution
             tau[i] = aux1_global[i] * sqrt(aux2_global[i]) * scale_global;
             c[i] = slab_scale * sqrt(caux[i]);
             lambda_tilde[i] = sqrt(c[i]^2 * square(lambda[i]) ./ 
@@ -85,7 +86,7 @@ model {
     for (i in 1:R) {
         z[i] ~ normal(0, 1);
         aux1_local[i] ~ normal(0, 1);
-        aux2_local[i] ~ inv_gamma(0.5, 0.5);
+        aux2_local[i] ~ inv_gamma(0.5, 0.5 * ((1/((hla_mean[i]) * (1 - hla_mean[i])))^2));
         aux1_global[i] ~ normal(0, 1);
         aux2_global[i] ~ inv_gamma(0.5, 0.5);
         caux[i] ~ inv_gamma(0.5* slab_df, 0.5 * slab_df);

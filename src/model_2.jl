@@ -30,6 +30,8 @@ function stan_input(model::Model2, data::AbstractHLAData; depth::Int = 1)
     ys = Matrix{Int64}(undef, R, N + 1)
     xs = Matrix{Float64}(undef, R, N * D)
     y_mean = Vector{Float64}(undef, R)
+    hla_mean = [mean(X[:, i]) for i in 1:D]
+    println(hla_mean)
     fill!(ys, -1)
     fill!(xs, -1)
 
@@ -52,7 +54,7 @@ function stan_input(model::Model2, data::AbstractHLAData; depth::Int = 1)
 
 
     d = Dict("N" => N, "D" => D, "R" => R, "ys" => ys, "xs" => xs,
-             "y_mean" => y_mean, "p0" => 5)
+             "y_mean" => y_mean, "hla_mean" => hla_mean, "p0" => 5)
     
     return d
 end
