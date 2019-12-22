@@ -22,7 +22,7 @@ end
 
 function stan_input(model::Model2, data::AbstractHLAData; depth::Int = 1)
     X = hla_matrix(data.hla_types; depth = depth)
-    r = replacements(data)
+    r = replacements(data)[72:72]
     N = size(X)[1]
     D = size(X)[2]
     R = length(r)
@@ -31,7 +31,6 @@ function stan_input(model::Model2, data::AbstractHLAData; depth::Int = 1)
     xs = Matrix{Float64}(undef, R, N * D)
     y_mean = Vector{Float64}(undef, R)
     hla_mean = [mean(X[:, i]) for i in 1:D]
-    println(hla_mean)
     fill!(ys, -1)
     fill!(xs, -1)
 
