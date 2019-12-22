@@ -92,7 +92,7 @@ model {
         intercepts[i] ~ normal(0, 20);
 
         for (j in 1:D) {
-            aux2_local[i][j] ~ inv_gamma(0.5, 0.5 * ((1/((hla_mean[i]) * (1 - hla_mean[i])))^2));
+            aux2_local[i][j] ~ inv_gamma(0.5, 0.5 * ((1/((hla_mean[j]) * (1 - hla_mean[j])))^2));
         }
     }
 
