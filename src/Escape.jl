@@ -1,5 +1,6 @@
 module Escape
 
+using Base.Threads
 using LinearAlgebra, Calculus, Statistics, DelimitedFiles, Distributed, Serialization
 using StanInterface, LightGraphs, MetaGraphs, Suppressor, DataFrames,
       JuMP, Ipopt, HypothesisTests, MultipleTesting, BioSequences,
@@ -19,6 +20,7 @@ include("phylogenetic_background.jl")
 include("epitope_prediction.jl")
 include("epitope_map.jl")
 include("model_2.jl")
+include("model_3.jl")
 include("fisher_test.jl")
 include("plots.jl")
 
