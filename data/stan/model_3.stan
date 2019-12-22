@@ -37,7 +37,7 @@ data {
     int ys[R, N + 1];
     real y_mean[R];
     real hla_mean[D];
-    real xs[R, N * D];
+    real xs[R, N * (D + 1)];
     real p0;
 }
 
@@ -85,6 +85,8 @@ transformed parameters {
 
 
 model {
+    beta[1] ~ normal(0, 1);
+
     for (i in 1:R) {
         z[i] ~ normal(0, 1);
         aux1_local[i] ~ normal(0, 1);

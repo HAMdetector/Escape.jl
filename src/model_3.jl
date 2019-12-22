@@ -28,7 +28,7 @@ function stan_input(model::Model3, data::AbstractHLAData; depth::Int = 1)
     R = length(r)
 
     ys = Matrix{Int64}(undef, R, N + 1)
-    xs = Matrix{Float64}(undef, R, N * D)
+    xs = Matrix{Float64}(undef, R, N * (D + 1))
     y_mean = Vector{Float64}(undef, R)
     hla_mean = [mean(X[:, i]) for i in 1:D]
     fill!(ys, -1)
