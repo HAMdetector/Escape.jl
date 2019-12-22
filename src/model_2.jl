@@ -22,7 +22,7 @@ end
 
 function stan_input(model::Model2, data::AbstractHLAData; depth::Int = 1)
     X = hla_matrix(data.hla_types; depth = depth)
-    r = replacements(data)[72:72]
+    r = replacements(data)
     N = size(X)[1]
     D = size(X)[2]
     R = length(r)
