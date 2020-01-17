@@ -53,15 +53,22 @@ end
     hla_data = HLAData("test", fasta_path, hla_types, missing)
 
     # predicted epitopes at:
-    # A02: 5-7, A03: 4+6, C*07
-
-    expected = zeros(Escape.fasta_length(fasta_path), length(unique_alleles(hla_types)))
+    # A02: 5-14, A03: 4-14, C*07: 6
+    alleles = Escape.unique_alleles(hla_types)
+    expected = zeros(Float64, Escape.fasta_length(fasta_path), length(alleles))
 
     # A01, A02, A03, A04, B03, B04, B05, B06, C03, C07
-    expected[4, :] = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0] # A03 has predicted epitope at pos. 6
-    expected[5, :] = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
-    expected[6, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 0]
-    expected[7, :] = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+     expected[4, :] = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0] # A03 has predicted epitope at pos. 6
+     expected[5, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 0]
+     expected[6, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 1]
+     expected[7, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 1]
+     expected[8, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 1]
+     expected[9, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 1]
+    expected[10, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 1]
+    expected[11, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 1]
+    expected[12, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 1]
+    expected[13, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 1]
+    expected[14, :] = [0, 1, 1, 0, 0, 0, 0, 0, 0, 1]
 
-    @test_broken Escape.epitope_feature_matrix(hla_types) == expected
+    @test Escape.epitope_feature_matrix(hla_data) == expected
 end
