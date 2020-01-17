@@ -1,5 +1,33 @@
 const NETMHC_ROOTDIR = joinpath(@__DIR__, "..", "data", "netMHC-4.0")
 
+function epitope_feature_matrix(
+    data::AbstractHLAData; 
+    depth::Int = 1, rank_threshold::Real = 2
+)
+    df = epitope_prediction(data, rank_threshold = rank_threshold)
+    df[!, :allele] = limit_hla_accuracy.(df[!, :allele], depth = depth)
+    
+    alleles = sort(unique_alleles(data.hla_types, depth = depth))
+    positions = fasta_length(data.fasta_file)
+
+    m = zeros(positions, length(alleles))
+    for (i, allele) in enumerate(alleles)
+        filtered_df = filter(x -> x[:allele] == allele, df)
+        start_positions = filtered_df[!, :position]
+        epitope_lengths = map(
+            x -> length(x) - length(findall("-", x)), 
+            filtered_df[!, :epitope]
+        )
+        stop_positions = start_positions .+ (epitope_lengths .- 1)
+
+        for (start, stop) in zip(start_positions, stop_positions)
+            m[start:stop, i] .= 1
+        end
+    end
+
+    return m
+end
+
 function epitope_prediction(data::AbstractHLAData; rank_threshold::Real = 2)
     df = epitope_prediction_fasta(data.fasta_file, rank_threshold = rank_threshold)
 
