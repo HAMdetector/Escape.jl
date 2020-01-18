@@ -21,6 +21,7 @@ include("epitope_prediction.jl")
 include("epitope_map.jl")
 include("model_2.jl")
 include("model_3.jl")
+include("model_4.jl")
 include("fisher_test.jl")
 include("plots.jl")
 
