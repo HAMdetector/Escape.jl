@@ -1,27 +1,5 @@
-struct Model3 <: HLAModel end
-
-struct Model3Result <: HLAModelResult 
-    sf::Stanfit
-    alleles::Vector{HLAAllele}
-    replacements::Vector{Replacement}
-end
-
-function run(model::Model3, data::AbstractHLAData; iter::Int = 1000, 
-             chains = 4, warmup::Int = 1000, wp::WorkerPool = WorkerPool(workers()), 
-             depth::Int = 1, mincount::Int = 10)
-
-    input = stan_input(model, data, depth = depth, mincount = mincount)
-    sf = stan(joinpath(@__DIR__, "..", "data", "stan", "model_3"),
-              input, stan_args = "adapt delta=0.97", iter = iter, chains = chains, 
-              warmup = warmup, wp = wp, refresh = 1)
-    alleles = sort(unique_alleles(data.hla_types, depth = depth))
-    r = replacements(data, mincount = mincount)
-
-    return Model3Result(sf, alleles, r)
-end
-
 function stan_input(
-    model::Model3, data::AbstractHLAData; 
+    model::Model4, data::AbstractHLAData; 
     depth::Int = 1, mincount::Int = 10
 )
     X = hla_matrix(data.hla_types; depth = depth)
@@ -30,7 +8,7 @@ function stan_input(
     D = size(X)[2]
     R = length(r)
 
-    ys = Matrix{Int64}(undef, R, N + 1) # +1 for length(t)
+    ys = Matrix{Int64}(undef, R, N + 1)
     xs = Matrix{Float64}(undef, R, N * (D + 1))
     y_mean = Vector{Float64}(undef, R)
     hla_mean = [mean(X[:, i]) for i in 1:D]
@@ -46,6 +24,7 @@ function stan_input(
         y_mean[i] = mean(skipmissing(t))
         count = 0
         for j in 1:N
+            ys[i, ]
             if !ismissing(t[j])
                 count += 1
                 ys[i, count + 1] = t[j]
