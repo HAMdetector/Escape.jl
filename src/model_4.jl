@@ -1,9 +1,32 @@
+struct Model4 <: HLAModel end
+
+struct Model4Result <: HLAModelResult 
+    sf::Stanfit
+    alleles::Vector{HLAAllele}
+    replacements::Vector{Replacement}
+end
+
+function run(model::Model4, data::AbstractHLAData; iter::Int = 1000, 
+             chains = 4, warmup::Int = 1000, wp::WorkerPool = WorkerPool(workers()), 
+             depth::Int = 1, mincount::Int = 10)
+
+    input = stan_input(model, data, depth = depth, mincount = mincount)
+    sf = stan(joinpath(@__DIR__, "..", "data", "stan", "model_4"),
+              input, stan_args = "adapt delta=0.97", iter = iter, chains = chains, 
+              warmup = warmup, wp = wp, refresh = 1)
+    alleles = sort(unique_alleles(data.hla_types, depth = depth))
+    r = replacements(data, mincount = mincount)
+
+    return Model4Result(sf, alleles, r)
+end
+
 function stan_input(
     model::Model4, data::AbstractHLAData; 
     depth::Int = 1, mincount::Int = 10
 )
     X = hla_matrix(data.hla_types; depth = depth)
     r = replacements(data, mincount = mincount)
+    Z = Escape.epitope_feature_matrix(data)[map(x -> x.position, r), :]
     N = size(X)[1]
     D = size(X)[2]
     R = length(r)
@@ -24,7 +47,6 @@ function stan_input(
         y_mean[i] = mean(skipmissing(t))
         count = 0
         for j in 1:N
-            ys[i, ]
             if !ismissing(t[j])
                 count += 1
                 ys[i, count + 1] = t[j]
@@ -38,7 +60,8 @@ function stan_input(
 
 
     d = Dict("N" => N, "D" => D, "R" => R, "ys" => ys, "xs" => xs,
-             "y_mean" => y_mean, "hla_mean" => hla_mean, "p0" => 5)
+             "y_mean" => y_mean, "hla_mean" => hla_mean, "p0" => 5,
+             "Z" => Z)
     
     return d
 end
