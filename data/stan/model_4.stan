@@ -70,7 +70,7 @@ transformed parameters {
     {
         for (i in 1:R) {
             real scale_global = (p0 / (D - p0)) * 
-                (1 / sqrt(((y_mean[i] * (1 - y_mean[i])))) / sqrt(1.0 * N));
+                (1.0 / sqrt(((y_mean[i] * (1 - y_mean[i])))) / sqrt(1.0 * N));
 
             lambda[i] = aux1_local[i] .* sqrt(aux2_local[i]); // implies cauchy distribution
             tau[i] = aux1_global[i] * sqrt(aux2_global[i]) * scale_global;
@@ -99,7 +99,7 @@ model {
         intercepts[i] ~ normal(0, 20);
 
         for (j in 1:D) {
-            aux2_local[i][j] ~ inv_gamma(0.5, 0.5 * ((1/((hla_mean[j]) * (1 - hla_mean[j])))^2));
+            aux2_local[i][j] ~ inv_gamma(0.5, 0.5 * ((1.0 / ((hla_mean[j]) * (1 - hla_mean[j])))^2));
         }
     }
 
