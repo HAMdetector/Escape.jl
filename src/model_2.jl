@@ -8,21 +8,26 @@ end
 
 function run(model::Model2, data::AbstractHLAData; iter::Int = 1000, 
              chains = 4, warmup::Int = 1000, wp::WorkerPool = WorkerPool(workers()), 
-             depth::Int = 1)
+             depth::Int = 1, mincount::Int = 10)
 
     input = stan_input(model, data, depth = depth)
+    input["R"] > 0 || error("No replacements found.")
+
     sf = stan(joinpath(@__DIR__, "..", "data", "stan", "model_2"),
               input, stan_args = "adapt delta=0.97", iter = iter, chains = chains, 
               warmup = warmup, wp = wp, refresh = 1)
     alleles = sort(unique_alleles(data.hla_types, depth = depth))
-    r = replacements(data)
+    r = replacements(data, mincount = mincount)
 
     return Model2Result(sf, alleles, r)
 end
 
-function stan_input(model::Model2, data::AbstractHLAData; depth::Int = 1)
+function stan_input(
+    model::Model2, data::AbstractHLAData; 
+    depth::Int = 1, mincount::Int = 10
+)
     X = hla_matrix(data.hla_types; depth = depth)
-    r = replacements(data)
+    r = replacements(data, mincount = mincount)
     N = size(X)[1]
     D = size(X)[2]
     R = length(r)
