@@ -10,7 +10,7 @@ function run(model::Model2, data::AbstractHLAData; iter::Int = 1000,
              chains = 4, warmup::Int = 1000, wp::WorkerPool = WorkerPool(workers()), 
              depth::Int = 1, mincount::Int = 10)
 
-    input = stan_input(model, data, depth = depth)
+    input = stan_input(model, data, depth = depth, mincount = mincount)
     input["R"] > 0 || error("No replacements found.")
 
     sf = stan(joinpath(@__DIR__, "..", "data", "stan", "model_2"),
