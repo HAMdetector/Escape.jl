@@ -58,7 +58,8 @@ function epitope_prediction_fasta(filepath::String; rank_threshold::Real = 100.0
     close(io) 
 
     alleles = let
-        alleles = split(read(`$NETMHC_ROOTDIR/netMHC -listMHC`, String), "\n")
+        netmhc_call = read(`$NETMHC_ROOTDIR/netMHC -listMHC -tdir $(tempdir())`, String)
+        alleles = split(netmhc_call, '\n')
         filter!(x -> startswith(x, "HLA"), alleles)
 
         s = ""
@@ -69,8 +70,8 @@ function epitope_prediction_fasta(filepath::String; rank_threshold::Real = 100.0
         s[1:end-1]
     end
 
-    Base.run(pipeline(`$NETMHC_ROOTDIR/netMHC $temp_input -a $alleles -l 8,9,10,11`, 
-                      stdout = temp_output))
+    Base.run(pipeline(`$NETMHC_ROOTDIR/netMHC -tdir $(tempdir()) $temp_input 
+        -a $alleles -l 8,9,10,11`, stdout = temp_output))
     df = parse_netmhc(temp_output, rank_threshold = rank_threshold)
     dropmissing!(df)
 
@@ -84,9 +85,9 @@ function parse_netmhc(filepath::String; rank_threshold::Real = 100.0)
     df = DataFrame([Union{Missing, T} for T in [HLAAllele, String, Int, Float64, Float64]],
                    [:allele, :epitope, :position, :affinity, :rank])
     for line in readlines(filepath)
-        if !any(occursin.(["pos", "#", "Protein", "---"], line)) & (line != "")
+        if !any(occursin.(["pos", "#", "Protein", "---", "Linux"], line)) & (line != "")
             components = split(line, r"\s+")
-            
+
             allele = parse_allele(components[3])
             epitope = components[5]
             position = parse(Int, components[2]) + 1
