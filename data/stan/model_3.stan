@@ -100,5 +100,5 @@ model {
         }
     }
 
-    target += map_rect(ll, beta, theta, xs, ys);
+    target += sum(map_rect(ll, beta, theta, xs, ys));
 }

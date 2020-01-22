@@ -23,7 +23,8 @@ end
 function stan_input(
     model::Model4, data::AbstractHLAData; 
     depth::Int = 1, mincount::Int = 10
-)
+)   
+    tree = ismissing(data.tree) ? phylogenetic_tree(data) : data.tree
     X = hla_matrix(data.hla_types; depth = depth)
     r = replacements(data, mincount = mincount)
     Z = Escape.epitope_feature_matrix(data)[map(x -> x.position, r), :]
@@ -39,7 +40,7 @@ function stan_input(
     fill!(xs, -1)
 
     phy = @distributed hcat for i in 1:R
-        phylogeny_probabilities(r[i], data, data.tree)
+        phylogeny_probabilities(r[i], data, tree)
     end
 
     for i in 1:R
