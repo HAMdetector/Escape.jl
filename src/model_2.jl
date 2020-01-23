@@ -62,3 +62,32 @@ function stan_input(
     
     return d
 end
+
+function pointwise_loglikelihoods(result::Model2Result, r::Int, i::Int)
+    sf = result.sf
+    D = sf.data["D"]
+    x_i = sf.data["xs"][r, :][(1 + (i - 1) * D):(i * D)]
+
+    log_lik_i = Vector{Vector{Float64}}(undef, sf.chains)
+
+    for c in 1:sf.chains
+        log_lik_i[c] = let
+            ll = Float64[]
+
+            for iter in 1:sf.iter
+                intercept = sf.result[c]["intercepts.$r"][iter]
+                beta_hla = [sf.result[c]["beta_hla.$r.$d"][iter] for d in 1:D]
+                x_i = sf.data["xs"][r, :][(1 + (i - 1) * D):(i * D)]
+
+                theta = logistic(intercept + dot(x_i, beta_hla))
+
+                y = sf.data["ys"][r, i + 1]
+                push!(ll, logpdf(Bernoulli(theta), y))
+            end
+
+            ll
+        end
+    end
+
+    return log_lik_i
+end
