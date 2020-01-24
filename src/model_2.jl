@@ -66,8 +66,7 @@ end
 function pointwise_loglikelihoods(result::Model2Result, r::Int, i::Int)
     sf = result.sf
     D = sf.data["D"]
-    x_i = sf.data["xs"][r, :][(1 + (i - 1) * D):(i * D)]
-
+    
     log_lik_i = Vector{Vector{Float64}}(undef, sf.chains)
 
     for c in 1:sf.chains
