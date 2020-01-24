@@ -64,3 +64,20 @@ function stan_input(
     
     return d
 end
+
+function indices(result::Model3Result)
+    sf = result.sf
+    R = sf.data["R"]
+    N = sf.data["ys"][:, 1]
+
+    x = Vector{Tuple{Int, Int}}()
+    sizehint!(x, R * maximum(N))
+
+    for r in 1:R
+        for n in 1:N[r]
+            push!(x, (r, n))
+        end
+    end
+
+    return x
+end
