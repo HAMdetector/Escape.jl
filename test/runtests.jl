@@ -1,11 +1,12 @@
 using Test, Escape, BioSequences, Suppressor, LightGraphs, MetaGraphs,
-      StanInterface, Distributed, HypothesisTests, Serialization, DataFrames
+      StanInterface, Distributed, HypothesisTests, Serialization, DataFrames, Loo
 
 import LightGraphs.SimpleGraphs
 import Escape.EpitopeMap
 
 include("alleles.jl")
 include("abstract_hla_model.jl")
+include("loo.jl")
 include("hla_data.jl")
 include("hla_dataset.jl")
 include("dataset_rousseau.jl")
