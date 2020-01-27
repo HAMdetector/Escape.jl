@@ -1,3 +1,8 @@
+@testset "EscapeResult(::Escape.HLAModel, ::Escape.HLADataset)" begin
+    ds = Escape.HLADataset("Rousseau")
+    @test Escape.EscapeResult(Escape.Model2(), ds, "") isa Escape.EscapeResult
+end
+
 @testset "dir(::EscapeResult)" begin
     result = Escape.EscapeResult(Escape.Model2(), Escape.HLADataset("Test"), "a")
     @test Escape.dir(result) == "a"
