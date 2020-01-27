@@ -25,6 +25,7 @@ include("model_3.jl")
 include("model_4.jl")
 include("fisher_test.jl")
 include("escape_result.jl")
+include("posterior_predictive_checks.jl")
 include("plots.jl")
 
 end
