@@ -1,3 +1,50 @@
+@userplot Calibration
+
+@recipe function f(c::Calibration)
+    x, y = c.args
+    check_calibration_arguments(x, y)
+    df = binned_intervals(x, y)
+
+    legend := false
+    grid --> false
+    markercolor --> "#B2001D"
+    markerstrokecolor --> "#B2001D"
+    xlabel --> "observed event percentage"
+    ylabel --> "bin midpoint"
+    formatter := x -> string(Int(round(x * 100))) * "%"
+    @series begin
+        seriestype := :scatter
+        df[!, :expected], df[!, :observed]
+    end
+
+    for row in eachrow(df)
+        @series begin
+            seriestype := :path
+            linecolor --> "#B2001D"
+            [row[:expected], row[:expected]], [row[:lower], row[:upper]]
+        end
+    end
+
+    @series begin
+        seriestype := :path
+        linecolor := "black"
+        linestyle := :dash
+        [0, 1], [0, 1]
+    end
+end
+
+function check_calibration_arguments(x::AbstractVector{<: Real}, y::AbstractVector{<: Bool})
+    if !(x isa AbstractVector{<: Real})
+        error("x must be <: AbstractVector{<: Real}, got $(typeof(x)).")
+    elseif !(y isa AbstractVector{<: Bool})
+        error("y must be <: AbstractVector{<: Bool}, got $(typeof(y)).")
+    elseif length(x) != length(y)
+        error("x ($(length(x))) and y ($(length(y))) must be of same length.")
+    elseif !all(0 .<= x .<= 1)
+        error("elemetns of x must be between 0 and 1.")
+    end
+end
+
 function binned_intervals(
     theta::AbstractVector{<: Real}, y::AbstractVector{<: Bool};
     bins::Int = 10, lower::Real = 0.025, upper = 0.975
