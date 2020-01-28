@@ -67,28 +67,44 @@ function pointwise_loglikelihoods(result::Model2Result, r::Int, i::Int)
     sf = result.sf
     D = sf.data["D"]
     
-    log_lik_i = Vector{Vector{Float64}}(undef, sf.chains)
+    thetas_i = thetas(result, r, i)
+    log_lik_i = Vector{Vector{Float64}}(undef, length(thetas_i))
+
+    for c in eachindex(thetas_i)
+        log_lik_i[c] = similar(thetas_i[c])
+
+        for n in eachindex(log_lik_i[c])
+            y = sf.data["ys"][r, i + 1]
+            log_lik_i[c][n] = logpdf(Bernoulli(thetas_i[c][n]), y)
+        end
+    end
+
+    return log_lik_i
+end
+
+function thetas(result::Model2Result, r::Int, i::Int)
+    sf = result.sf
+    D = sf.data["D"]
+
+    theta_i = Vector{Vector{Float64}}(undef, sf.chains)
 
     for c in 1:sf.chains
-        log_lik_i[c] = let
-            ll = Float64[]
+        theta_i[c] = let
+            theta = Float64[]
 
             for iter in 1:sf.iter
                 intercept = sf.result[c]["intercepts.$r"][iter]
                 beta_hla = [sf.result[c]["beta_hla.$r.$d"][iter] for d in 1:D]
                 x_i = sf.data["xs"][r, :][(1 + (i - 1) * D):(i * D)]
 
-                theta = logistic(intercept + dot(x_i, beta_hla))
-
-                y = sf.data["ys"][r, i + 1]
-                push!(ll, logpdf(Bernoulli(theta), y))
+                push!(theta, logistic(intercept + dot(x_i, beta_hla)))
             end
 
-            ll
+            theta
         end
     end
 
-    return log_lik_i
+    return theta_i
 end
 
 function indices(result::Model2Result)
