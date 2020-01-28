@@ -11,6 +11,29 @@
     @test length(Escape.indices(res)) == 14 * 15
 end
 
+@testset "thetas(::Model3Result, ::Int, ::Int)" begin
+    ds = Escape.HLADataset("Test")
+    data = Escape.stan_input(Escape.Model3(), ds.data[1], mincount = 2)
+
+    sf = @suppress Escape.stan(
+        joinpath(@__DIR__, "stan", "model_3_gq"), data,
+        iter = 10, warmup = 10, chains = 2
+    )
+    r = Escape.replacements(ds.data[1], mincount = 2)
+    alleles = sort(Escape.unique_alleles(ds.data[1].hla_types, depth = 1))
+    res = Escape.Model3Result(sf, alleles, r)
+
+    N = sf.data["N"]
+    R = length(r)
+
+    for n in 1:N, r in 1:R
+        for c in 1:2
+            @test length(Escape.thetas(res, r, n)[c]) == 10
+            @test all(0 .<= Escape.thetas(res, r, n)[c] .<= 1)
+        end
+    end
+end
+
 @testset "pointwise_loglikelihoods(::Model3Result, ::Int, ::Int)" begin
     ds = Escape.HLADataset("Test")
     data = Escape.stan_input(Escape.Model3(), ds.data[1], mincount = 2)

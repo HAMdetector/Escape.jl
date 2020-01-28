@@ -68,13 +68,32 @@ end
 function pointwise_loglikelihoods(result::Model3Result, r::Int, i::Int)
     sf = result.sf
     D = sf.data["D"]
+    
+    thetas_i = thetas(result, r, i)
+    log_lik_i = Vector{Vector{Float64}}(undef, length(thetas_i))
+
+    for c in eachindex(thetas_i)
+        log_lik_i[c] = similar(thetas_i[c])
+
+        for n in eachindex(log_lik_i[c])
+            y = sf.data["ys"][r, i + 1]
+            log_lik_i[c][n] = logpdf(Bernoulli(thetas_i[c][n]), y)
+        end
+    end
+
+    return log_lik_i
+end
+
+function thetas(result::Model3Result, r::Int, i::Int)
+    sf = result.sf
+    D = sf.data["D"]
     phylogeny = sf.data["xs"][r, :][1 + (i - 1) * (D + 1)]
 
-    log_lik_i = Vector{Vector{Float64}}(undef, sf.chains)
+    thetas_i = Vector{Vector{Float64}}(undef, sf.chains)
 
     for c in 1:sf.chains
-        log_lik_i[c] = let
-            ll = Float64[]
+        thetas_i[c] = let
+            theta = Float64[]
 
             for iter in 1:sf.iter
                 alpha = sf.result[c]["intercepts.$r"][iter]
@@ -82,17 +101,14 @@ function pointwise_loglikelihoods(result::Model3Result, r::Int, i::Int)
                 beta_hla = [sf.result[c]["beta_hla.$r.$d"][iter] for d in 1:D]
                 x_i = sf.data["xs"][r, :][(2 + (i - 1) * (D + 1)):(i * (D + 1))]
 
-                theta = logistic(intercept + dot(x_i, beta_hla))
-
-                y = sf.data["ys"][r, i + 1]
-                push!(ll, logpdf(Bernoulli(theta), y))
+                push!(theta, logistic(intercept + dot(x_i, beta_hla)))
             end
 
-            ll
+            theta
         end
     end
 
-    return log_lik_i
+    return thetas_i
 end
 
 function indices(result::Model3Result)
