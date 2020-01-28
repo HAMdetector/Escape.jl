@@ -1,21 +1,3 @@
-@testset "check_calibration_arguments(::Any, ::Any)" begin
-    @test Escape.check_calibration_arguments(
-        [0.1, 0.2, 0.3], [true, false, true]
-    ) === nothing
-    @test_throws ErrorException Escape.check_calibration_arguments(
-        ["a", "b", "c"], [true, false, true]
-    )
-    @test_throws ErrorException Escape.check_calibration_arguments(
-        [0.1, 0.2], [1, 0]
-    )
-    @test_throws ErrorException Escape.check_calibration_arguments(
-        [0.1, 0.2], [true, false, true]
-    )
-    @test_throws ErrorException Escape.check_calibration_arguments(
-        [0.3, 1, 1.1], [true, false, true]
-    )
-end
-
 @testset "binned_intervals(::AbstractVector{<: Real}, ::AbstractVector{<: Bool}" begin
     theta = collect(0.3:0.1:1)
     y = [0, 0, 0, 1, 0, 1, 1, 1]
@@ -47,4 +29,29 @@ end
     for row in eachrow(df) 
         @test row[:lower] <= row[:observed] <= row[:upper]
     end
+end
+
+@testset "check_calibration_arguments(::Any, ::Any)" begin
+    @test Escape.check_calibration_arguments(
+        [0.1, 0.2, 0.3], [true, false, true]
+    ) === nothing
+    @test_throws ErrorException Escape.check_calibration_arguments(
+        ["a", "b", "c"], [true, false, true]
+    )
+    @test_throws ErrorException Escape.check_calibration_arguments(
+        [0.1, 0.2], [1, 0]
+    )
+    @test_throws ErrorException Escape.check_calibration_arguments(
+        [0.1, 0.2], [true, false, true]
+    )
+    @test_throws ErrorException Escape.check_calibration_arguments(
+        [0.3, 1, 1.1], [true, false, true]
+    )
+end
+
+@testset "@recipe function f(::Calibration)" begin
+    theta = range(0, 1, length = 1000)
+    y = map(x -> rand(Bernoulli(x)), theta)
+
+    @test Escape.calibration(theta, y) isa Plots.Plot
 end

@@ -116,7 +116,7 @@ end
     tree = phylogenetic_tree(hla_data)
 
     annotation = Dict("1" => "0", "2" => "0", "3" => "1", "4" => "1", "5" => "1")
-    annotate!(tree, hla_data, r)
+    Escape.annotate!(tree, hla_data, r)
 
     for k in keys(annotation)
         v = filter(x -> get_property(tree, x, :name) == k, leaves(tree))[1]
