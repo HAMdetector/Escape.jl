@@ -16,6 +16,7 @@
     xlabel --> "observed event percentage"
     ylabel --> "bin midpoint"
     formatter := x -> string(Int(round(x * 100))) * "%"
+    
     @series begin
         seriestype := :scatter
         df[!, :expected], df[!, :observed]
