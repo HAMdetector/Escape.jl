@@ -1,5 +1,9 @@
 @userplot Calibration
 
+# @recipe function f(::HLAModelResult) begin
+
+# end
+
 @recipe function f(c::Calibration)
     x, y = c.args
     check_calibration_arguments(x, y)
@@ -33,7 +37,7 @@
     end
 end
 
-function check_calibration_arguments(x::AbstractVector{<: Real}, y::AbstractVector{<: Bool})
+function check_calibration_arguments(x, y)
     if !(x isa AbstractVector{<: Real})
         error("x must be <: AbstractVector{<: Real}, got $(typeof(x)).")
     elseif !(y isa AbstractVector{<: Bool})
@@ -41,7 +45,7 @@ function check_calibration_arguments(x::AbstractVector{<: Real}, y::AbstractVect
     elseif length(x) != length(y)
         error("x ($(length(x))) and y ($(length(y))) must be of same length.")
     elseif !all(0 .<= x .<= 1)
-        error("elemetns of x must be between 0 and 1.")
+        error("elements of x must be between 0 and 1.")
     end
 end
 
