@@ -31,27 +31,41 @@
     end
 end
 
-@testset "check_calibration_arguments(::Any, ::Any)" begin
-    @test Escape.check_calibration_arguments(
+@testset "calibration_plot_(::AbstractVector{<: Real}, ::AbstractVector{<: Bool})" begin
+    @test Escape.calibration_plot_(
         [0.1, 0.2, 0.3], [true, false, true]
-    ) === nothing
-    @test_throws ErrorException Escape.check_calibration_arguments(
-        ["a", "b", "c"], [true, false, true]
-    )
-    @test_throws ErrorException Escape.check_calibration_arguments(
+    ) == ([0.1, 0.2, 0.3], [true, false, true])
+    @test_throws MethodError Escape.calibration_plot_(
         [0.1, 0.2], [1, 0]
     )
-    @test_throws ErrorException Escape.check_calibration_arguments(
+    @test_throws ErrorException Escape.calibration_plot_(
         [0.1, 0.2], [true, false, true]
     )
-    @test_throws ErrorException Escape.check_calibration_arguments(
+    @test_throws ErrorException Escape.calibration_plot_(
         [0.3, 1, 1.1], [true, false, true]
     )
+end
+
+@testset "calibration_plot_(::HLAModelResult)" begin
+    ds = Escape.HLADataset("Test")
+
+    res = @suppress Escape.run(
+        Escape.Model2(), ds.data[1], 
+        mincount = 2, iter = 10, chains = 2, warmup = 10
+    )
+    @test Escape.calibration_plot_(res) isa Tuple{Vector{Float64}, Vector{Bool}}
 end
 
 @testset "@recipe function f(::Calibration)" begin
     theta = range(0, 1, length = 1000)
     y = map(x -> rand(Bernoulli(x)), theta)
 
-    @test Escape.calibration(theta, y) isa Plots.Plot
+    ds = Escape.HLADataset("Test")
+    res = @suppress Escape.run(
+        Escape.Model2(), ds.data[1], 
+        mincount = 2, iter = 10, chains = 2, warmup = 10
+    )
+
+    @test Escape.calibration_plot(theta, y) isa Plots.Plot
+    @test Escape.calibration_plot(res) isa Plots.Plot
 end

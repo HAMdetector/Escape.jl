@@ -1,12 +1,34 @@
-@userplot Calibration
+@userplot Calibration_Plot
 
-# @recipe function f(::HLAModelResult) begin
+function calibration_plot_(result::HLAModelResult)
+    indices = Escape.indices(result)
+    theta = Vector{Float64}(undef, length(indices))
+    y = Vector{Bool}(undef, length(indices))
 
-# end
+    for (i, idx) in enumerate(indices)
+        theta[i] = mean(Iterators.flatten(thetas(result, idx...)))
+        y[i] = result.sf.data["ys"][idx[1], idx[2] + 1]        
+    end
 
-@recipe function f(c::Calibration)
-    x, y = c.args
-    check_calibration_arguments(x, y)
+    calibration_plot_(theta, y)
+end
+
+function calibration_plot_(x::AbstractVector{<: Real}, y::AbstractVector{<: Bool})
+    if !(x isa AbstractVector{<: Real})
+        error("x must be <: AbstractVector{<: Real}, got $(typeof(x)).")
+    elseif !(y isa AbstractVector{<: Bool})
+        error("y must be <: AbstractVector{<: Bool}, got $(typeof(y)).")
+    elseif length(x) != length(y)
+        error("x ($(length(x))) and y ($(length(y))) must be of same length.")
+    elseif !all(0 .<= x .<= 1)
+        error("elements of x must be between 0 and 1.")
+    end
+
+    return x, y
+end
+
+@recipe function f(c::Calibration_Plot)
+    x, y = calibration_plot_(c.args...)
     df = binned_intervals(x, y)
 
     legend := false
@@ -35,18 +57,6 @@
         linecolor := "black"
         linestyle := :dash
         [0, 1], [0, 1]
-    end
-end
-
-function check_calibration_arguments(x, y)
-    if !(x isa AbstractVector{<: Real})
-        error("x must be <: AbstractVector{<: Real}, got $(typeof(x)).")
-    elseif !(y isa AbstractVector{<: Bool})
-        error("y must be <: AbstractVector{<: Bool}, got $(typeof(y)).")
-    elseif length(x) != length(y)
-        error("x ($(length(x))) and y ($(length(y))) must be of same length.")
-    elseif !all(0 .<= x .<= 1)
-        error("elements of x must be between 0 and 1.")
     end
 end
 
