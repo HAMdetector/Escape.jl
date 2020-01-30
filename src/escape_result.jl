@@ -41,6 +41,13 @@ dir(result::EscapeResult) = result.dir
 model(result::EscapeResult) = result.model
 dataset(result::EscapeResult) = result.ds
 
+function Base.getindex(result::EscapeResult, i::Int)
+    dir_ = dir(result)
+    model_result = deserialize(joinpath(dir_, "$i.jls"))
+
+    return model_result
+end
+
 function Base.iterate(iter::EscapeResult)
     dir_ = dir(iter)
     model_result = deserialize(joinpath(dir_, "1.jls"))
