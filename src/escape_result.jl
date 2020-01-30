@@ -1,4 +1,5 @@
 export EscapeResult
+export escape_result
 export dir
 export model
 export dataset
@@ -40,6 +41,12 @@ end
 dir(result::EscapeResult) = result.dir
 model(result::EscapeResult) = result.model
 dataset(result::EscapeResult) = result.ds
+
+function escape_result(dir::String)
+    result = deserialize(joinpath(dir, "result.jls"))
+
+    return result
+end
 
 function Base.getindex(result::EscapeResult, i::Int)
     dir_ = dir(result)

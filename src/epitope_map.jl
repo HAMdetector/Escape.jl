@@ -11,7 +11,7 @@ struct EpitopeMap
     function EpitopeMap(name, epitopes, starts, stops, alleles, maplength)
         if !(length(epitopes) == length(starts) == length(stops))
             error("epitope sequence and start and stop positions" * 
-                "must have the same length.")
+                  "must have the same length.")
         elseif !all(starts .<= stops)
             error("epitope start must be less than epitope stop.")
         elseif !(all((starts .> 0) .& (stops .> 0)))
