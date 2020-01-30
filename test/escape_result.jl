@@ -18,6 +18,24 @@ end
     @test Escape.dataset(result) == result.ds
 end
 
+@testset "Base.getindex(::EscapeResult, ::Int)" begin
+    tmp = tempname()
+
+    try
+        result = @suppress Escape.run(
+            Escape.Model2(), Escape.HLADataset("Test"),
+            mincount = 1,
+            result_dir = tempdir(),
+            result_name = splitdir(tmp)[end],
+            iter = 10, warmup = 10, chains = 1
+        )
+
+        @test result[1] isa Escape.HLAModelResult
+    finally
+        rm(tmp, force = true, recursive = true)
+    end
+end
+
 @testset "Base.iterate(::EscapeResult)" begin
     tmp = tempname()
 
