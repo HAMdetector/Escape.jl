@@ -1,6 +1,41 @@
 @userplot Calibration_Plot
 
-function calibration_plot_(result::HLAModelResult)
+@recipe function f(c::Calibration_Plot)
+    legend := false
+    grid --> false
+    seriescolor --> "#B2001D"
+    markerstrokecolor --> "#B2001D"
+    xlabel --> "observed event percentage"
+    ylabel --> "bin midpoint"
+    formatter := x -> string(Int(round(x * 100))) * "%"
+    
+    (c.args)
+end
+
+@recipe function f(result::EscapeResult)
+    layout --> (ceil(Int, length(result) / 2), 2)
+
+    for (i, res) in enumerate(result)
+        @series begin
+            title := result.ds.data[i].name
+            subplot := i
+            (res)
+        end
+    end
+    
+    plots = ceil(Int, length(result) / 2) * 2
+    for i in (length(result) + 1):plots
+        @series begin
+            subplot := 3
+            legend := false
+            grid := false
+            foreground_color_subplot := :white
+            ()
+        end
+    end
+end
+
+@recipe function f(result::HLAModelResult)
     indices = Escape.indices(result)
     theta = Vector{Float64}(undef, length(indices))
     y = Vector{Bool}(undef, length(indices))
@@ -10,46 +45,9 @@ function calibration_plot_(result::HLAModelResult)
         y[i] = result.sf.data["ys"][idx[1], idx[2] + 1]        
     end
 
-    calibration_plot_(theta, y)
-end
-
-function calibration_plot_(x::AbstractVector{<: Real}, y::AbstractVector{<: Bool})
-    if !(x isa AbstractVector{<: Real})
-        error("x must be <: AbstractVector{<: Real}, got $(typeof(x)).")
-    elseif !(y isa AbstractVector{<: Bool})
-        error("y must be <: AbstractVector{<: Bool}, got $(typeof(y)).")
-    elseif length(x) != length(y)
-        error("x ($(length(x))) and y ($(length(y))) must be of same length.")
-    elseif !all(0 .<= x .<= 1)
-        error("elements of x must be between 0 and 1.")
-    end
-
-    return x, y
-end
-
-@recipe function f(c::Calibration_Plot)
-    x, y = calibration_plot_(c.args...)
-    df = binned_intervals(x, y)
-
-    legend := false
-    grid --> false
-    markercolor --> "#B2001D"
-    markerstrokecolor --> "#B2001D"
-    xlabel --> "observed event percentage"
-    ylabel --> "bin midpoint"
-    formatter := x -> string(Int(round(x * 100))) * "%"
-    
     @series begin
-        seriestype := :scatter
-        df[!, :expected], df[!, :observed]
-    end
-
-    for row in eachrow(df)
-        @series begin
-            seriestype := :path
-            linecolor --> "#B2001D"
-            [row[:expected], row[:expected]], [row[:lower], row[:upper]]
-        end
+        seriestype := :calibration
+        theta, y
     end
 
     @series begin
@@ -60,12 +58,33 @@ end
     end
 end
 
+@recipe function f(::Type{Val{:calibration}}, x, y, z)
+    bins = plotattributes[:bins] == :auto ? 10 : plotattributes[:bins]
+    df = binned_intervals(x, Bool.(y), bins = bins)
+
+    # error bars
+    for row in eachrow(df)
+        @series begin
+            seriestype := :path
+            linecolor := plotattributes[:linecolor]
+            x := [row[:expected], row[:expected]]
+            y := [row[:lower], row[:upper]]
+            ()
+        end
+        
+    end
+
+    # scatter points
+    seriestype := :scatter
+    x := df[!, :expected]
+    y := df[!, :observed]
+end
+
 function binned_intervals(
     theta::AbstractVector{<: Real}, y::AbstractVector{<: Bool};
     bins::Int = 10, lower::Real = 0.025, upper = 0.975
 )   
-    length(theta) == length(y) || 
-        throw(DimensionMismatch("theta and y must have same length."))
+    check_calibration_arguments(theta, y)
     
     sort_idx = sortperm(theta)
     theta = theta[sort_idx]
@@ -87,4 +106,16 @@ function binned_intervals(
     end
 
     return df
+end
+
+function check_calibration_arguments(x::AbstractVector{<: Real}, y::AbstractVector{<: Bool})
+    if !(x isa AbstractVector{<: Real})
+        error("x must be <: AbstractVector{<: Real}, got $(typeof(x)).")
+    elseif !(y isa AbstractVector{<: Bool})
+        error("y must be <: AbstractVector{<: Bool}, got $(typeof(y)).")
+    elseif length(x) != length(y)
+        error("x ($(length(x))) and y ($(length(y))) must be of same length.")
+    elseif !all(0 .<= x .<= 1)
+        error("elements of x must be between 0 and 1.")
+    end
 end
