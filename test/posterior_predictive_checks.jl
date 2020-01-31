@@ -1,4 +1,19 @@
-@testset "binned_intervals(::AbstractVector{<: Real}, ::AbstractVector{<: Bool}" begin
+@testset "check_calibration_arguments(::AbstractVector{<: Real}, ::AbstractVector{<: Bool}))" begin
+    @test isnothing(
+        Escape.check_calibration_arguments([0.1, 0.2, 0.3], [true, false, true])
+    )
+    @test_throws ErrorException Escape.check_calibration_arguments(
+        [0.1, 0.2], [true, false, true]
+    )
+    @test_throws MethodError Escape.check_calibration_arguments(
+        [0.1, 0.2], [1, 0]
+    )
+    @test_throws ErrorException Escape.check_calibration_arguments(
+        [0.3, 1, 1.1], [true, false, true]
+    )
+end
+
+@testset "binned_intervals(::AbstractVector{<: Real}, ::AbstractVector{<: Bool})" begin
     theta = collect(0.3:0.1:1)
     y = [0, 0, 0, 1, 0, 1, 1, 1]
 
@@ -31,41 +46,37 @@
     end
 end
 
-@testset "calibration_plot_(::AbstractVector{<: Real}, ::AbstractVector{<: Bool})" begin
-    @test Escape.calibration_plot_(
-        [0.1, 0.2, 0.3], [true, false, true]
-    ) == ([0.1, 0.2, 0.3], [true, false, true])
-    @test_throws MethodError Escape.calibration_plot_(
-        [0.1, 0.2], [1, 0]
-    )
-    @test_throws ErrorException Escape.calibration_plot_(
-        [0.1, 0.2], [true, false, true]
-    )
-    @test_throws ErrorException Escape.calibration_plot_(
-        [0.3, 1, 1.1], [true, false, true]
-    )
-end
-
-@testset "calibration_plot_(::HLAModelResult)" begin
-    ds = Escape.HLADataset("Test")
-
-    res = @suppress Escape.run(
-        Escape.Model2(), ds.data[1], 
-        mincount = 2, iter = 10, chains = 2, warmup = 10
-    )
-    @test Escape.calibration_plot_(res) isa Tuple{Vector{Float64}, Vector{Bool}}
-end
-
-@testset "@recipe function f(::Calibration)" begin
+@testset "@recipe f(::Type{Val{:calibration}}, x, y, z)" begin
     theta = range(0, 1, length = 1000)
     y = map(x -> rand(Bernoulli(x)), theta)
 
-    ds = Escape.HLADataset("Test")
-    res = @suppress Escape.run(
-        Escape.Model2(), ds.data[1], 
-        mincount = 2, iter = 10, chains = 2, warmup = 10
-    )
+    @test Plots.plot(theta, y, seriestype = :calibration) isa Plots.Plot
+    @test Plots.plot(theta, y, bins = 20, seriestype = :calibration) isa Plots.Plot
+end
 
-    @test Escape.calibration_plot(theta, y) isa Plots.Plot
-    @test Escape.calibration_plot(res) isa Plots.Plot
+@testset "@recipe f(::HLAModelResult)" begin
+    result = @suppress Escape.run(
+        Escape.Model2(), Escape.HLADataset("Test").data[1], 
+        iter = 10, chains = 1, warmup = 10, mincount = 2
+    )
+    
+    @test Escape.calibration_plot(result) isa Plots.Plot
+end
+
+@testset "@recipe f(::EscapeResult)" begin
+    tmp = tempname()
+
+    try
+        result = @suppress Escape.run(
+            Escape.Model2(), Escape.HLADataset("Test"),
+            mincount = 2,
+            result_dir = tempdir(),
+            result_name = splitdir(tmp)[end],
+            iter = 10, warmup = 10, chains = 1
+        )
+
+        @test Escape.calibration_plot(result) isa Plots.Plot
+    finally
+        rm(tmp, force = true, recursive = true)
+    end
 end

@@ -33,7 +33,7 @@ end
         @test Escape.escape_result(tmp) isa Escape.EscapeResult
     finally
         rm(tmp, force = true, recursive = true)
-    end 
+    end
 end
 
 @testset "Base.getindex(::EscapeResult, ::Int)" begin
