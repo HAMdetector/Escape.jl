@@ -37,8 +37,8 @@ end
     grid --> false
     seriescolor --> "#B2001D"
     markerstrokecolor --> "#B2001D"
-    xlabel --> "observed event percentage"
-    ylabel --> "bin midpoint"
+    xlabel --> "bin midpoint"
+    ylabel --> "observed event percentage"
     formatter := x -> string(Int(round(x * 100))) * "%"
     
     (c.args)
