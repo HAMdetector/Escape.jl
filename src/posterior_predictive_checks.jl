@@ -58,7 +58,7 @@ end
     plots = ceil(Int, length(result) / 2) * 2
     for i in (length(result) + 1):plots
         @series begin
-            subplot := 3res 
+            subplot := 3
             legend := false
             grid := false
             foreground_color_subplot := :white
