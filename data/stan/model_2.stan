@@ -88,7 +88,7 @@ model {
         aux1_local[i] ~ normal(0, 1);
         aux1_global[i] ~ normal(0, 1);
         aux2_global[i] ~ inv_gamma(0.5, 0.5);
-        caux[i] ~ inv_gamma(0.5* slab_df, 0.5 * slab_df);
+        caux[i] ~ inv_gamma(0.5 * slab_df, 0.5 * slab_df);
         intercepts[i] ~ normal(0, 20);
 
         for (j in 1:D) {

@@ -1,4 +1,36 @@
 @userplot Calibration_Plot
+@userplot Phylogeny_Calibration
+
+@recipe function f(c::Phylogeny_Calibration)
+    legend := false
+    grid --> false
+    seriescolor --> "#B2001D"
+    markerstrokecolor --> "#B2001D"
+    xlabel --> "observed event percentage"
+    ylabel --> "bin midpoint"
+    formatter := x -> string(Int(round(x * 100))) * "%"
+
+    (c.args)
+end
+
+@recipe function f(result::Union{Model3Result, Model4Result})
+    indices = Escape.indices(result)
+    D = result.sf.data["D"]
+    theta = map(x -> result.sf.data["xs"][x[1], :][1 + (x[2] - 1) * (D + 1)], indices)
+    y = map(x -> result.sf.data["ys"][x[1], x[2] + 1], indices)
+
+    @series begin
+        seriestype := :calibration
+        theta, y
+    end
+
+    @series begin
+        seriestype := :path
+        linecolor := "black"
+        linestyle := :dash
+        [0, 1], [0, 1]
+    end
+end
 
 @recipe function f(c::Calibration_Plot)
     legend := false
@@ -26,7 +58,7 @@ end
     plots = ceil(Int, length(result) / 2) * 2
     for i in (length(result) + 1):plots
         @series begin
-            subplot := 3
+            subplot := 3res 
             legend := false
             grid := false
             foreground_color_subplot := :white
@@ -41,7 +73,7 @@ end
     y = Vector{Bool}(undef, length(indices))
 
     for (i, idx) in enumerate(indices)
-        theta[i] = mean(Iterators.flatten(thetas(result, idx...)))
+        theta[i] = StatsBase.mode(Iterators.flatten(thetas(result, idx...)))
         y[i] = result.sf.data["ys"][idx[1], idx[2] + 1]        
     end
 
