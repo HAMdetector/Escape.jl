@@ -87,28 +87,25 @@ end
 function thetas(result::Model3Result, r::Int, i::Int)
     sf = result.sf
     D = sf.data["D"]
-    phylogeny = sf.data["xs"][r, :][1 + (i - 1) * (D + 1)]
+    xs = sf.data["xs"]
+    x_i = xs[r, (2 + (i - 1) * (D + 1)):(i * (D + 1))]
+    phylogeny = xs[r, (1 + (i - 1) * (D + 1))]
 
-    thetas_i = Vector{Vector{Float64}}(undef, sf.chains)
+    theta_i = [zeros(sf.iter) for i in 1:sf.chains]
+    beta_hla = Matrix{Float64}(undef, sf.iter, D)
 
     for c in 1:sf.chains
-        thetas_i[c] = let
-            theta = Float64[]
+        alphas = sf.result[c]["intercepts.$r"] .+ sf.result[c]["beta.1"] .* logit(phylogeny)
+        for d in 1:D
+            beta_hla[:, d] = sf.result[c]["beta_hla.$r.$d"]
+        end
 
-            for iter in 1:sf.iter
-                alpha = sf.result[c]["intercepts.$r"][iter]
-                intercept = sf.result[c]["beta.1"][iter] * logit(phylogeny) + alpha 
-                beta_hla = [sf.result[c]["beta_hla.$r.$d"][iter] for d in 1:D]
-                x_i = sf.data["xs"][r, :][(2 + (i - 1) * (D + 1)):(i * (D + 1))]
-
-                push!(theta, logistic(intercept + dot(x_i, beta_hla)))
-            end
-
-            theta
+        for iter in 1:sf.iter
+            theta_i[c][iter] = logistic(alphas[iter] + dot(beta_hla[iter,:], x_i))
         end
     end
 
-    return thetas_i
+    return theta_i
 end
 
 function indices(result::Model3Result)
