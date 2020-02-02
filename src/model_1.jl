@@ -28,7 +28,11 @@ function run(
         refresh = 1
     )
     alleles = sort(unique_alleles(data.hla_types, depth = depth))
+<<<<<<< HEAD
     r = replacements(data, mincount = mincount)
+=======
+    r = replacements(data, mincount = mincount)[1:20]
+>>>>>>> 3885cc7812ca7cab9f5d2e815241f3a421bd2d2a
 
     return Model1Result(sf, alleles, r)
 end
@@ -38,7 +42,11 @@ function stan_input(
     depth::Int = 1, mincount::Int = 10 
 )
     X = hla_matrix(data.hla_types; depth = depth)
+<<<<<<< HEAD
     r = replacements(data, mincount = mincount)
+=======
+    r = replacements(data, mincount = mincount)[1:20]
+>>>>>>> 3885cc7812ca7cab9f5d2e815241f3a421bd2d2a
     N = size(X)[1]
     D = size(X)[2]
     R = length(r)
