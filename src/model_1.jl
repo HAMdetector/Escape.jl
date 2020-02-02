@@ -83,22 +83,20 @@ end
 function thetas(result::Model1Result, r::Int, i::Int)
     sf = result.sf
     D = sf.data["D"]
+    xs = sf.data["xs"]
+    x_i = xs[r, (1 + (i - 1) * D):(i * D)]
 
-    theta_i = Vector{Vector{Float64}}(undef, sf.chains)
+    theta_i = [zeros(sf.iter) for i in 1:sf.chains]
+    beta_hla = Matrix{Float64}(undef, sf.iter, D)
 
     for c in 1:sf.chains
-        theta_i[c] = let
-            theta = Float64[]
+        intercepts = sf.result[c]["intercepts.$r"]
+        for d in 1:D
+            beta_hla[:, d] = sf.result[c]["beta_hla.$r.$d"]
+        end
 
-            for iter in 1:sf.iter
-                intercept = sf.result[c]["intercepts.$r"][iter]
-                beta_hla = [sf.result[c]["beta_hla.$r.$d"][iter] for d in 1:D]
-                x_i = sf.data["xs"][r, :][(1 + (i - 1) * D):(i * D)]
-
-                push!(theta, logistic(intercept + dot(x_i, beta_hla)))
-            end
-
-            theta
+        for iter in 1:sf.iter
+            theta_i[c][iter] = logistic(intercepts[iter] + dot(beta_hla[iter,:], x_i))
         end
     end
 
