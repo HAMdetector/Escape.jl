@@ -6,14 +6,14 @@
     grid --> false
     seriescolor --> "#B2001D"
     markerstrokecolor --> "#B2001D"
-    xlabel --> "observed event percentage"
-    ylabel --> "bin midpoint"
+    xlabel --> "bin midpoint"
+    ylabel --> "observed event percentage"
     formatter := x -> string(Int(round(x * 100))) * "%"
 
-    (c.args)
+    (c, c.args...)
 end
 
-@recipe function f(result::Union{Model3Result, Model4Result})
+@recipe function f(::Phylogeny_Calibration, result::Union{Model3Result, Model4Result})
     indices = Escape.indices(result)
     D = result.sf.data["D"]
     theta = map(x -> result.sf.data["xs"][x[1], :][1 + (x[2] - 1) * (D + 1)], indices)
@@ -41,17 +41,17 @@ end
     ylabel --> "observed event percentage"
     formatter := x -> string(Int(round(x * 100))) * "%"
     
-    (c.args)
+    (c, c.args...)
 end
 
-@recipe function f(result::EscapeResult)
+@recipe function f(c::Calibration_Plot, result::EscapeResult)
     layout --> (ceil(Int, length(result) / 2), 2)
 
     for (i, res) in enumerate(result)
         @series begin
             title := result.ds.data[i].name
             subplot := i
-            (res)
+            (c, res)
         end
     end
     
@@ -67,7 +67,7 @@ end
     end
 end
 
-@recipe function f(result::HLAModelResult)
+@recipe function f(::Calibration_Plot, result::HLAModelResult)
     indices = Escape.indices(result)
     theta = Vector{Float64}(undef, length(indices))
     y = Vector{Bool}(undef, length(indices))
