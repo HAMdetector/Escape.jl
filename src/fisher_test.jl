@@ -14,7 +14,7 @@ function Escape.run(model::FisherTest, data::AbstractHLAData, replacement::Repla
     y = targets(replacement, data)
     m = hla_matrix(data.hla_types; depth = depth)
 
-    alleles = sort(unique_alleles(filter(x -> missing ∉ x, data.hla_types), depth = depth))
+    alleles = sort(unique_alleles(data.hla_types, depth = depth))
 
     counts = Dict{HLAAllele, Array{Int, 2}}()
     p_values = Dict{HLAAllele, Float64}()
