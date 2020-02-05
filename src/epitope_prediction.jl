@@ -13,12 +13,8 @@ function epitope_feature_matrix(
     m = zeros(positions, length(alleles))
     for (i, allele) in enumerate(alleles)
         filtered_df = filter(x -> x[:allele] == allele, df)
-        start_positions = filtered_df[!, :position]
-        epitope_lengths = map(
-            x -> length(x) - length(findall("-", x)), 
-            filtered_df[!, :epitope]
-        )
-        stop_positions = start_positions .+ (epitope_lengths .- 1)
+        start_positions = filtered_df[!, :start_position]
+        stop_positions = filtered_df[!, :stop_position]
 
         for (start, stop) in zip(start_positions, stop_positions)
             m[start:stop, i] .= 1
@@ -82,20 +78,25 @@ function epitope_prediction_fasta(filepath::String; rank_threshold::Real = 100.0
 end
 
 function parse_netmhc(filepath::String; rank_threshold::Real = 100.0)
-    df = DataFrame([Union{Missing, T} for T in [HLAAllele, String, Int, Float64, Float64]],
-                   [:allele, :epitope, :position, :affinity, :rank])
+    df = DataFrame(
+        [Union{Missing, T} for T in [HLAAllele, String, Int, Int, Float64, Float64]],
+        [:allele, :epitope, :start_position, :stop_position, :affinity, :rank]
+    )
     for line in readlines(filepath)
         if !any(occursin.(["pos", "#", "Protein", "---", "Linux"], line)) & (line != "")
             components = split(line, r"\s+")
 
             allele = parse_allele(components[3])
             epitope = components[5]
-            position = parse(Int, components[2]) + 1
+            start_position = parse(Int, components[2]) + 1
+            stop_position = let
+                start_position + length(epitope) - length(findall("-", epitope)) - 1
+            end
             affinity = parse(Float64, components[14])
             rank = parse(Float64, components[15])
         
             if rank <= rank_threshold
-                push!(df, [allele, epitope, position, affinity, rank])
+                push!(df, [allele, epitope, start_position, stop_position, affinity, rank])
             end
         end
     end
