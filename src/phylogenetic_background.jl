@@ -87,6 +87,7 @@ function infer_rate_matrix(tree::PhylogeneticTree, model::Type{TwoStateGTR})
     optimize!(m)
 
     estimate = TwoStateGTR(α = JuMP.value(α), π_1 = JuMP.value(π_1), π_2 = JuMP.value(π_2))
+    
     return rate_matrix(estimate, states)
 end
 
