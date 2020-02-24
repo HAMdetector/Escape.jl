@@ -71,7 +71,7 @@ function infer_rate_matrix(tree::PhylogeneticTree, model::Type{TwoStateGTR})
 
     states = ["0", "1"]
 
-    m = Model(with_optimizer(Ipopt.Optimizer, print_level = 0))
+    m = Model(optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0))
     JuMP.register(m, :l, 3, l, ∇l)
     @variable(m, α, start = 1)
     @variable(m, π_1, start = 0.5)

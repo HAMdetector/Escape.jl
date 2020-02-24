@@ -122,7 +122,7 @@ end
 
 function fasta_length(filepath::String)
     reader = FASTA.Reader(open(filepath, "r"))
-    fasta_length = maximum([length(sequence(r)) for r in reader])
+    fasta_length = maximum([length(FASTA.sequence(r)) for r in reader])
 
     close(reader)
 

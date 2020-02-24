@@ -5,9 +5,6 @@
     @test_throws ErrorException Escape.check_calibration_arguments(
         [0.1, 0.2], [true, false, true]
     )
-    @test_throws MethodError Escape.check_calibration_arguments(
-        [0.1, 0.2], [1, 0]
-    )
     @test_throws ErrorException Escape.check_calibration_arguments(
         [0.3, 1, 1.1], [true, false, true]
     )

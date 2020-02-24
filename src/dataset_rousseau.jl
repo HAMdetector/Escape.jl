@@ -8,8 +8,8 @@ function HLADataset(::Val{:Rousseau})
     function extract_hla_types(file::String)
         hla_types = Vector{HLAType}()
 
-        for record in BioSequences.FASTA.Reader(open(file, "r"))
-            identifier = BioSequences.FASTA.identifier(record)
+        for record in FASTA.Reader(open(file, "r"))
+            identifier = FASTA.identifier(record)
             patient_id = split(identifier, '_')[1]
             patient_id = endswith(patient_id, '.') ? patient_id[1:end-1] : patient_id
             accession = length(split(identifier, '_')) == 1 ? "" : split(identifier, '_')[2]

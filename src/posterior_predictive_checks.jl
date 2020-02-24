@@ -113,7 +113,7 @@ end
 end
 
 function binned_intervals(
-    theta::AbstractVector{<:Real}, y::AbstractVector{<:Bool};
+    theta, y;
     bins::Int = 10, lower::Real = 0.025, upper = 0.975
 )   
     check_calibration_arguments(theta, y)
@@ -143,12 +143,8 @@ function binned_intervals(
     return df
 end
 
-function check_calibration_arguments(x::AbstractVector{<: Real}, y::AbstractVector{<: Bool})
-    if !(x isa AbstractVector{<: Real})
-        error("x must be <: AbstractVector{<: Real}, got $(typeof(x)).")
-    elseif !(y isa AbstractVector{<: Bool})
-        error("y must be <: AbstractVector{<: Bool}, got $(typeof(y)).")
-    elseif length(x) != length(y)
+function check_calibration_arguments(x, y)
+    if length(x) != length(y)
         error("x ($(length(x))) and y ($(length(y))) must be of same length.")
     elseif !all(0 .<= x .<= 1)
         error("elements of x must be between 0 and 1.")
