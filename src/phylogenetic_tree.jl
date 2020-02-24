@@ -43,13 +43,13 @@ function numbered_fasta(data::AbstractHLAData, filepath::String)
 end
 
 function numbered_fasta(fasta_file::String, filepath::String)
-    reader = BioSequences.FASTA.Reader(open(fasta_file, "r"))
-    writer = BioSequences.FASTA.Writer(open(filepath, "w"))
+    reader = FASTA.Reader(open(fasta_file, "r"))
+    writer = FASTA.Writer(open(filepath, "w"))
 
     for (i, record) in enumerate(reader)
         identifier = string(i)
-        sequence = BioSequences.FASTA.sequence(record)
-        new_record = BioSequences.FASTA.Record(identifier, sequence)
+        sequence = FASTA.sequence(record)
+        new_record = FASTA.Record(identifier, sequence)
 
         write(writer, new_record)
     end
@@ -170,10 +170,10 @@ function annotate!(tree::PhylogeneticTree, data::AbstractHLAData, replacement::R
     data.name == replacement.protein || error("Replacement does not match HLA data.")
     matching(tree, data) isa Exception && throw(matching(tree, data))
 
-    reader = BioSequences.FASTA.Reader(open(data.fasta_file, "r"))
+    reader = FASTA.Reader(open(data.fasta_file, "r"))
 
     for (i, record) in enumerate(reader)
-        sequence = BioSequences.FASTA.sequence(record)
+        sequence = FASTA.sequence(record)
         symbol = Char(sequence[replacement.position])
 
         v = filter(x -> get_property(tree, x, :name) == string(i), leaves(tree))[1]
@@ -206,7 +206,7 @@ end
 function matching(tree::PhylogeneticTree, fasta_file::AbstractString)
     n_leaves = length(leaves(tree))
     
-    reader = BioSequences.FASTA.Reader(open(fasta_file, "r"))
+    reader = FASTA.Reader(open(fasta_file, "r"))
     fasta_length = length(collect(reader))
     close(reader) 
 

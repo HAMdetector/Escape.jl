@@ -9,7 +9,7 @@ mutable struct HLAData <: AbstractHLAData
     function HLAData(name::String, fasta_file::String, hla_types::Vector{HLAType},
             tree::Union{PhylogeneticTree, Missing})
         
-        reader = BioSequences.FASTA.Reader(open(fasta_file, "r"))
+        reader = FASTA.Reader(open(fasta_file, "r"))
         fasta_length = length(collect(reader))
         close(reader)
 

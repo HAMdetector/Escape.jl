@@ -191,11 +191,11 @@ function Base.rand(S::Type{HLAAllele}, gene::Symbol)
     gene ∉ [:A, :B, :C] && error("gene must be either :A, :B, or :C")
     fasta_path = joinpath(@__DIR__, "..", "data", "HLA_alleles", 
                          "$(string(gene))_nuc.fasta")
-    fasta_reader = BioSequences.FASTA.Reader(open(fasta_path, "r"))
+    fasta_reader = FASTA.Reader(open(fasta_path, "r"))
     allele_strings = Vector{String}()
 
     for record in fasta_reader
-        allele_string = split(BioSequences.FASTA.description(record))[1]
+        allele_string = split(FASTA.description(record))[1]
         push!(allele_strings, allele_string)
     end
 
