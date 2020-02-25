@@ -71,26 +71,23 @@ function infer_rate_matrix(tree::PhylogeneticTree, model::Type{TwoStateGTR})
 
     states = ["0", "1"]
 
-    m = Model(optimizer_with_attributes(SeDuMi.Optimizer))
+    m = Model(optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0))
     JuMP.register(m, :l, 3, l, ∇l)
-    @variable(m, α, start = 0)
-    @variable(m, π_1, start = log(0.5))
-    @variable(m, π_2, start = log(0.5))
+    @variable(m, α, start = 1)
+    @variable(m, π_1, start = 0.5)
+    @variable(m, π_2, start = 0.5)
 
-    @constraint(m, π_1 <= 0)
-    @constraint(m, π_2 <= 0)
-    @constraint(m, exp(π_1) + exp(π_2) == 1)
-    @constraint(m, log(2) + α + π_1 + π_2 == 0)
+    @constraint(m, π_1 >= 0.001)
+    @constraint(m, π_2 >= 0.001)
+    @constraint(m, α >= 0.001)
+    @constraint(m, π_1 + π_2 == 1)
+    @NLconstraint(m, 2*α*π_1*π_2 == 1)
 
-    @objective(m, Max, l(α, π_1, π_2))
+    @NLobjective(m, Max, l(α, π_1, π_2))
     optimize!(m)
 
-    estimate = TwoStateGTR(
-        α = exp(JuMP.value(α)), 
-        π_1 = exp(JuMP.value(π_1)), 
-        π_2 = exp(JuMP.value(π_2))
-    )
-        
+    estimate = TwoStateGTR(α = JuMP.value(α), π_1 = JuMP.value(π_1), π_2 = JuMP.value(π_2))
+    
     return rate_matrix(estimate, states)
 end
 

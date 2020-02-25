@@ -3,7 +3,7 @@ module Escape
 using Base.Threads
 using LinearAlgebra, Calculus, Statistics, DelimitedFiles, Distributed, Serialization
 using StanInterface, LightGraphs, MetaGraphs, Suppressor, DataFrames,
-      JuMP, Clp, HypothesisTests, MultipleTesting, BioSequences, FASTX,
+      JuMP, Ipopt, HypothesisTests, MultipleTesting, BioSequences, FASTX,
       StatsBase, StatsFuns, Distributions, Loo, RecipesBase, Base.Threads
 
 include("alleles.jl")
@@ -23,6 +23,7 @@ include("model_1.jl")
 include("model_2.jl")
 include("model_3.jl")
 include("model_4.jl")
+include("model_5.jl")
 include("fisher_test.jl")
 include("escape_result.jl")
 include("loo.jl")
