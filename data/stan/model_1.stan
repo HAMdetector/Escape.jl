@@ -1,32 +1,60 @@
+functions {
+    vector ll(vector global_beta, vector local_beta, real[] xs, int[] ys) {
+        int N_obs = ys[1];
+        int y[N_obs] = segment(ys, 2, N_obs);
+        int D = num_elements(local_beta) - 1;
+        matrix[N_obs, D] X = to_matrix(segment(xs, 4, N_obs * D), N_obs, D);
+
+        real lp = bernoulli_logit_glm_lpmf(y | X, local_beta[1], local_beta[2:D + 1]);
+
+        return [lp]';
+    }
+}
+
 data {
-    int<lower=1> N;
-    int<lower=3> D;
-    int<lower=1> R;
+    int N;
+    int D;
+    int R;
+    real p0;
     int ys[R, N + 1];
-    matrix[R, N * D] xs;
+    real xs[R, 3 + N * D + D + N];
 }
 
 parameters {
-    vector[R] intercepts;
+    vector[0] placeholder;
+    vector[R] b0;
     vector[D] beta_hla[R];
 }
 
-model {
-    intercepts ~ normal(0, 20);
+transformed parameters {
+    vector[D + 1] beta[R];
 
     for (i in 1:R) {
-        beta_hla[i] ~ normal(0, 3);
+        beta[i][1] = b0[i];
+        beta[i][2:(D + 1)] = beta_hla[i];
+    }
+}
 
-        {
-            matrix[ys[i, 1], D] X;
-            int y[ys[i, 1]];
+model {
+    b0 ~ normal(0, 3);
 
-            for (j in 1:ys[i, 1]) {
-                X[j,] = xs[i, ][(1 + (j - 1) * D):(j * D)];
-                y[j] = ys[i, 1 + j];
-            }
+    for (i in 1:R) {
+        beta_hla[i] ~ std_normal();
+    }
 
-            y ~ bernoulli_logit(intercepts[i] + X * beta_hla[i]);
+    target += sum(map_rect(ll, placeholder, beta, xs, ys));
+}
+
+generated quantities {
+    matrix[R, N] theta = rep_matrix(-1, R, N);
+
+    for (i in 1:R) {
+        int N_obs = ys[i, 1];
+        int y[N_obs] = segment(ys[i, ], 2, N_obs);
+        matrix[N_obs, D] X = to_matrix(segment(xs[i, ], 4, N_obs * D), N_obs, D);
+
+        for (j in 1:N_obs) {
+            theta[i, j] = inv_logit(b0[i] + X[j] * beta_hla[i]);
         }
     }
 }
