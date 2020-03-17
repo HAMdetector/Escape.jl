@@ -35,7 +35,7 @@ transformed data {
         N_obs[i] = ys[i, 1];
         y[i] = segment(to_vector(ys[i, ]), 2, N_obs[i]);
         y_means[i] = mean(y[i]);
-        pseudo_variances[i] = (1 / y_means[i]) * (1 / (1 - y_means[i]));
+        pseudo_variances[i] = (1.0 / y_means[i]) * (1.0 / (1.0 - y_means[i]));
         pseudo_sigmas[i] = sqrt(pseudo_variances[i]);
         tau_0s[i] = (p0 / (D - p0)) * (pseudo_sigmas[i] / sqrt(N_obs[i]));
     } 
