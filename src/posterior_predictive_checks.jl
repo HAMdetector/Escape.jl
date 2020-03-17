@@ -13,8 +13,11 @@
     (c, c.args...)
 end
 
-@recipe function f(::Phylogeny_Calibration, result::Union{Model3Result, Model4Result})
-    indices = Escape.indices(result)
+@recipe function f(
+    ::Phylogeny_Calibration, 
+    result::Union{HLAModelResult{3}, HLAModelResult{4}}
+)
+    indices = sample_indices(result)
     D = result.sf.data["D"]
     theta = map(x -> result.sf.data["xs"][x[1], :][1 + (x[2] - 1) * (D + 1)], indices)
     y = map(x -> result.sf.data["ys"][x[1], x[2] + 1], indices)
@@ -68,13 +71,14 @@ end
 end
 
 @recipe function f(::Calibration_Plot, result::HLAModelResult)
-    indices = Escape.indices(result)
+    indices = sample_indices(result)
+    posterior = StanInterface.extract(result.sf)
     theta = Vector{Float64}(undef, length(indices))
     y = Vector{Bool}(undef, length(indices))
 
     for (i, idx) in enumerate(indices)
-        theta[i] = StatsBase.mode(Iterators.flatten(thetas(result, idx...)))
-        y[i] = result.sf.data["ys"][idx[1], idx[2] + 1]        
+        theta[i] = StatsBase.mode(posterior["theta.$(idx[1]).$(idx[2])"])
+        y[i] = result.sf.data["ys"][idx[1], idx[2] + 1]
     end
 
     @series begin

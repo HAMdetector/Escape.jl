@@ -5,13 +5,13 @@ export model
 export dataset
 
 struct EscapeResult
-    model::Escape.HLAModel
+    model::Escape.AbstractHLAModel
     ds::Escape.AbstractHLADataset
     dir::String
 end
 
 function Escape.run(
-    model::Escape.HLAModel, 
+    model::Escape.AbstractHLAModel, 
     ds::Escape.AbstractHLADataset;
     result_dir::String = "",
     result_name::String = lowercase(split(string(model), '.')[2][1:end-2]),

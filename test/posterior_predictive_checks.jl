@@ -53,7 +53,7 @@ end
 
 @testset "@recipe f(::HLAModelResult)" begin
     result = @suppress Escape.run(
-        Escape.Model2(), Escape.HLADataset("Test").data[1], 
+        Escape.HLAModel{2}(), Escape.HLADataset("Test").data[1], 
         iter = 10, chains = 1, warmup = 10, mincount = 2
     )
     
@@ -65,7 +65,7 @@ end
 
     try
         result = @suppress Escape.run(
-            Escape.Model2(), Escape.HLADataset("Test"),
+            Escape.HLAModel{2}(), Escape.HLADataset("Test"),
             mincount = 2,
             result_dir = tempdir(),
             result_name = splitdir(tmp)[end],
