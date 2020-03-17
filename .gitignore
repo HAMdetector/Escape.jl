@@ -6,4 +6,3 @@ deps/build.log
 data/stan/*
 !data/stan/*.stan
 data/netMHC-4.0/*
-Manifest.toml
