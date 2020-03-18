@@ -118,5 +118,5 @@ function phylogeny_information(
 end
 
 function combine_input(x...)
-    return [length.(x)..., Iterators.flatten(x)...]
+    return [collect(length.(x)); collect(Iterators.flatten(x))]
 end
