@@ -73,9 +73,10 @@ function ys_maprect(
 )   
     R = length(r)
     N = length(data.hla_types)
+
     ys =  Matrix{Int}(undef, R, N + 1)
     fill!(ys, -1)
-
+    
     for i in 1:R
         t = targets(r[i], data)
         y = combine_input(filter(x -> !ismissing(x), t))
