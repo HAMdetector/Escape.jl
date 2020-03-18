@@ -56,7 +56,7 @@ function xs_maprect(
     D = size(X)[2]
     R = length(r)
 
-    xs = Matrix{Float64}(undef, R, 3 + N*D + D + N)
+    xs = Matrix{Float64}(-1, R, 3 + N*D + D + N)
     fill!(xs, -1)
 
     for i in 1:R
@@ -73,7 +73,7 @@ function ys_maprect(
 )   
     R = length(r)
     N = length(data.hla_types)
-    ys =  Matrix{Int}(undef, R, N + 1)
+    ys =  Matrix{Int}(-1, R, N + 1)
 
     for i in 1:R
         t = targets(r[i], data)
