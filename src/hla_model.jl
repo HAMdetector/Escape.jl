@@ -56,7 +56,7 @@ function xs_maprect(
     D = size(X)[2]
     R = length(r)
 
-    xs = Matrix{Float64}(-1, R, 3 + N*D + D + N)
+    xs = Matrix{Float64}(undef, R, 3 + N*D + D + N)
     fill!(xs, -1)
 
     for i in 1:R
@@ -76,7 +76,7 @@ function ys_maprect(
 
     ys =  Matrix{Int}(undef, R, N + 1)
     fill!(ys, -1)
-    
+
     for i in 1:R
         t = targets(r[i], data)
         y = combine_input(filter(x -> !ismissing(x), t))
