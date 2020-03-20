@@ -16,6 +16,7 @@ function replacements(data::AbstractHLAData; mincount::Int = 10)
         reader = FASTA.Reader(open(data.fasta_file, "r"))
         counts = [Char(FASTA.sequence(record)[i]) for record in reader] |>
             StatsBase.countmap 
+        close(reader)
         filter!(x -> x.first ∉ ('X', '*', '-') && x.second >= mincount, counts)
         
         if length(counts) > 1
@@ -47,5 +48,6 @@ function targets(replacement::Replacement, data::AbstractHLAData)
     end
 
     close(reader)
+    
     return t
 end

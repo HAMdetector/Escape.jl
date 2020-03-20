@@ -2,11 +2,11 @@ export RateMatrix, TransitionMatrix, rate_matrix, transp, stationary
 
 abstract type StateMatrix end
 
-struct RateMatrix{T} <: StateMatrix
-    m::Matrix{T}
+struct RateMatrix <: StateMatrix
+    m::SMatrix
     s::Vector{String}
     
-    function RateMatrix(m::Matrix{T}, s::Vector{String}) where T
+    function RateMatrix(m::SMatrix, s::Vector{String})
         length(s) == size(m)[1] || 
             throw(DimensionMismatch("matrix dimensions must match length of state names."))
         
@@ -19,15 +19,15 @@ struct RateMatrix{T} <: StateMatrix
         all(diag(m) .<= 0) ||
             throw(ErrorException("diagonal matrix elements must be < 0."))
 
-        new{T}(m, s)
+        new(m, s)
     end
 end
 
-struct TransitionMatrix{T} <: StateMatrix
-    m::Matrix{T}
+struct TransitionMatrix <: StateMatrix
+    m::SMatrix
     s::Vector{String}
 
-    function TransitionMatrix(m::Matrix{T}, s::Vector{String}) where T
+    function TransitionMatrix(m::SMatrix{T}, s::Vector{String}) where T
         length(s) == size(m)[1] || 
             throw(DimensionMismatch("matrix dimensions must match length of state names."))
         
@@ -40,12 +40,12 @@ struct TransitionMatrix{T} <: StateMatrix
         all(zero(T) <= e <= one(T) for e in m) ||
             throw(ErrorException("matrix elements must be between 0 and 1."))
 
-        new{T}(m, s)
+        new(m, s)
     end
 end
 
-rate_matrix(m::Matrix, s::Vector{String}) = RateMatrix(m, s)
-transition_matrix(m::Matrix, s::Vector{String}) = TransitionMatrix(m, s)
+rate_matrix(m::SMatrix, s::Vector{String}) = RateMatrix(m, s)
+transition_matrix(m::SMatrix, s::Vector{String}) = TransitionMatrix(m, s)
 
 function Base.getindex(A::StateMatrix, d1::String, d2::String)
     d1 in A.s && d2 in A.s || error("invalid index.")
@@ -59,7 +59,7 @@ end
 Base.size(A::StateMatrix) = size(A.m)
 Base.getindex(A::StateMatrix, i::Int, j::Int) = getindex(A.m, i, j)
 Base.:(*)(A::RateMatrix, x::Real) = RateMatrix(A.m * x, A.s)
-Base.exp(A::RateMatrix{T}) where T = TransitionMatrix(exp(A.m), A.s)
+Base.exp(A::RateMatrix) = TransitionMatrix(exp(A.m), A.s)
 
 function transp(r::RateMatrix, from_state::String, to_state::String, branch_length::Real)
     p = exp(r * branch_length)[from_state, to_state]
@@ -67,6 +67,6 @@ function transp(r::RateMatrix, from_state::String, to_state::String, branch_leng
     return p
 end
 
-function stationary(r::RateMatrix{T}) where T
+function stationary(r::RateMatrix)
     Dict(k => v for (k,v) in zip(r.s, diag(exp(r.m * 1000))))
 end

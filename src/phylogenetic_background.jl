@@ -101,7 +101,7 @@ function L(tree::PhylogeneticTree, r::RateMatrix)
 end
 
 # Likelihood of subtree of node k for each state
-function L_k(tree::PhylogeneticTree, r::RateMatrix{T}, k::Int) where T
+function L_k(tree::PhylogeneticTree, r::RateMatrix, k::Int)
     states = r.s
     if isleaf(k, tree)
         state = get_property(tree, k, :state)

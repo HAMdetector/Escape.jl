@@ -1,6 +1,6 @@
 using Test, Escape, BioSequences, Suppressor, LightGraphs, MetaGraphs,
       StanInterface, Distributed, HypothesisTests, Serialization, DataFrames, Loo,
-      Statistics, Distributions, Plots, FASTX
+      Statistics, Distributions, Plots, FASTX, StaticArrays
 
 include("alleles.jl")
 include("abstract_hla_model.jl")
