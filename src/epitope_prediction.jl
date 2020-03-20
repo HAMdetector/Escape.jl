@@ -117,6 +117,7 @@ function consensus_sequence(filepath::String)
         consensus[i] = findfirst(x -> x == maximum(values(counts)), counts)
     end
 
+    close(reader)
     return consensus
 end
 

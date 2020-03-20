@@ -21,7 +21,7 @@ function rate_matrix(model::TwoStateGTR, states::Vector{String})
     π_1 = model.π_1
     π_2 = model.π_2
 
-    m = [-α*π_1 α*π_1 ; α*π_2 -α*π_2]
+    m = SA[-α*π_1 α*π_1; α*π_2 -α*π_2]
     rate_matrix(m, states)
 end
 

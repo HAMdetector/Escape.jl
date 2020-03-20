@@ -4,7 +4,8 @@ using Base.Threads
 using LinearAlgebra, Calculus, Statistics, DelimitedFiles, Distributed, Serialization
 using StanInterface, LightGraphs, MetaGraphs, Suppressor, DataFrames,
       JuMP, Ipopt, HypothesisTests, MultipleTesting, BioSequences, FASTX,
-      StatsBase, StatsFuns, Distributions, Loo, RecipesBase, Base.Threads
+      StatsBase, StatsFuns, Distributions, Loo, RecipesBase, Base.Threads,
+      StaticArrays
 
 include("alleles.jl")
 include("abstract_hla_data.jl")

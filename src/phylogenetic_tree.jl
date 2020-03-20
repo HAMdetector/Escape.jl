@@ -186,6 +186,8 @@ function annotate!(tree::PhylogeneticTree, data::AbstractHLAData, replacement::R
             set_property!(tree, v, :state, "0")
         end
     end
+
+    close(reader)
 end
 
 function matching(tree::PhylogeneticTree, data::AbstractHLAData)
