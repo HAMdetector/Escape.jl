@@ -6,7 +6,7 @@ function phylogeny_probabilities(
     ctree = deepcopy(tree)
     annotate!(ctree, data, replacement)
 
-    p = state_probabilities(ctree, TwoStateGTR)
+    p = state_probabilities(ctree, TwoState)
     phylogeny_effect = [p[s]["1"] for s in string.(1:length(y))]
     phylogeny_effect = [min(max(0.01, x), 0.99) for x in phylogeny_effect]
 
@@ -18,14 +18,14 @@ function phylogeny_probabilities(replacement::Replacement, data::AbstractHLAData
     ctree = deepcopy(data.tree)
     annotate!(ctree, data, replacement)
 
-    p = state_probabilities(ctree, TwoStateGTR)
+    p = state_probabilities(ctree, TwoState)
     phylogeny_effect = [p[s]["1"] for s in string.(1:length(y))]
     phylogeny_effect = [min(max(0.01, x), 0.99) for x in phylogeny_effect]
 
     return phylogeny_effect
 end
 
-function state_probabilities(tree::PhylogeneticTree, model::Type{TwoStateGTR})
+function state_probabilities(tree::PhylogeneticTree, model::Type{TwoState})
     p = Dict{String, Dict{String, Float64}}()
     r = infer_rate_matrix(tree, model)
     stat = stationary(r)
@@ -56,46 +56,44 @@ function state_probabilities(tree::PhylogeneticTree, model::Type{TwoStateGTR})
     return p
 end
 
-function infer_rate_matrix(tree::PhylogeneticTree, model::Type{TwoStateGTR})
-    function l(α, π_1, π_2)
-        r = rate_matrix(TwoStateGTR(α = α, π_1 = π_1, π_2 = π_2), states)
+function infer_rate_matrix(tree::PhylogeneticTree, model::Type{TwoState})
+    function l(r01, r10)
+        r = rate_matrix(SA[-r01 r01; r10 -r10], states)
+   
         return L(tree, r)
     end
 
-    function ∇l(g, α, π_1, π_2)
-        r = rate_matrix(TwoStateGTR(α = α, π_1 = π_1, π_2 = π_2), states)
-        f = x -> l(x[1], x[2], x[3])
+    function ∇l(g, r01, r10)
+        r = rate_matrix(SA[-r01 r01; r10 -r10], states)
+        f = x -> l(x[1], x[2])
 
-        g .= Calculus.gradient(f, [α, π_1, π_2])
+        g .= Calculus.gradient(f, [r01, r10])
     end
 
     states = ["0", "1"]
 
     m = Model(optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0))
-    JuMP.register(m, :l, 3, l, ∇l)
-    @variable(m, α, start = 1)
-    @variable(m, π_1, start = 0.5)
-    @variable(m, π_2, start = 0.5)
+    JuMP.register(m, :l, 2, l, ∇l)
+    @variable(m, r01, start = 1)
+    @variable(m, r10, start = 1)
 
-    @constraint(m, π_1 >= 0.001)
-    @constraint(m, π_2 >= 0.001)
-    @constraint(m, α >= 0.001)
-    @constraint(m, π_1 + π_2 == 1)
-    @NLconstraint(m, 2*α*π_1*π_2 == 1)
+    @constraint(m, 0 <= r01)
+    @constraint(m, 0 <= r10)
 
-    @NLobjective(m, Max, l(α, π_1, π_2))
+    @NLobjective(m, Max, l(r01, r10))
     optimize!(m)
 
-    estimate = TwoStateGTR(α = JuMP.value(α), π_1 = JuMP.value(π_1), π_2 = JuMP.value(π_2))
+    result_r01 = JuMP.value(r01)
+    result_r10 = JuMP.value(r10)
     
-    return rate_matrix(estimate, states)
+    return rate_matrix(SA[-result_r01 result_r01; result_r10 -result_r10], states)
 end
 
 # Likelihood of observing a state pattern on a tree for given transition rates.
 function L(tree::PhylogeneticTree, r::RateMatrix)
     states = r.s
     p = L_k(tree, r, 1)
-    stat = Dict(k => v for (k,v) in zip(r.s, diag(exp(r.m * 1000))))
+    stat = Dict(k => v for (k,v) in zip(r.s, diag(exp(r.m * 100))))
 
     return StatsFuns.logsumexp(p[s] + log(stat[s]) for s in r.s)
 end

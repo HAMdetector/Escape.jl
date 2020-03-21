@@ -2,11 +2,11 @@ export RateMatrix, TransitionMatrix, rate_matrix, transp, stationary
 
 abstract type StateMatrix end
 
-struct RateMatrix <: StateMatrix
-    m::SMatrix
+struct RateMatrix{N, T, L} <: StateMatrix
+    m::SMatrix{N, N, T, L}
     s::Vector{String}
     
-    function RateMatrix(m::SMatrix, s::Vector{String})
+    function RateMatrix(m::SMatrix{N, N, T, L}, s::Vector{String}) where {N, T, L}
         length(s) == size(m)[1] || 
             throw(DimensionMismatch("matrix dimensions must match length of state names."))
         
@@ -19,15 +19,15 @@ struct RateMatrix <: StateMatrix
         all(diag(m) .<= 0) ||
             throw(ErrorException("diagonal matrix elements must be < 0."))
 
-        new(m, s)
+        new{N, T, L}(m, s)
     end
 end
 
-struct TransitionMatrix <: StateMatrix
-    m::SMatrix
+struct TransitionMatrix{N, T, L} <: StateMatrix
+    m::SMatrix{N, N, T, L}
     s::Vector{String}
 
-    function TransitionMatrix(m::SMatrix{T}, s::Vector{String}) where T
+    function TransitionMatrix(m::SMatrix{N, N, T, L}, s::Vector{String}) where {N, T, L}
         length(s) == size(m)[1] || 
             throw(DimensionMismatch("matrix dimensions must match length of state names."))
         
@@ -40,7 +40,7 @@ struct TransitionMatrix <: StateMatrix
         all(zero(T) <= e <= one(T) for e in m) ||
             throw(ErrorException("matrix elements must be between 0 and 1."))
 
-        new(m, s)
+        new{N, T, L}(m, s)
     end
 end
 
@@ -68,5 +68,5 @@ function transp(r::RateMatrix, from_state::String, to_state::String, branch_leng
 end
 
 function stationary(r::RateMatrix)
-    Dict(k => v for (k,v) in zip(r.s, diag(exp(r.m * 1000))))
+    Dict(k => v for (k,v) in zip(r.s, diag(exp(r.m * 100))))
 end
