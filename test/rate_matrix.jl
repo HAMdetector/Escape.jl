@@ -2,7 +2,7 @@
     @test RateMatrix(SA[-1 1; 1 -1], ["1", "2"]) isa RateMatrix
     @test RateMatrix(SA[-1.0 1.0; 1.0 -1.0], ["0", "1"]) isa RateMatrix
     @test RateMatrix(SMatrix{3,3}(zeros(3, 3)), ["a", "b", "c"]) isa RateMatrix
-    @test_throws DimensionMismatch RateMatrix(SA[0 0 0; 0 0 0], ["1", "2", "3"])
+    @test_throws MethodError RateMatrix(SA[0 0 0; 0 0 0], ["1", "2", "3"])
     @test_throws DimensionMismatch RateMatrix(SA[0 0; 0 0], ["1", "2", "3"])
 
     @test size(RateMatrix(SA[-1 1; 1 -1], ["1", "2"])) == (2, 2)

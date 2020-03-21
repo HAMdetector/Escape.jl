@@ -20,9 +20,9 @@ version = "3.5.0+2"
 
 [[ArrayInterface]]
 deps = ["LinearAlgebra", "Requires", "SparseArrays"]
-git-tree-sha1 = "7ab65638f4664498b01aeddf2e82f93780ba5e21"
+git-tree-sha1 = "8683deff18ed6cd123e2b4d4147d2dc21f19391b"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
-version = "2.6.0"
+version = "2.6.1"
 
 [[Automa]]
 deps = ["DataStructures", "Printf", "Test", "TranscodingStreams"]
