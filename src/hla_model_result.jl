@@ -1,14 +1,14 @@
 function sample_indices(result::HLAModelResult)
-    input = stan_input(result)
-    R = input["R"]
-    N = input["N"]
-    ys = input["ys"]
+    ys = stan_input(result)["ys"]
 
     indices = Vector{Tuple{Int, Int}}()
-    sizehint!(indices, R * N)
+    sizehint!(indices, sum(ys[:, 1]))
 
-    for i in 1:R, j in 1:ys[i, 1]
-        push!(indices, (i, j))
+    for i in 1:size(ys)[1]
+        N = ys[i, 1]
+        for j in 1:N
+            push!(indices, (i, j))
+        end
     end
 
     return indices
