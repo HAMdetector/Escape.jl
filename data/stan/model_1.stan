@@ -39,7 +39,7 @@ model {
     b0 ~ normal(0, 3);
 
     for (i in 1:R) {
-        beta_hla[i] ~ std_normal();
+        beta_hla[i] ~ student_t(4, 0, 1);
     }
 
     target += sum(map_rect(ll, placeholder, beta, xs, ys));
