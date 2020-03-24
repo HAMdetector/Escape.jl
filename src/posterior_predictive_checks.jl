@@ -77,7 +77,7 @@ end
     y = Vector{Bool}(undef, length(indices))
 
     for (i, idx) in enumerate(indices)
-        theta[i] = StatsBase.mode(posterior["theta.$(idx[1]).$(idx[2])"])
+        theta[i] = mean(posterior["theta.$(idx[1]).$(idx[2])"])
         y[i] = result.sf.data["ys"][idx[1], idx[2] + 1]
     end
 
@@ -140,7 +140,7 @@ function binned_intervals(
         interval = invlogcdf.(d, (log(lower), log(upper)))
 
         if i <= bins
-            push!(df, (mean(theta_p), mean(y_p), interval...))
+            push!(df, [theta_p[round(Int, binsize / 2)], mean(y_p), interval...])
         end
     end
 
