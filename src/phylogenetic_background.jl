@@ -58,22 +58,18 @@ end
 
 function infer_rate_matrix(tree::PhylogeneticTree, model::Type{TwoState})
     function l(r01, r10)
-        r = rate_matrix(SA[-r01 r01; r10 -r10], states)
-   
+        r = rate_matrix(SA[-r01 r01; r10 -r10], ["0", "1"])
+    
         return L(tree, r)
     end
 
-    function ∇l(g, r01, r10)
-        r = rate_matrix(SA[-r01 r01; r10 -r10], states)
-        f = x -> l(x[1], x[2])
-
-        g .= Calculus.gradient(f, [r01, r10])
-    end
-
-    states = ["0", "1"]
-
-    m = Model(optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0))
-    JuMP.register(m, :l, 2, l, ∇l)
+    m = Model(
+        optimizer_with_attributes(
+            Ipopt.Optimizer, 
+            "print_level" => 0
+        )
+    )
+    JuMP.register(m, :l, 2, l, autodiff = true)
     @variable(m, r01, start = 1)
     @variable(m, r10, start = 1)
 
@@ -86,14 +82,14 @@ function infer_rate_matrix(tree::PhylogeneticTree, model::Type{TwoState})
     result_r01 = JuMP.value(r01)
     result_r10 = JuMP.value(r10)
     
-    return rate_matrix(SA[-result_r01 result_r01; result_r10 -result_r10], states)
+    return rate_matrix(SA[-result_r01 result_r01; result_r10 -result_r10], ["0", "1"])
 end
 
 # Likelihood of observing a state pattern on a tree for given transition rates.
 function L(tree::PhylogeneticTree, r::RateMatrix)
     states = r.s
     p = L_k(tree, r, 1)
-    stat = Dict(k => v for (k,v) in zip(r.s, diag(exp(r.m * 100))))
+    stat = stationary(r)
 
     return StatsFuns.logsumexp(p[s] + log(stat[s]) for s in r.s)
 end

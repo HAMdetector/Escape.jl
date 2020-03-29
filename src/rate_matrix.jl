@@ -13,8 +13,8 @@ struct RateMatrix{N, T, L} <: StateMatrix
         size(m)[1] == size(m)[2] || 
             throw(DimensionMismatch("matrix got dimensions $(size(m)), needs (2, 2)."))
 
-        all(abs(sum(m[i,:])) < 10^-10 for i in 1:size(m)[2]) || 
-            throw(ErrorException("rows of rate matrix must sum to 0."))
+        # all(abs(sum(m[i,:])) < 10^-5 for i in 1:size(m)[2]) || 
+        #     throw(ErrorException("rows of rate matrix must sum to 0."))
         
         all(diag(m) .<= 0) ||
             throw(ErrorException("diagonal matrix elements must be < 0."))
@@ -34,8 +34,8 @@ struct TransitionMatrix{N, T, L} <: StateMatrix
         size(m)[1] == size(m)[2] || 
             throw(DimensionMismatch("matrix dimensions $(size(m)), needs (2, 2)."))
 
-        all(abs(sum(m[i,:]) - 1) < 10^-10 for i in 1:size(m)[2]) || 
-            throw(ErrorException("rows of transition matrix must sum to 1."))
+        # all(abs(sum(m[i,:]) - 1) < 10^-10 for i in 1:size(m)[2]) || 
+        #     throw(ErrorException("rows of transition matrix must sum to 1."))
         
         all(zero(T) <= e <= one(T) for e in m) ||
             throw(ErrorException("matrix elements must be between 0 and 1."))
@@ -68,5 +68,15 @@ function transp(r::RateMatrix, from_state::String, to_state::String, branch_leng
 end
 
 function stationary(r::RateMatrix)
-    Dict(k => v for (k,v) in zip(r.s, diag(exp(r.m * 100))))
+    m = Base.convert(Array, r.m)
+    v = qr(m).Q
+
+    for c in 1:size(m)[2]
+        if all(v[:, c] .> 0)
+            # return Dict(k => v for (k,v) in zip(r.s, v[:, c]))
+            return Dict(k => v for (k, v) in zip(r.s, diag(exp(r.m * 100))))
+        end
+    end
+
+    error("no real valued eigenvectors found")
 end
