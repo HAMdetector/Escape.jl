@@ -5,7 +5,7 @@ using LinearAlgebra, Calculus, Statistics, DelimitedFiles, Distributed, Serializ
 using StanInterface, LightGraphs, MetaGraphs, Suppressor, DataFrames,
       JuMP, Ipopt, HypothesisTests, MultipleTesting, BioSequences, FASTX,
       StatsBase, StatsFuns, Distributions, Loo, RecipesBase, Base.Threads,
-      StaticArrays
+      StaticArrays, ProgressMeter
 
 include("alleles.jl")
 include("abstract_hla_data.jl")
