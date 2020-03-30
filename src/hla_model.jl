@@ -1,5 +1,5 @@
 function Escape.run(
-    model::HLAModel{T}, data::AbstractHLAData, d;
+    model::HLAModel{T}, data::AbstractHLAData;
     p0::Real = 5,
     mincount::Int = 10,
     depth::Int = 1,
@@ -10,7 +10,7 @@ function Escape.run(
     input["p0"] = p0
 
     sf = StanInterface.stan(
-        joinpath(@__DIR__, "..", "data", "stan", "model_$T"), input;
+        joinpath(@__DIR__, "..", "data", "stan", "model_$(T)"), input;
         stan_args = "adapt delta=0.97", 
         stan_kwargs...
     )
@@ -77,7 +77,7 @@ function phylogeny_information(
     tree = ismissing(data.tree) ? phylogenetic_tree(data) : data.tree
 
     if phylogeny_information(model) == PhylogenyIncluded()
-        phy = @showprogress @distributed hcat for i in 1:R
+        phy = @showprogress "phylogeny calculation " @distributed hcat for i in 1:R
             phylogeny_probabilities(r[i], data, tree)
         end
         phy = phy'
