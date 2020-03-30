@@ -16,8 +16,8 @@ struct RateMatrix{N, T, L} <: StateMatrix
         # all(abs(sum(m[i,:])) < 10^-5 for i in 1:size(m)[2]) || 
         #     throw(ErrorException("rows of rate matrix must sum to 0."))
         
-        all(diag(m) .<= 0) ||
-            throw(ErrorException("diagonal matrix elements must be < 0."))
+        # all(diag(m) .<= 0) ||
+        #     throw(ErrorException("diagonal matrix elements must be < 0."))
 
         new{N, T, L}(m, s)
     end
@@ -37,8 +37,8 @@ struct TransitionMatrix{N, T, L} <: StateMatrix
         # all(abs(sum(m[i,:]) - 1) < 10^-10 for i in 1:size(m)[2]) || 
         #     throw(ErrorException("rows of transition matrix must sum to 1."))
         
-        all(zero(T) <= e <= one(T) for e in m) ||
-            throw(ErrorException("matrix elements must be between 0 and 1."))
+        # all(zero(T) <= e <= one(T) for e in m) ||
+        #     throw(ErrorException("matrix elements must be between 0 and 1."))
 
         new{N, T, L}(m, s)
     end

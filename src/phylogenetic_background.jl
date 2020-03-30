@@ -66,7 +66,8 @@ function infer_rate_matrix(tree::PhylogeneticTree, model::Type{TwoState})
     m = Model(
         optimizer_with_attributes(
             Ipopt.Optimizer, 
-            "print_level" => 0
+            "print_level" => 0,
+            "max_cpu_time" => 60.0
         )
     )
     JuMP.register(m, :l, 2, l, autodiff = true)
