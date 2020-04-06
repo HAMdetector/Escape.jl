@@ -16,11 +16,13 @@ end
 @recipe function f(
     ::Phylogeny_Calibration, 
     result::Union{HLAModelResult{3}, HLAModelResult{4}}
-)
-    indices = sample_indices(result)
-    D = result.sf.data["D"]
-    theta = map(x -> result.sf.data["xs"][x[1], :][1 + (x[2] - 1) * (D + 1)], indices)
-    y = map(x -> result.sf.data["ys"][x[1], x[2] + 1], indices)
+)   
+    N = result.sf.data["N"]
+    rs = result.sf.data["rs"]
+    idx = result.sf.data["idx"]
+
+    theta = [result.sf.data["phy"][rs[i], idx[i]] for i in 1:N]
+    y = result.sf.data["y"]
 
     @series begin
         seriestype := :calibration
@@ -71,7 +73,8 @@ end
 end
 
 @recipe function f(::Calibration_Plot, result::HLAModelResult)
-    indices = 1:result.sf.data["N"]
+    N = result.sf.data["N"]
+    indices = 1:N
     posterior = StanInterface.extract(result.sf)
     theta = Vector{Float64}(undef, length(indices))
     y = Vector{Bool}(undef, length(indices))
@@ -79,7 +82,7 @@ end
     for (i, idx) in enumerate(indices)
         r = result.sf.data["rs"][idx]
         n = result.sf.data["idx"][idx]
-        theta[i] = mean(posterior["theta.$r.$n"])
+        theta[i] = mean(posterior["theta.$i"])
         y[i] = result.sf.data["y"][idx]
     end
 
@@ -142,7 +145,7 @@ function binned_intervals(
         interval = invlogcdf.(d, (log(lower), log(upper)))
 
         if i <= bins
-            push!(df, [theta_p[round(Int, binsize / 2)], mean(y_p), interval...])
+            push!(df, [mean(theta_p), mean(y_p), interval...])
         end
     end
 

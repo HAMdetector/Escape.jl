@@ -161,32 +161,36 @@ model {
     target += sum(map_rect(ll, global_pars, local_pars, x_r, y_r));
 }
 
-// generated quantities {
-//     matrix[R, S] theta = rep_matrix(-1, R, S);
-//     vector[D] omega[R];
-//     vector[R] m_eff;
-//     vector[D] beta_hla[R];
+generated quantities {
+    vector[N] theta;
+    vector[D] beta_hla[R];
+    vector[D] omega[R];
+    vector[R] m_eff;
 
-//     for (i in 1:R) {
-//         real tau;
-//         vector[D] lambda;
-//         vector[D] lambda_tilde;
+    for (i in 1:R) {
+        real tau;
+        vector[D] lambda;
+        vector[D] lambda_tilde;
 
-//         tau = aux1_tau[i] * sqrt(aux2_tau[i]);
-//         lambda = aux1_lambda[i] .* sqrt(aux2_lambda[i]);
-//         lambda_tilde = sqrt(c2[i] .* square(lambda) ./ 
-//             (c2[i] + square(tau) * square(lambda)));
-//         beta_hla[i] = lambda_tilde * tau .* z_std[i];
-//         m_eff[i] = 0;
+        tau = aux1_tau[i] * sqrt(aux2_tau[i]);
+        lambda = aux1_lambda[i] .* sqrt(aux2_lambda[i]);
+        lambda_tilde = sqrt(c2[i] .* square(lambda) ./ 
+            (c2[i] + square(tau) * square(lambda)));
+        beta_hla[i] = lambda_tilde * tau .* z_std[i];
+        m_eff[i] = 0;
 
-//         for (j in 1:D) {
-//             omega[i][j] = 1.0 - (1.0 / (1.0 + y_counts[i] / square(pseudo_sigmas[i]) *
-//                 square(lambda[j]) * square(tau)));
-//             m_eff[i] += omega[i][j];
-//         }
-//     }
+        for (j in 1:D) {
+            omega[i][j] = 1.0 - (1.0 / (1.0 + y_counts[i] / square(pseudo_sigmas[i]) *
+                square(lambda[j]) * square(tau)));
+            m_eff[i] += omega[i][j];
+        }
+    }
 
-//     for (i in 1:N) {
-//         theta[rs[i], idx[i]] = inv_logit(b0_hla[rs[i]] + X[idx[i]] * beta_hla[rs[i]]);
-//     }
-// }
+    for (i in 1:N) {
+        theta[i] = inv_logit(
+            b0_hla[rs[i]] + 
+            b_phy * logit(phy[rs[i], idx[i]]) + 
+            X[idx[i]] * beta_hla[rs[i]]
+        );
+    }
+}
