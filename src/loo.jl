@@ -12,11 +12,12 @@ function Escape.loo(result::EscapeResult)
 end
 
 function Escape.loo(result::HLAModelResult)
-    indices = sample_indices(result)
-    pw = Vector{Loo.PointwiseLoo}(undef, length(indices))
+    d = stan_input(result)
+    N = d["N"]
+    pw = Vector{Loo.PointwiseLoo}(undef, N)
     
-    for i in 1:length(indices)
-        ll = pointwise_loglikelihoods(result.sf, indices[i])
+    @showprogress for i in 1:N
+        ll = pointwise_loglikelihoods(result.sf, i)
         pw[i] = Loo.pointwise_loo(ll)
     end
 
@@ -25,15 +26,15 @@ function Escape.loo(result::HLAModelResult)
     return Loo.LooResult(pw, (draws, length(pw)))
 end
 
-function pointwise_loglikelihoods(sf::StanInterface.Stanfit, idx::Tuple{Int, Int})
-    y = sf.data["ys"][idx[1], idx[2] + 1]
+function pointwise_loglikelihoods(sf::StanInterface.Stanfit, i::Int)
+    y = sf.data["y"][i]
     iter = sf.iter
     chains = sf.chains
 
     ll = Vector{Vector{Float64}}(undef, chains)
-    for i in eachindex(sf.result)
-        theta = sf.result[i]["theta.$(idx[1]).$(idx[2])"]
-        ll[i] = y == 1 ? log.(theta) : log.(1 .- theta)
+    for idx in eachindex(sf.result)
+        theta = sf.result[idx]["theta.$i"]
+        ll[idx] = y == 1 ? log.(theta) : log.(1 .- theta)
     end
 
     return ll
