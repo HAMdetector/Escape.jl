@@ -71,14 +71,16 @@ end
 end
 
 @recipe function f(::Calibration_Plot, result::HLAModelResult)
-    indices = sample_indices(result)
+    indices = 1:result.sf.data["N"]
     posterior = StanInterface.extract(result.sf)
     theta = Vector{Float64}(undef, length(indices))
     y = Vector{Bool}(undef, length(indices))
 
     for (i, idx) in enumerate(indices)
-        theta[i] = mean(posterior["theta.$(idx[1]).$(idx[2])"])
-        y[i] = result.sf.data["ys"][idx[1], idx[2] + 1]
+        r = result.sf.data["rs"][idx]
+        n = result.sf.data["idx"][idx]
+        theta[i] = mean(posterior["theta.$r.$n"])
+        y[i] = result.sf.data["y"][idx]
     end
 
     @series begin

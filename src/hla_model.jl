@@ -1,6 +1,6 @@
 function Escape.run(
     model::HLAModel{T}, data::AbstractHLAData;
-    p0::Real = 5,
+    p0::Real = 3,
     mincount::Int = 10,
     depth::Int = 1,
     stan_kwargs... 
@@ -11,7 +11,7 @@ function Escape.run(
 
     sf = StanInterface.stan(
         joinpath(@__DIR__, "..", "data", "stan", "model_$(T)"), input;
-        stan_args = "adapt delta=0.97", 
+        stan_args = "adapt delta=0.90 algorithm=hmc engine=nuts max_depth=12", 
         stan_kwargs...
     )
 
@@ -22,8 +22,12 @@ function stan_input(
     model::AbstractHLAModel, data::AbstractHLAData;
     depth::Int = 1, mincount::Int = 10
 )
+    X = Float64.(hla_matrix(data.hla_types; depth = depth))
+    for i in 1:size(X)[2]
+        X[:, i] .= (X[:, i] .- mean(X[:, i])) ./ std(X[:, i])
+    end
+
     r = replacements(data, mincount = mincount)
-    X = hla_matrix(data.hla_types; depth = depth)
     phy = phylogeny_information(model, data, r)
     Z = epitope_information(model, data, r, depth)
     y = Int[]

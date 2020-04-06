@@ -3,6 +3,7 @@ data {
     int S;
     int D;
     int R;
+    real p0;
     matrix[S, D] X;
     int y[N];
     int rs[N];
@@ -29,13 +30,5 @@ model {
         }
 
         y ~ bernoulli_logit(theta_i);
-    }
-}
-
-generated quantities {
-    matrix[R, S] theta = rep_matrix(-1, R, S);
-
-    for (i in 1:N) {
-        theta[rs[i], idx[i]] = inv_logit(b0_hla[rs[i]] + X[idx[i]] * beta_hla[rs[i]]);
     }
 }
