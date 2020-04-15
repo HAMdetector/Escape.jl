@@ -1,5 +1,6 @@
 @userplot Calibration_Plot
 @userplot Phylogeny_Calibration
+@userplot Proportion_Plot
 
 @recipe function f(c::Phylogeny_Calibration)
     legend := false
@@ -96,6 +97,65 @@ end
         linecolor := "black"
         linestyle := :dash
         [0, 1], [0, 1]
+    end
+end
+
+@recipe function f(c::Proportion_Plot)
+    legend := false
+    grid --> false
+    seriescolor --> "#B2001D"
+    markerstrokecolor --> "#B2001D"
+    linecolor --> "#B2001D"
+    xlabel --> "proportion of sequences with replacement"
+    ylabel --> "expected proportion"
+    formatter := x -> string(Int(round(x * 100))) * "%"
+
+    (c, c.args...)
+end
+
+@recipe function f(::Proportion_Plot, result::HLAModelResult)
+    sf = stanfit(result)
+    d = sf.data
+    posterior = extract(sf)
+    R = d["R"]
+    y = d["y"]
+    rs = d["rs"]
+
+    df = DataFrame(
+        expected = Float64[], observed = Float64[], 
+        lower = Float64[], upper = Float64[]
+    )
+
+    theta = hcat([posterior["theta.$i"] for i in 1:d["N"]]...)
+
+    for r in 1:R
+        idx = findall(x -> x == r, rs)
+        observed = mean(y[idx])
+        expected = map(x -> mean(rand.(Bernoulli.(x[idx]))), eachrow(theta))
+
+        interval = quantile(expected, (0.025, 0.975))
+
+        push!(df, [mean(expected), observed, interval...])
+    end
+
+    # diagonal line
+    @series begin
+        seriestype := :path
+        linecolor := "black"
+        linestyle := :dash
+        [0, 1], [0, 1]
+    end
+
+    # error bars
+    for row in eachrow(df)
+        @series begin
+            seriestype := :path
+            linecolor := plotattributes[:linecolor]
+            x := [row[:expected], row[:expected]]
+            y := [row[:lower], row[:upper]]
+            ()
+        end
+        
     end
 end
 
