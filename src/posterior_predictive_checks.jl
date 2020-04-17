@@ -7,8 +7,8 @@
     grid --> false
     seriescolor --> "#B2001D"
     markerstrokecolor --> "#B2001D"
-    xlabel --> "bin midpoint"
-    ylabel --> "observed event percentage"
+    xlabel --> "observed event percentage"
+    ylabel --> "bin midpoint"
     formatter := x -> string(Int(round(x * 100))) * "%"
 
     (c, c.args...)
@@ -43,8 +43,8 @@ end
     grid --> false
     seriescolor --> "#B2001D"
     markerstrokecolor --> "#B2001D"
-    xlabel --> "bin midpoint"
-    ylabel --> "observed event percentage"
+    xlabel --> "observed event percentage"
+    ylabel --> "bin midpoint"
     formatter := x -> string(Int(round(x * 100))) * "%"
     
     (c, c.args...)
@@ -196,17 +196,13 @@ function binned_intervals(
         lower = Float64[], upper = Float64[]
     )
 
-    binsize = div(length(theta), bins)
-    for (i, partition) in enumerate(Iterators.partition(1:length(theta), binsize))
-        y_p = y[partition]
-        theta_p = theta[partition]
-        d = Beta(sum(y_p) + 1, length(y_p) - sum(y_p) + 1)
+    cutpoints = range(0, 1, length = bins)
 
-        interval = invlogcdf.(d, (log(lower), log(upper)))
+    for (lo, hi) in zip(cutpoints[1:end-1], cutpoints[2:end])
+        idx = findall(x -> lo <= x <= hi, theta)
+        y_p = y[idx]
 
-        if i <= bins
-            push!(df, [mean(theta_p), mean(y_p), interval...])
-        end
+        push!(df, [mean(y_p), lo + (hi - lo) / 2, lo, hi])
     end
 
     return df
