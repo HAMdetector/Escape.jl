@@ -223,3 +223,16 @@ function matching(tree::PhylogeneticTree, fasta_file::AbstractString)
 
     return true
 end
+
+function states(tree::PhylogeneticTree)
+    states = Vector{String}(undef, length(leaves(tree)))
+
+    for leaf in leaves(tree)
+        state = get_property(tree, leaf, :state)
+        name = get_property(tree, leaf, :name)
+
+        states[parse(Int, name)] = ismissing(state) ? "-" : state
+    end
+
+    return states
+end
