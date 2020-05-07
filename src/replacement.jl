@@ -4,6 +4,15 @@ struct Replacement
     protein::String
     position::Int
     replacement::Char
+    negated::Bool
+end
+
+function replacement(
+        protein::String, position::Int, replacement::Char; 
+        negated::Bool = false
+    )
+
+    return Replacement(protein, position, replacement, negated)
 end
 
 function replacements(data::AbstractHLAData; mincount::Int = 10)
@@ -21,7 +30,7 @@ function replacements(data::AbstractHLAData; mincount::Int = 10)
         
         if length(counts) > 1
             for (k, v) in counts
-                push!(replacements, Replacement(data.name, i, k))
+                push!(replacements, replacement(data.name, i, k))
             end
         end
     end
@@ -37,13 +46,18 @@ function targets(replacement::Replacement, data::AbstractHLAData)
 
     for record in reader
         symbol = Char(FASTA.sequence(record)[replacement.position])
+        r = replacement.replacement
 
-        if symbol == replacement.replacement
+        if (symbol == r) & !replacement.negated
             push!(t, 1)
+        elseif (symbol == r) & replacement.negated
+            push!(t, 0)
         elseif symbol ∈ ('X', '-', '*')
             push!(t, missing)
-        else
+        elseif !replacement.negated
             push!(t, 0)
+        else
+            push!(t, 1)
         end
     end
 

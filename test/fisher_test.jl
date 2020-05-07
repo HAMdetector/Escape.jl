@@ -10,7 +10,7 @@ end
                  HLAType(parse_allele("A02", "A04", "B03", "B04", "C03", "C07"))]
 
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
-    replacement = Replacement("test", 2, 'S')
+    replacement = Replacement("test", 2, 'S', false)
     hla_data = HLAData("test", fasta_path, hla_types, missing)
 
     y = Bool[0, 0, 1, 1, 1] # representation for replacement
