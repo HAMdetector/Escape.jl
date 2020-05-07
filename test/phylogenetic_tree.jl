@@ -111,7 +111,7 @@ end
 
 @testset "annotate!(::PhylogeneticTree, ::HLAData, ::Replacement)" begin
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
-    r = Replacement("test", 2, 'S')
+    r = Replacement("test", 2, 'S', false)
     hla_data = HLAData("test", fasta_path, rand(HLAType, 5), missing)
     tree = phylogenetic_tree(hla_data)
 
