@@ -47,17 +47,23 @@ function targets(replacement::Replacement, data::AbstractHLAData)
     for record in reader
         symbol = Char(FASTA.sequence(record)[replacement.position])
         r = replacement.replacement
-
-        if (symbol == r) & !replacement.negated
-            push!(t, 1)
-        elseif (symbol == r) & replacement.negated
-            push!(t, 0)
-        elseif symbol ∈ ('X', '-', '*')
-            push!(t, missing)
+        
+        if replacement.negated
+            if symbol == r
+                push!(t, 0)
+            elseif symbol in ('X', '-', '*')
+                push!(t, missing)
+            else
+                push!(t, 1)
+            end
         elseif !replacement.negated
-            push!(t, 0)
-        else
-            push!(t, 1)
+            if symbol == r
+                push!(t, 1)
+            elseif symbol in ('X', '-', '*')
+                push!(t, missing)
+            else
+                push!(t, 0)
+            end
         end
     end
 
