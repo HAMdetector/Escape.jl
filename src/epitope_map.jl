@@ -40,3 +40,13 @@ function epitope_map(data::AbstractHLAData; rank_threshold::Real = 100)
     
     return map
 end
+
+function Base.in(x::Pair{Replacement, HLAAllele}, y::EpitopeMap)
+    for (i, (start, stop)) in enumerate(zip(y.starts, y.stops))
+        if (start <= x[1].position <= stop) & (y.alleles[i] == x[2])
+            return true
+        end
+    end
+
+    return false
+end

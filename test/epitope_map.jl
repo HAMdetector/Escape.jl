@@ -31,3 +31,27 @@ end
     @test map isa Escape.EpitopeMap
     @test map.maplength == 14
 end
+
+@testset "Base.in(::Pair{Replacement, HLAAllele}, ::EpitopeMap)" begin
+    epitopes = ["SLYNTVATLY", "LYNTVATL"]
+    start = [77, 78]
+    stop = [86, 85]
+    alleles = [parse_allele("B51"), parse_allele("A01")]
+    map = EpitopeMap("test", epitopes, start, stop, alleles, 100)
+    r_1 = Replacement("test", 77, 'G', false)
+    r_2 = Replacement("test", 76, 'S', false)
+    r_3 = Replacement("test", 99, 'S', false)
+    r_4 = Replacement("test", 80, 'G', false)
+
+    @test (r_1 => parse_allele("B51")) in map
+    @test !((r_1 => parse_allele("A01")) in map)
+    @test !((r_1 => parse_allele("B52")) in map)
+    @test !((r_2 => parse_allele("B51")) in map)
+    @test !((r_2 => parse_allele("B51")) in map)
+    @test !((r_3 => parse_allele("B51")) in map)
+    @test !((r_3 => parse_allele("B52")) in map)
+    @test ((r_4 => parse_allele("B51")) in map)
+    @test ((r_4 => parse_allele("A01")) in map)
+    @test !((r_4 => parse_allele("B52")) in map)
+
+end
