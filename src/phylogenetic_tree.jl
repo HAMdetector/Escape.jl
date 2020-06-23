@@ -209,7 +209,7 @@ function matching(tree::PhylogeneticTree, data::AbstractHLAData)
                  "($(n_sequences)) in the fasta file $(data.fasta_file).")
     n_leaves == n_sequences || return DimensionMismatch(msg)
 
-    msg = """:name property of leaves must be "1", "2", ..., "$n_leaves"."""
+    msg = """name property of leaves must be "1", "2", ..., "$n_leaves"."""
     leaf_names == Set(string.(1:n_leaves)) || return ErrorException(msg)
 
     return true
