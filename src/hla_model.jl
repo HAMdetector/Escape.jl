@@ -81,10 +81,13 @@ function phylogeny_information(
     tree = ismissing(data.tree) ? phylogenetic_tree(data) : data.tree
 
     if phylogeny_information(model) == PhylogenyIncluded()
-        phy = @showprogress "phylogeny calculation " @distributed hcat for i in 1:R
-            phylogeny_probabilities(r[i], data, tree)
+        p = Progress(R, 1)
+
+        phy = Matrix{Float64}(undef, R, N)
+        @threads for i in 1:R
+            phy[i, :] = phylogeny_probabilities(r[i], data, tree)
+            next!(p)
         end
-        phy = phy'
     else
         phy = zeros(Int, R, N)
     end
