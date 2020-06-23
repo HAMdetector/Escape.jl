@@ -1,9 +1,11 @@
-export PhylogeneticTree, phylogenetic_tree, newick_string, leaves, isleaf, set_property!, 
-       get_property, annotate!
+export PhylogeneticTree, phylogenetic_tree, calculate_tree, newick_string, leaves, isleaf, 
+    set_property!, get_property, annotate!
 
 struct PhylogeneticTree
     graph::MetaDiGraph
 end
+
+graph(tree::PhylogeneticTree) = getfield(tree, :graph)
 
 function phylogenetic_tree(newick_string::String)
     graph = MetaDiGraph()
@@ -19,11 +21,11 @@ function phylogenetic_tree(newick_string::String)
 end
 
 function phylogenetic_tree(data::AbstractHLAData)
-    !ismissing(data.tree) && return data.tree
+    !ismissing(data.phylogenetic_tree) && return data.phylogenetic_tree
 
     temp_fasta = tempname() * ".fasta"
     temp_name = basename(tempname())
-    numbered_fasta(data, temp_fasta)
+    write_numbered_fasta(data, temp_fasta)
 
     model = "PROTGAMMAAUTO"
     @suppress Base.run(`raxmlHPC -s $temp_fasta -m $model -p 53 
@@ -38,24 +40,22 @@ function phylogenetic_tree(data::AbstractHLAData)
     return phylogenetic_tree(readline(final_tree_path))
 end
 
-function numbered_fasta(data::AbstractHLAData, filepath::String)
-    numbered_fasta(data.fasta_file, filepath)
+function write_numbered_fasta(data::AbstractHLAData, filepath::String)
+    records = Escape.records(data)
+
+    write_numbered_fasta(records, filepath)
 end
 
-function numbered_fasta(fasta_file::String, filepath::String)
-    reader = FASTA.Reader(open(fasta_file, "r"))
-    writer = FASTA.Writer(open(filepath, "w"))
+function write_numbered_fasta(records::Vector{FASTX.FASTA.Record}, filepath::String)
+    open(FASTA.Writer, filepath) do writer
+        for (i, record) in enumerate(records)
+            identifier = string(i)
+            sequence = FASTA.sequence(record)
+            new_record = FASTA.Record(identifier, sequence)
 
-    for (i, record) in enumerate(reader)
-        identifier = string(i)
-        sequence = FASTA.sequence(record)
-        new_record = FASTA.Record(identifier, sequence)
-
-        write(writer, new_record)
+            write(writer, new_record)
+        end
     end
-
-    close(reader)
-    close(writer) 
 end
 
 function add_to_graph!(graph::AbstractMetaGraph, vertex::Int, s::String)
@@ -113,14 +113,15 @@ function newick_components(s::String)
 end
 
 function newick_string(tree::PhylogeneticTree)
-    n = LightGraphs.neighbors(tree.graph, 1)
+    graph = Escape.graph(tree)
+    n = LightGraphs.neighbors(graph, 1)
     length(n) == 0 && return "();"
-    length(n) == 1 && return "(" * newick_string(tree.graph, n[1]) * ");"
+    length(n) == 1 && return "(" * newick_string(graph, n[1]) * ");"
 
-    newick = "(" * newick_string(tree.graph, LightGraphs.neighbors(tree.graph, 1)[1])
-    for n in LightGraphs.neighbors(tree.graph, 1)[2:end]
+    newick = "(" * newick_string(graph, LightGraphs.neighbors(graph, 1)[1])
+    for n in LightGraphs.neighbors(graph, 1)[2:end]
         newick *= ","
-        newick *= newick_string(tree.graph, n)
+        newick *= newick_string(graph, n)
     end
     newick *= ");"
 
@@ -154,40 +155,45 @@ function isleaf(v::Int, tree::PhylogeneticTree)
 end
 
 function leaves(tree::PhylogeneticTree)
-    return map(x -> x[1], attracting_components(tree.graph))
+    graph = Escape.graph(tree)
+    leaves = map(x -> x[1], attracting_components(graph))
+
+    return leaves
 end
 
 function get_property(tree::PhylogeneticTree, v::Int, property::Symbol)
-    has_prop(tree.graph, v, property) || return missing
-    return get_prop(tree.graph, v, property)
+    graph = Escape.graph(tree)
+    has_prop(graph, v, property) || return missing
+
+    return get_prop(graph, v, property)
 end
 
 function set_property!(tree::PhylogeneticTree, v::Int, property::Symbol, value)
-    set_prop!(tree.graph, v, property, value)
+    graph = Escape.graph(tree)
+
+    set_prop!(graph, v, property, value)
 end
 
 function annotate!(tree::PhylogeneticTree, data::AbstractHLAData, replacement::Replacement)
-    data.name == replacement.protein || error("Replacement does not match HLA data.")
-    matching(tree, data) isa Exception && throw(matching(tree, data))
+    name(data) == protein(replacement) || error("Replacement does not match HLA data.")
+    records = Escape.records(data)
 
-    reader = FASTA.Reader(open(data.fasta_file, "r"))
-
-    for (i, record) in enumerate(reader)
+    for (i, record) in enumerate(records)
         sequence = FASTA.sequence(record)
-        symbol = Char(sequence[replacement.position])
+        symbol = Char(sequence[position(replacement)])
 
         v = filter(x -> get_property(tree, x, :name) == string(i), leaves(tree))[1]
         
-        if !replacement.negated
-            if symbol == replacement.replacement
+        if !negated(replacement)
+            if symbol == Escape.replacement(replacement)
                 set_property!(tree, v, :state, "1")
             elseif symbol in ('-', 'X')
                 set_property!(tree, v, :state, missing)
             else
                 set_property!(tree, v, :state, "0")
             end
-        elseif replacement.negated
-            if symbol == replacement.replacement
+        elseif negated(replacement)
+            if symbol == Escape.replacement(replacement)
                 set_property!(tree, v, :state, "0")
             elseif symbol in ('-', 'X')
                 set_property!(tree, v, :state, missing)
@@ -196,39 +202,26 @@ function annotate!(tree::PhylogeneticTree, data::AbstractHLAData, replacement::R
             end
         end
     end
-
-    close(reader)
 end
 
 function matching(tree::PhylogeneticTree, data::AbstractHLAData)
-    n_leaves = length(leaves(tree))
-    n_sequences = length(data.hla_types)
-    leaf_names = Set(map(x -> get_property(tree, x, :name), leaves(tree)))
+    records = Escape.records(data)
+    matching = Escape.matching(tree, records)
 
-    msg = string("Number of leaves ($n_leaves) does not match number of sequences ",
-                 "($(n_sequences)) in the fasta file $(data.fasta_file).")
-    n_leaves == n_sequences || return DimensionMismatch(msg)
-
-    msg = """name property of leaves must be "1", "2", ..., "$n_leaves"."""
-    leaf_names == Set(string.(1:n_leaves)) || return ErrorException(msg)
-
-    return true
+    return matching
 end
 
-function matching(tree::PhylogeneticTree, fasta_file::AbstractString)
+function matching(tree::PhylogeneticTree, records::Vector{FASTX.FASTA.Record})
     n_leaves = length(leaves(tree))
-    
-    reader = FASTA.Reader(open(fasta_file, "r"))
-    fasta_length = length(collect(reader))
-    close(reader) 
 
-    leaf_names = Set(map(x -> get_property(tree, x, :name), leaves(tree)))
-
-    msg = string("Number of leaves ($n_leaves) does not match number of sequences ",
-                 "($fasta_length) in the fasta file $fasta_file.")
-    n_leaves == fasta_length || return DimensionMismatch(msg)
+    msg = string(
+        "Number of leaves ($n_leaves) does not match number of sequences ",
+        "($(length(records)))"
+    )
+    n_leaves == length(records) || return DimensionMismatch(msg)
 
     msg = """:name property of leaves must be "1", "2", ..., "$n_leaves"."""
+    leaf_names = Set(map(x -> get_property(tree, x, :name), leaves(tree)))
     leaf_names == Set(string.(1:n_leaves)) || return ErrorException(msg)
 
     return true

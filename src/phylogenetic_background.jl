@@ -15,7 +15,8 @@ end
 
 function phylogeny_probabilities(replacement::Replacement, data::AbstractHLAData)
     y = targets(replacement, data)
-    ctree = deepcopy(data.tree)
+    tree = phylogenetic_tree(data)
+    ctree = deepcopy(tree)
     annotate!(ctree, data, replacement)
 
     p = state_probabilities(ctree)
@@ -56,33 +57,34 @@ function state_probabilities(tree::PhylogeneticTree)
 end
 
 function L(tree::PhylogeneticTree)
-    fasta_filepath = write_fasta(tree)
-    newick_filepath = write_newick(tree)
+    fasta_file = write_fasta(tree)
+    newick_file = write_newick(tree)
 
     try
-        ll = L(fasta_filepath, newick_filepath)
+        ll = L(fasta_file, newick_file)
         return ll
     finally
-        rm(fasta_filepath)
-        rm(newick_filepath)
+        rm(fasta_file)
+        rm(newick_file)
     end
 end
 
-function L(fasta_filepath::String, tree_filepath::String)
+function L(fasta_file::String, tree_file::String)
 
-    output = read(`raxml-ng --evaluate --msa $fasta_filepath --tree $tree_filepath 
+    output = read(`raxml-ng --evaluate --msa $fasta_file --tree $tree_file 
         --model BIN --nofiles --opt-model off --opt-branches off
         --threads 1`, String)
     m = match(r"Final LogLikelihood: (.+)\n", output)
     ll = tryparse(Float64, m.captures[1])
     
-    !isnothing(ll) || throw(error("raxml-ng did not return a tree loglikelihood."))
+    !isnothing(ll) || error("raxml-ng did not return a tree loglikelihood.")
 
     return ll
 end
 
 function write_newick(tree::PhylogeneticTree)
     path, io = mktemp(cleanup = true)
+
     try
         write(io, newick_string(tree))
     finally
@@ -96,8 +98,6 @@ function write_fasta(tree::PhylogeneticTree)
     path, io = mktemp(cleanup = true)
 
     try
-        writer = FASTA.Writer(io)
-
         for (i, s) in enumerate(states(tree))
             write(io, ">$(i)\n")
             write(io, "$s\n")

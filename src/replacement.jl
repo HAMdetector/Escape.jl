@@ -7,6 +7,11 @@ struct Replacement
     negated::Bool
 end
 
+protein(r::Replacement) = getfield(r, :protein)
+position(r::Replacement) = getfield(r, :position)
+replacement(r::Replacement) = getfield(r, :replacement)
+negated(r::Replacement) = getfield(r, :negated)
+
 function replacement(
         protein::String, position::Int, replacement::Char; 
         negated::Bool = false
@@ -16,39 +21,36 @@ function replacement(
 end
 
 function replacements(data::AbstractHLAData; mincount::Int = 10)
-    replacements = Vector{Replacement}()
-
-    reader = FASTA.Reader(open(data.fasta_file, "r"))
-    N = minimum(length(FASTA.sequence(record)) for record in reader)
+    replacements = Replacement[]
+    records = Escape.records(data)
+    N = minimum(length(FASTA.sequence(record)) for record in records)
 
     for i in 1:N
-        reader = FASTA.Reader(open(data.fasta_file, "r"))
-        counts = [Char(FASTA.sequence(record)[i]) for record in reader] |>
+        counts = [Char(FASTA.sequence(record)[i]) for record in records] |>
             StatsBase.countmap 
-        close(reader)
         filter!(x -> x.first ∉ ('X', '*', '-') && x.second >= mincount, counts)
         
         if length(counts) > 1
             for (k, v) in counts
-                push!(replacements, replacement(data.name, i, k))
+                push!(replacements, replacement(name(data), i, k))
             end
         end
     end
-
-    close(reader)
     
     return replacements
 end
 
 function targets(replacement::Replacement, data::AbstractHLAData)
-    reader = FASTA.Reader(open(data.fasta_file, "r"))
     t = Vector{Union{Missing, Int}}()
 
-    for record in reader
-        symbol = Char(FASTA.sequence(record)[replacement.position])
+    for record in records(data)
+        r = Escape.replacement(replacement)
+        p = position(replacement)
+
+        symbol = Char(FASTA.sequence(record)[p])
         r = replacement.replacement
         
-        if replacement.negated
+        if negated(replacement)
             if symbol == r
                 push!(t, 0)
             elseif symbol in ('X', '-', '*')
@@ -56,7 +58,7 @@ function targets(replacement::Replacement, data::AbstractHLAData)
             else
                 push!(t, 1)
             end
-        elseif !replacement.negated
+        elseif !negated(replacement)
             if symbol == r
                 push!(t, 1)
             elseif symbol in ('X', '-', '*')
@@ -67,7 +69,5 @@ function targets(replacement::Replacement, data::AbstractHLAData)
         end
     end
 
-    close(reader)
-    
     return t
 end
