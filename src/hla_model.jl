@@ -22,7 +22,8 @@ function stan_input(
     model::AbstractHLAModel, data::AbstractHLAData;
     depth::Int = 1, mincount::Int = 10
 )
-    X = Float64.(hla_matrix(data.hla_types; depth = depth))
+    hla_types = Escape.hla_types(data)
+    X = Float64.(hla_matrix(hla_types; depth = depth))
     for i in 1:size(X)[2]
         X[:, i] .= (X[:, i] .- mean(X[:, i])) ./ std(X[:, i])
     end
@@ -78,7 +79,7 @@ function phylogeny_information(
 )
     R = length(r)
     N = length(data.hla_types)
-    tree = ismissing(data.tree) ? phylogenetic_tree(data) : data.tree
+    tree = phylogenetic_tree(data)
 
     if phylogeny_information(model) == PhylogenyIncluded()
         p = Progress(R, 1)

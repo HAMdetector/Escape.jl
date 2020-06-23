@@ -7,10 +7,14 @@ function epitope_feature_matrix(
     df = epitope_prediction(data, rank_threshold = rank_threshold)
     df[!, :allele] = limit_hla_accuracy.(df[!, :allele], depth = depth)
     
-    alleles = sort(unique_alleles(data.hla_types, depth = depth))
-    positions = fasta_length(data.fasta_file)
+    hla_types = Escape.hla_types(data)
+    records = Escape.records(data)
+
+    alleles = sort(unique_alleles(hla_types, depth = depth))
+    positions = sequence_length(records)
 
     m = zeros(positions, length(alleles))
+
     for (i, allele) in enumerate(alleles)
         filtered_df = filter(x -> x[:allele] == allele, df)
         start_positions = filtered_df[!, :start_position]
@@ -25,32 +29,23 @@ function epitope_feature_matrix(
 end
 
 function epitope_prediction(data::AbstractHLAData; rank_threshold::Real = 2)
-    df = epitope_prediction_fasta(data.fasta_file, rank_threshold = rank_threshold)
+    records = Escape.records(data)
+    consensus = consensus_sequence(records)
+
+    df = epitope_prediction(consensus, rank_threshold = rank_threshold)
 
     return df
 end
 
-function epitope_prediction(epitope::String; rank_threshold::Real = 100.0)
-    temp_input = tempname()
-    io = open(temp_input, "w")
-    write(io, ">epitope\n")
-    write(io, replace(epitope, "X" => "-"))
-    close(io)
-
-    df = epitope_prediction_fasta(temp_input, rank_threshold = rank_threshold)
-    rm(temp_input)
-
-    return df
-end
-
-function epitope_prediction_fasta(filepath::String; rank_threshold::Real = 100.0)
+function epitope_prediction(epitope::String; rank_threshold::Real = 100.0
+)
     temp_input = tempname()
     temp_output = tempname()
-    consensus = consensus_sequence(filepath)
+    # consensus = consensus_sequence(records)
 
     io = open(temp_input, "w")
-    write(io, ">consensus\n")
-    write(io, string(replace(consensus, "X" => "-")...))
+    write(io, ">epitope\n")
+    write(io, string(replace(epitope, "X" => "-")...))
     close(io) 
 
     alleles = let
@@ -104,28 +99,20 @@ function parse_netmhc(filepath::String; rank_threshold::Real = 100.0)
     return df
 end
 
-function consensus_sequence(filepath::String)
-    consensus = Vector{String}(undef, fasta_length(filepath))
-    reader = FASTA.Reader(open(filepath, "r"))
+function consensus_sequence(records::Vector{FASTX.FASTA.Record})
+    consensus = Vector{String}(undef, sequence_length(records))
 
-    for i in 1:fasta_length(filepath)
-        reader = FASTA.Reader(open(filepath, "r"))
-        sequence = [string(FASTA.sequence(record)[i]) for record in reader]
-        close(reader)
-
+    for i in 1:sequence_length(records)
+        sequence = [string(FASTA.sequence(record)[i]) for record in records]
         counts = countmap(sequence)
         consensus[i] = findfirst(x -> x == maximum(values(counts)), counts)
     end
 
-    close(reader)
-    return consensus
+    return string.(consensus...)
 end
 
-function fasta_length(filepath::String)
-    reader = FASTA.Reader(open(filepath, "r"))
-    fasta_length = maximum([length(FASTA.sequence(r)) for r in reader])
+function sequence_length(records::Vector{FASTX.FASTA.Record})
+    sequence_length = maximum([length(FASTA.sequence(r)) for r in records])
 
-    close(reader)
-
-    return fasta_length
+    return sequence_length
 end

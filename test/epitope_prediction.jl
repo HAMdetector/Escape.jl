@@ -6,14 +6,6 @@
     @test nrow(df) == 1
 end
 
-@testset "epitope_prediction_fasta(::String)" begin
-    fastafile = joinpath(@__DIR__, "data", "test.fasta")
-    df = Escape.epitope_prediction_fasta(fastafile)
-
-    @test df isa DataFrame
-    @test nrow(df) > 0
-end
-
 @testset "epitope_prediction(::String)" begin
     testoutput = joinpath(@__DIR__, "data", "netmhc_testoutput.txt")
     df = Escape.parse_netmhc(testoutput)
@@ -34,10 +26,10 @@ end
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01"))]
-    fasta_path = joinpath(@__DIR__, "data", "test.fasta")
-    hla_data = HLAData("test", fasta_path, hla_types, missing)
+    fasta_file = joinpath(@__DIR__, "data", "test.fasta")
+    data = HLAData("test", fasta_file, hla_types, missing)
 
-    df = Escape.epitope_prediction(hla_data, rank_threshold = 100)
+    df = Escape.epitope_prediction(data, rank_threshold = 100)
 
     @test nrow(df) > 0
 end
@@ -49,13 +41,13 @@ end
                  HLAType(parse_allele("A02", "A04", "B03", "B04", "C03", "C07")),
                  HLAType(parse_allele("A02", "A04", "B03", "B04", "C03", "C07"))]
 
-    fasta_path = joinpath(@__DIR__, "data", "test.fasta")
-    hla_data = HLAData("test", fasta_path, hla_types, missing)
+    fasta_file = joinpath(@__DIR__, "data", "test.fasta")
+    hla_data = HLAData("test", fasta_file, hla_types, missing)
 
     # predicted epitopes at:
     # A02: 5-14, A03: 4-14, C*07: 6
     alleles = Escape.unique_alleles(hla_types)
-    expected = zeros(Float64, Escape.fasta_length(fasta_path), length(alleles))
+    expected = zeros(Float64, Escape.sequence_length(hla_data), length(alleles))
 
     # A01, A02, A03, A04, B03, B04, B05, B06, C03, C07
      expected[4, :] = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0] # A03 has predicted epitope at pos. 6

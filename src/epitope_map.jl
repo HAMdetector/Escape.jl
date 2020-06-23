@@ -28,15 +28,15 @@ struct EpitopeMap
 end
 
 function epitope_map(data::AbstractHLAData; rank_threshold::Real = 100)
-    df = epitope_prediction_fasta(data.fasta_file, rank_threshold = rank_threshold)
+    df = epitope_prediction(data, rank_threshold = rank_threshold)
     
     epitopes = df[!, :epitope]
     starts = df[!, :start_position]
     stops = df[!, :stop_position]
     alleles = df[!, :allele]
-    maplength = fasta_length(data.fasta_file)
+    maplength = sequence_length(data)
 
-    map = EpitopeMap(data.name, epitopes, starts, stops, alleles, maplength)
+    map = EpitopeMap(name(data), epitopes, starts, stops, alleles, maplength)
     
     return map
 end
