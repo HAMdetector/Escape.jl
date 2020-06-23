@@ -162,10 +162,10 @@ model {
 }
 
 generated quantities {
-    vector[N] theta;
+    // vector[N] theta;
     vector[D] beta_hla[R];
-    vector[D] omega[R];
-    vector[R] m_eff;
+    // vector[D] omega[R];
+    // vector[R] m_eff;
 
     for (i in 1:R) {
         real tau;
@@ -177,20 +177,20 @@ generated quantities {
         lambda_tilde = sqrt(c2[i] .* square(lambda) ./ 
             (c2[i] + square(tau) * square(lambda)));
         beta_hla[i] = lambda_tilde * tau .* z_std[i];
-        m_eff[i] = 0;
+        // m_eff[i] = 0;
 
-        for (j in 1:D) {
-            omega[i][j] = 1.0 - (1.0 / (1.0 + y_counts[i] / square(pseudo_sigmas[i]) *
-                square(lambda[j]) * square(tau)));
-            m_eff[i] += omega[i][j];
-        }
+        // for (j in 1:D) {
+        //     omega[i][j] = 1.0 - (1.0 / (1.0 + y_counts[i] / square(pseudo_sigmas[i]) *
+        //         square(lambda[j]) * square(tau)));
+        //     m_eff[i] += omega[i][j];
+        // }
     }
 
-    for (i in 1:N) {
-        theta[i] = inv_logit(
-            b0_hla[rs[i]] + 
-            b_phy * logit(phy[rs[i], idx[i]]) + 
-            X[idx[i]] * beta_hla[rs[i]]
-        );
-    }
+    // for (i in 1:N) {
+    //     theta[i] = inv_logit(
+    //         b0_hla[rs[i]] + 
+    //         b_phy * logit(phy[rs[i], idx[i]]) + 
+    //         X[idx[i]] * beta_hla[rs[i]]
+    //     );
+    // }
 }
