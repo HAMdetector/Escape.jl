@@ -3,6 +3,7 @@ using Escape
 
 using DataFrames
 using Distributions
+using FASTX
 using HypothesisTests
 using LightGraphs
 using Loo
