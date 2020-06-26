@@ -30,6 +30,5 @@ end
     @test all(Escape.targets(replacement, hla_data) .=== [missing, missing, 1, 1, 1])
 
     replacement = Replacement("test", 2, 'S', true)
-    println(Escape.targets(replacement, hla_data))
     @test all(Escape.targets(replacement, hla_data) .== [1, 1, 0, 0, 0])
 end

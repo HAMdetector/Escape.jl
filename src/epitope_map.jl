@@ -16,8 +16,7 @@ struct EpitopeMap
             error("epitope start must be less than epitope stop.")
         elseif !(all((starts .> 0) .& (stops .> 0)))
             error("start and stop positions must be positive.")
-        elseif !all(length.(epitopes) .- count.(x -> x == '-', epitopes) .== 
-                (stops .- starts .+ 1))
+        elseif !all(length.(epitopes) .== (stops .- starts .+ 1))
             error("epitope length must match the given start and stop positions.")
         elseif !(maplength >= maximum(stops))
             error("maplength must be >= largest stop position.") 
@@ -30,9 +29,9 @@ end
 function epitope_map(data::AbstractHLAData; rank_threshold::Real = 100)
     df = epitope_prediction(data, rank_threshold = rank_threshold)
     
-    epitopes = df[!, :epitope]
-    starts = df[!, :start_position]
-    stops = df[!, :stop_position]
+    epitopes = df[!, :peptide]
+    starts = df[!, :position]
+    stops = df[!, :position] .+ length.(df[!, :peptide]) .- 1
     alleles = df[!, :allele]
     maplength = sequence_length(data)
 

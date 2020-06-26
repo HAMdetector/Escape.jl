@@ -1,8 +1,8 @@
-const NETMHC_ROOTDIR = joinpath(@__DIR__, "..", "data", "netMHC-4.0")
+const NETMHC_ROOTDIR = ENV["NETMHC_ROOTDIR"]
 
 function epitope_feature_matrix(
     data::AbstractHLAData; 
-    depth::Int = 1, rank_threshold::Real = 2
+    depth::Int = 1, rank_threshold::Real = 2,
 )
     df = epitope_prediction(data, rank_threshold = rank_threshold)
     df[!, :allele] = limit_hla_accuracy.(df[!, :allele], depth = depth)
@@ -17,8 +17,8 @@ function epitope_feature_matrix(
 
     for (i, allele) in enumerate(alleles)
         filtered_df = filter(x -> x[:allele] == allele, df)
-        start_positions = filtered_df[!, :start_position]
-        stop_positions = filtered_df[!, :stop_position]
+        start_positions = filtered_df[!, :position]
+        stop_positions = filtered_df[!, :position] .+ length.(filtered_df[!, :peptide]) .- 1
 
         for (start, stop) in zip(start_positions, stop_positions)
             m[start:stop, i] .= 1
@@ -32,71 +32,140 @@ function epitope_prediction(data::AbstractHLAData; rank_threshold::Real = 2)
     records = Escape.records(data)
     consensus = consensus_sequence(records)
 
-    df = epitope_prediction(consensus, rank_threshold = rank_threshold)
+    alleles = unique_alleles(hla_types(data))
+
+    df = epitope_prediction(consensus, alleles, rank_threshold = rank_threshold)
 
     return df
 end
 
-function epitope_prediction(epitope::String; rank_threshold::Real = 100.0
+function epitope_prediction(
+    query::String, alleles::Vector{HLAAllele};
+    rank_threshold::Real = 100
 )
+    netmhc_alleles = Escape.netmhc_alleles()
+    relevant_alleles = HLAAllele[]
+    
+    
+    for allele in alleles
+        if hla_accuracy(allele) == 1
+            for netmhc_allele in netmhc_alleles
+                if limit_hla_accuracy(netmhc_allele, depth = 1) == allele
+                    push!(relevant_alleles, netmhc_allele)
+                end
+            end
+        else
+            push!(relevant_alleles, limit_hla_accuracy(allele, depth = 2))
+        end
+    end
+
+    relevant_alleles = sort(unique(relevant_alleles))
+    dfs = []
+
+    @threads for alleles in collect.(Base.Iterators.partition(relevant_alleles, 85))
+        df = epitope_prediction_limited(query, alleles, rank_threshold = rank_threshold)
+        push!(dfs, df)
+    end
+
+    combined_df = dfs[1]
+    for i in 2:length(dfs)
+        append!(combined_df, dfs[i])
+    end
+
+    filter!(x -> x[:rank_percent] <= rank_threshold, combined_df)
+    sort!(combined_df, :rank_percent)
+
+    return combined_df
+end
+
+function epitope_prediction_limited(
+    query::String, alleles::Vector{HLAAllele};
+    rank_threshold::Real = 100
+)
+    if (length(alleles) > 85)
+        error("maxmimum number of 85 alleles supported, got $(length(alleles)).")
+    elseif any(ismissing.(getfield.(alleles, :field_2)))
+        error("only ")
+    end
+
+    length(alleles) <= 85 & all(.!ismissing.(getfield.(alleles, :field_2)))
+
     temp_input = tempname()
     temp_output = tempname()
-    # consensus = consensus_sequence(records)
 
-    io = open(temp_input, "w")
-    write(io, ">epitope\n")
-    write(io, string(replace(epitope, "X" => "-")...))
-    close(io) 
-
-    alleles = let
-        netmhc_call = read(`$NETMHC_ROOTDIR/netMHC -listMHC -tdir $(tempdir())`, String)
-        alleles = split(netmhc_call, '\n')
-        filter!(x -> startswith(x, "HLA"), alleles)
-
-        s = ""
-        for allele in alleles
-            s = s * "$allele,"
-        end
-
-        s[1:end-1]
+    open(temp_input, "w") do io
+        write(io, ">epitope\n")
+        write(io, string(replace(query, "X" => "-")...))
     end
 
-    Base.run(pipeline(`$NETMHC_ROOTDIR/netMHC -tdir $(tempdir()) $temp_input 
-        -a $alleles -l 8,9,10,11`, stdout = temp_output))
-    df = parse_netmhc(temp_output, rank_threshold = rank_threshold)
-    dropmissing!(df)
+    alleles = sort(unique(limit_hla_accuracy.(alleles, depth = 2)))
 
-    rm(temp_output)
-    rm(temp_input)
+    s = ""
+    for allele in alleles
+        if ismissing(allele.field_2)
+            error("field 2 is missing.")
+        else
+            s = s * "HLA-" * allele.gene * allele.field_1 * allele.field_2 * ','
+        end
+    end
+    s = s[1:end-1]
 
-    return sort(df, :rank)
+    mhc_output = Base.read(`$NETMHC_ROOTDIR/netMHCpan $temp_input -a $s`) |> String
+    df = parse_netmhc(mhc_output)
+    filter!(x -> x[:rank_percent] <= rank_threshold, df)
+
+    return df
 end
 
-function parse_netmhc(filepath::String; rank_threshold::Real = 100.0)
+function parse_netmhc(output::String)
     df = DataFrame(
-        [Union{Missing, T} for T in [HLAAllele, String, Int, Int, Float64, Float64]],
-        [:allele, :epitope, :start_position, :stop_position, :affinity, :rank]
+        position = Int[], allele = HLAAllele[], peptide = String[], core = String[],
+        core_start = Int[], deletion_position = Int[], deletion_length = Int[],
+        insertion_position = Int[], insertion_length = Int[],
+        interaction_core = String[], identity = String[], score = Float64[],
+        rank_percent = Float64[]
     )
-    for line in readlines(filepath)
-        if !any(occursin.(["pos", "#", "Protein", "---", "Linux"], line)) & (line != "")
-            components = split(line, r"\s+")
 
-            allele = parse_allele(components[3])
-            epitope = components[5]
-            start_position = parse(Int, components[2]) + 1
-            stop_position = let
-                start_position + length(epitope) - length(findall("-", epitope)) - 1
-            end
-            affinity = parse(Float64, components[14])
-            rank = parse(Float64, components[15])
-        
-            if rank <= rank_threshold
-                push!(df, [allele, epitope, start_position, stop_position, affinity, rank])
-            end
+    for line in split(output, '\n')
+        if occursin("HLA-", line) & !(any(startswith.(line, ['#', "HLA-", "Protein"])))
+            components = split(line, r"\s+")
+            components = string.(components[2:end])
+
+            position = parse(Int, components[1])
+            allele = parse_allele(components[2])
+            peptide = components[3]
+            core = components[4]
+            core_start = parse(Int, components[5])
+            deletion_position = parse(Int, components[6])
+            deletion_length = parse(Int, components[7])
+            insertion_position = parse(Int, components[8])
+            insertion_length = parse(Int, components[9])
+            interaction_core = components[10]
+            identity = components[11]
+            score = parse(Float64, components[12])
+            rank_percent = parse(Float64, components[13])
+
+            push!(df, [position, allele, peptide, core, core_start, deletion_position,
+                deletion_length, insertion_position, insertion_length,
+                interaction_core, identity, score, rank_percent])
         end
     end
 
     return df
+end
+
+function netmhc_alleles()
+    netmhc_call = read(`$NETMHC_ROOTDIR/netMHCpan -listMHC`, String)
+    alleles = split(netmhc_call, '\n')
+
+    filter!(x -> startswith(x, "HLA"), alleles)
+    filter!(x -> !startswith(x, "HLA-E"), alleles)
+    filter!(x -> !startswith(x, "HLA-G"), alleles)
+    filter!(x -> !(':' in x), alleles)
+
+    alleles = parse_allele.(alleles)
+
+    return alleles
 end
 
 function consensus_sequence(records::Vector{FASTX.FASTA.Record})

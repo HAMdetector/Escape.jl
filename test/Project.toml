@@ -2,6 +2,7 @@
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 HypothesisTests = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
+FASTX = "c2308a5c-f048-11e8-3e8a-31650f418d12"
 LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
 Loo = "17760cec-3789-11e9-196f-659854311368"
 MetaGraphs = "626554b9-1ddb-594c-aa3c-2596fe9399a5"
