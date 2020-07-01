@@ -7,6 +7,8 @@ function Escape.run(
 ) where T
 
     input = stan_input(model, data, depth = depth, mincount = mincount)
+    replacements = Escape.replacements(data, mincount = mincount)
+    alleles = sort(unique_alleles(hla_types(data), depth = depth))
     input["p0"] = p0
 
     sf = StanInterface.stan(
@@ -15,7 +17,7 @@ function Escape.run(
         stan_kwargs...
     )
 
-    return HLAModelResult(model, data, sf)
+    return HLAModelResult(model, data, sf, replacements, alleles)
 end
 
 function stan_input(
