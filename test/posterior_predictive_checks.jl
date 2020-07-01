@@ -51,7 +51,7 @@ end
     @test Escape.calibration_plot(result) isa Plots.Plot
 end
 
-@testset "@recipe f(::EscapeResult)" begin
+@testset "@recipe f(::HLAModelResultIO)" begin
     tmp = tempname()
 
     try
