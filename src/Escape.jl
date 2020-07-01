@@ -21,7 +21,7 @@ include("epitope_map.jl")
 include("hla_model.jl")
 include("hla_model_result.jl")
 include("fisher_test.jl")
-include("escape_result.jl")
+include("hla_model_result_io.jl")
 include("loo.jl")
 include("posterior_predictive_checks.jl")
 

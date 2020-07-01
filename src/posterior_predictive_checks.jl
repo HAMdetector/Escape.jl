@@ -50,7 +50,7 @@ end
     (c, c.args...)
 end
 
-@recipe function f(c::Calibration_Plot, result::EscapeResult)
+@recipe function f(c::Calibration_Plot, result::HLAModelResultIO)
     layout --> (ceil(Int, length(result) / 2), 2)
 
     for (i, res) in enumerate(result)

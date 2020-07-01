@@ -1,10 +1,10 @@
-export EscapeResult
-export escape_result
+export HLAModelResultIO
+export hla_model_result_io
 export dir
 export model
 export dataset
 
-struct EscapeResult
+struct HLAModelResultIO
     model::Escape.AbstractHLAModel
     ds::Escape.AbstractHLADataset
     dir::String
@@ -32,37 +32,37 @@ function Escape.run(
         serialize(joinpath(result_dir, result_name, "$i.jls"), res)
     end
 
-    result = EscapeResult(model, ds, joinpath(result_dir, result_name))
+    result = HLAModelResultIO(model, ds, joinpath(result_dir, result_name))
     serialize(joinpath(result_dir, result_name, "result.jls"), result)
 
     return result
 end
 
-dir(result::EscapeResult) = result.dir
-model(result::EscapeResult) = result.model
-dataset(result::EscapeResult) = result.ds
+dir(result::HLAModelResultIO) = result.dir
+model(result::HLAModelResultIO) = result.model
+dataset(result::HLAModelResultIO) = result.ds
 
-function escape_result(dir::String)
+function hla_model_result_io(dir::String)
     result = deserialize(joinpath(dir, "result.jls"))
 
     return result
 end
 
-function Base.getindex(result::EscapeResult, i::Int)
+function Base.getindex(result::HLAModelResultIO, i::Int)
     dir_ = dir(result)
     model_result = deserialize(joinpath(dir_, "$i.jls"))
 
     return model_result
 end
 
-function Base.iterate(iter::EscapeResult)
+function Base.iterate(iter::HLAModelResultIO)
     dir_ = dir(iter)
     model_result = deserialize(joinpath(dir_, "1.jls"))
 
     return (model_result, 1)
 end
 
-function Base.iterate(iter::EscapeResult, state::Int)
+function Base.iterate(iter::HLAModelResultIO, state::Int)
     dir_ = dir(iter)
     model_path = joinpath(dir_, "$(state + 1).jls")
 
@@ -74,6 +74,6 @@ function Base.iterate(iter::EscapeResult, state::Int)
     end
 end
 
-function Base.length(iter::EscapeResult)
+function Base.length(iter::HLAModelResultIO)
     return length(dataset(iter).data)
 end

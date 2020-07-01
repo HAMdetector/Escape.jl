@@ -1,4 +1,4 @@
-function Escape.loo(result::EscapeResult)
+function Escape.loo(result::HLAModelResultIO)
     pw = Loo.PointwiseLoo[]
     size = Tuple{Int, Int}[]
 
