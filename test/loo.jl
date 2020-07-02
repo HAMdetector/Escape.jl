@@ -1,11 +1,20 @@
-# @testset "Escape.loo(::HLAModelResult)" begin
-#     ds = Escape.HLADataset("Test")
+@testset "Loo" begin
+    tmp = tempname()
 
-#     for i in 1:4
-#         res = @suppress Escape.run(
-#             Escape.HLAModel{i}(), ds.data[1], 
-#             mincount = 1, iter = 10, warmup = 50, chains = 2
-#         )
-#         @test Escape.loo(res) isa Loo.LooResult
-#     end
-# end
+    try
+        result = @suppress Escape.run(
+            Escape.HLAModel{4}(), Escape.HLADataset("Test"),
+            mincount = 1,
+            result_dir = tempdir(),
+            result_name = splitdir(tmp)[end],
+            iter = 200, warmup = 200, chains = 4
+        )
+
+        @test Escape.theta_i(result[1].sf, 1) isa Vector{Float64}
+        @test Escape.pointwise_loglikelihoods(result[1].sf, 1) isa Vector{Vector{Float64}}
+        @test @suppress Escape.loo(result[1]) isa Loo.LooResult
+        @test @suppress Escape.loo(result) isa Loo.LooResult
+    finally
+        rm(tmp, force = true, recursive = true)
+    end
+end
