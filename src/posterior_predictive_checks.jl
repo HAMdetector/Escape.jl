@@ -7,8 +7,8 @@
     grid --> false
     seriescolor --> "#B2001D"
     markerstrokecolor --> "#B2001D"
-    xlabel --> "observed event percentage"
-    ylabel --> "bin midpoint"
+    xguide --> "observed event percentage"
+    yguide --> "bin midpoint"
     formatter := x -> string(Int(round(x * 100))) * "%"
 
     (c, c.args...)
@@ -43,8 +43,8 @@ end
     grid --> false
     seriescolor --> "#B2001D"
     markerstrokecolor --> "#B2001D"
-    xlabel --> "observed event percentage"
-    ylabel --> "bin midpoint"
+    xguide --> "observed event percentage"
+    yguide --> "bin midpoint"
     formatter := x -> string(Int(round(x * 100))) * "%"
     
     (c, c.args...)
@@ -106,8 +106,8 @@ end
     seriescolor --> "#B2001D"
     markerstrokecolor --> "#B2001D"
     linecolor --> "#B2001D"
-    xlabel --> "proportion of sequences with replacement"
-    ylabel --> "expected proportion"
+    xguide --> "proportion of sequences with replacement"
+    yguide --> "expected proportion"
     formatter := x -> string(Int(round(x * 100))) * "%"
 
     (c, c.args...)
