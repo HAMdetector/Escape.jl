@@ -38,7 +38,7 @@ end
 
     peptide = "ARGDEFFPE"
     alleles = Escape.netmhc_alleles()
-    prediction = Escape.epitope_prediction(peptide, alleles)
+    prediction = Escape.epitope_prediction(peptide, alleles[1:10])
 
     @test prediction isa DataFrame
     @test nrow(prediction) > 0
