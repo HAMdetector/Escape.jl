@@ -1,18 +1,37 @@
 @testset "accessor functions for HLAModelResult" begin
-    ds = HLADataset("Test")
-    res = @suppress Escape.run(Escape.HLAModel{4}(), ds.data[1], mincount = 1, 
-        iter = 10, chains = 1)
+    tmp = tempname()
 
-    @test Escape.stan_input(res) === res.sf.data
-    @test Escape.stanfit(res) === res.sf
-    @test Escape.hla_data(res) === res.data
-    @test Escape.hla_model(res) === res.model
+    if !isfile(joinpath(@__DIR__, "data", "result.jls"))
+        result = @suppress Escape.run(
+            Escape.HLAModel{4}(), Escape.HLADataset("Test").data[1], 
+            mincount = 1, iter = 10, chains = 1
+        )
+
+        serialize(joinpath(@__DIR__, "data", "result.jls"), result)
+    end
+
+    result = deserialize(joinpath(@__DIR__, "data", "result.jls"))
+
+    @test Escape.stan_input(result) === result.sf.data
+    @test Escape.stanfit(result) === result.sf
+    @test Escape.hla_data(result) === result.data
+    @test Escape.hla_model(result) === result.model
 end
 
 @testset "replacement_summary(::HLAModelResult)" begin
-    ds = HLADataset("Test")
-    res = @suppress Escape.run(Escape.HLAModel{4}(), ds.data[1], mincount = 1, 
-        iter = 10, chains = 1)
+    if !isfile(joinpath(@__DIR__, "data", "result.jls"))
+        result = @suppress Escape.run(
+            Escape.HLAModel{4}(), Escape.HLADataset("Test").data[1],
+            mincount = 1,
+            result_dir = tempdir(),
+            result_name = splitdir(tmp)[end],
+            iter = 200, warmup = 200, chains = 4
+        )
 
-    @test Escape.replacement_summary(res) isa DataFrame
+        serialize(joinpath(@__DIR__, "data", "result.jls"), result)
+    end
+
+    result = deserialize(joinpath(@__DIR__, "data", "result.jls"))
+
+    @test Escape.replacement_summary(result) isa DataFrame
 end

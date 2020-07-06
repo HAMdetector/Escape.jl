@@ -234,7 +234,7 @@ function limit_hla_accuracy(::Missing; depth::Int = 1)
 end
 
 function limit_hla_accuracy(s::HLAAllele; depth::Int = 1)
-    1 <= depth <= 5 || error("depth must be between 1 and 5")
+    1 <= depth <= 5 || error("depth must be between 1 and 5.")
 
     HLA_components::Vector{Union{Missing, String}} = [missing for i in 1:6]
     HLA_components[1] = s.gene

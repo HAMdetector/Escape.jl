@@ -1,6 +1,5 @@
 @testset "Loo" begin
     tmp = tempname()
-
     try
         result = @suppress Escape.run(
             Escape.HLAModel{4}(), Escape.HLADataset("Test"),
