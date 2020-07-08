@@ -52,20 +52,17 @@ function theta_i(sf::StanInterface.Stanfit, i::Int)
     phy = stan_input["phy"]
 
     r = rs[i]
-
-    tau = @. p["aux1_tau.$r"] * sqrt(p["aux2_tau.$r"]) 
     
     nu = zeros(length(p["lp__"]))
 
     for d in 1:D
-        lambda = @. p["aux1_lambda.$r.$d"] * sqrt(p["aux2_lambda.$r.$d"])
-        lambda_tilde = @. sqrt(p["c2.$r.$d"] * lambda^2 / (p["c2.$r.$d"] + tau^2 * lambda^2))
-        beta_hla = @. lambda_tilde * tau * p["z_std.$r.$d"]
+        beta_hla = p["beta_hla.$r.$d"]
 
         nu += X[idx[i], d] .* beta_hla
     end
 
-    theta = @. logistic(p["b0_hla.$r"] + (p["b_phy"] * logit(phy[r, idx[i]])) + nu)
+    b_phy = "b_phy" in keys(p) ? p["b_phy"] : 0
+    theta = @. logistic(p["b0_hla.$r"] + (b_phy * logit(phy[r, idx[i]])) + nu)
 
     return theta
 end
