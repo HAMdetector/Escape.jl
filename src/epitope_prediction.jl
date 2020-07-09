@@ -60,11 +60,15 @@ function epitope_prediction(
     end
 
     relevant_alleles = sort(unique(relevant_alleles))
+    allele_partitions = collect.(Base.Iterators.partition(relevant_alleles, 85))
     dfs = []
 
+    p = Progress(length(allele_partitions), 0, "epitope prediction")
+    
     @threads for alleles in collect.(Base.Iterators.partition(relevant_alleles, 85))
         df = epitope_prediction_limited(query, alleles, rank_threshold = rank_threshold)
         push!(dfs, df)
+        next!(p)
     end
 
     combined_df = dfs[1]
