@@ -1,7 +1,7 @@
 function Escape.run(
     model::HLAModel{T}, data::AbstractHLAData;
     p0::Real = 3,
-    mincount::Int = 10,
+    mincount::Int = 2,
     depth::Int = 1,
     stan_kwargs... 
 ) where T
@@ -13,7 +13,7 @@ function Escape.run(
 
     sf = StanInterface.stan(
         joinpath(@__DIR__, "..", "data", "stan", "model_$(T)"), input;
-        stan_args = "adapt delta=0.90 algorithm=hmc engine=nuts max_depth=12", 
+        stan_args = "adapt delta=0.80 algorithm=hmc engine=nuts max_depth=10",
         stan_kwargs...
     )
 
@@ -22,7 +22,7 @@ end
 
 function stan_input(
     model::AbstractHLAModel, data::AbstractHLAData;
-    depth::Int = 1, mincount::Int = 10
+    depth::Int = 1, mincount::Int = 2
 )
     hla_types = Escape.hla_types(data)
     X = Float64.(hla_matrix(hla_types; depth = depth))
@@ -84,7 +84,7 @@ function phylogeny_information(
     tree = phylogenetic_tree(data)
 
     if phylogeny_information(model) == PhylogenyIncluded()
-        p = Progress(R, 1)
+        p = Progress(R, 0, "phylogeny")
 
         phy = Matrix{Float64}(undef, R, N)
         @threads for i in 1:R
