@@ -30,8 +30,7 @@ function state_probabilities(tree::PhylogeneticTree)
     p = Dict{String, Dict{String, Float64}}()
     ctree = deepcopy(tree)
 
-    states = [get_property(tree, x, :state) for x in leaves(ctree)] |> 
-        skipmissing |> unique |> sort
+    states = ["0", "1"]
 
     for leaf in leaves(ctree)
         leafname = get_property(ctree, leaf, :name)
@@ -73,7 +72,7 @@ function L(fasta_file::String, tree_file::String)
 
     output = read(`raxml-ng --evaluate --msa $fasta_file --tree $tree_file 
         --model BIN --nofiles --opt-model off --opt-branches off
-        --threads 1`, String)
+        --threads 1 --force`, String)
     m = match(r"Final LogLikelihood: (.+)\n", output)
     ll = tryparse(Float64, m.captures[1])
     
