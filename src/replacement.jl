@@ -20,7 +20,7 @@ function replacement(
     return Replacement(protein, position, replacement, negated)
 end
 
-function replacements(data::AbstractHLAData; mincount::Int = 10)
+function replacements(data::AbstractHLAData; mincount::Int = 2)
     replacements = Replacement[]
     records = Escape.records(data)
     N = minimum(length(FASTA.sequence(record)) for record in records)
