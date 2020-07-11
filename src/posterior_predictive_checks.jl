@@ -83,7 +83,7 @@ end
     for (i, idx) in enumerate(indices)
         r = result.sf.data["rs"][idx]
         n = result.sf.data["idx"][idx]
-        theta[i] = mean(theta_i(result.sf, i))
+        theta[i] = mean(theta_i(result.sf, posterior, i))
         y[i] = result.sf.data["y"][idx]
     end
 
@@ -126,7 +126,7 @@ end
         lower = Float64[], upper = Float64[]
     )
 
-    theta = hcat([theta_i(sf, i) for i in 1:d["N"]]...)
+    theta = hcat([theta_i(sf, posterior, i) for i in 1:d["N"]]...)
 
     for r in 1:R
         idx = findall(x -> x == r, rs)

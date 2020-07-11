@@ -15,10 +15,13 @@ function Escape.loo(result::HLAModelResult)
     d = stan_input(result)
     N = d["N"]
     pw = Vector{Loo.PointwiseLoo}(undef, N)
-    
-    @showprogress for i in 1:N
-        ll = pointwise_loglikelihoods(result.sf, i)
+    p = extract(stanfit(result))
+
+    progress = Progress(N)
+    @threads for i in 1:N
+        ll = pointwise_loglikelihoods(result.sf, p, i)
         pw[i] = Loo.pointwise_loo(ll)
+        next!(progress)
     end
 
     draws = result.sf.iter * result.sf.chains
@@ -26,22 +29,21 @@ function Escape.loo(result::HLAModelResult)
     return Loo.LooResult(pw, (draws, length(pw)))
 end
 
-function pointwise_loglikelihoods(sf::StanInterface.Stanfit, i::Int)
+function pointwise_loglikelihoods(sf::StanInterface.Stanfit, p::Dict, i::Int)
     y = sf.data["y"][i]
     iter = sf.iter
     chains = sf.chains
 
     ll = Vector{Vector{Float64}}(undef, chains)
     for idx in eachindex(sf.result)
-        theta = theta_i(sf, i)
+        theta = theta_i(sf, p, i)
         ll[idx] = y == 1 ? log.(theta) : log.(1 .- theta)
     end
 
     return ll
 end
 
-function theta_i(sf::StanInterface.Stanfit, i::Int)
-    p = extract(sf)
+function theta_i(sf::StanInterface.Stanfit, p::Dict, i::Int)
     stan_input = sf.data
 
     rs = stan_input["rs"]
