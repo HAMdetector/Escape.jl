@@ -96,7 +96,7 @@ function HLAAllele(s::AbstractString)
                 raw"((?<=:)\d\d(?!\d))?:?((?<=:)\d\d(?!\d))?([NLSCAQ])?" |> Regex
 
         captures = match(regex, s).captures
-        return HLAAllele((i == nothing ? missing : String(i) for i in captures)...)
+        return HLAAllele((i === nothing ? missing : String(i) for i in captures)...)
     else
         throw(error("$s does not follow HLA nomenclature " *
               "(http://hla.alleles.org/nomenclature/naming.html)"))
@@ -107,7 +107,7 @@ function is_valid_allele(s::AbstractString)
     regex = raw"HLA-([ABC])\*(\d{2}(?!\d)):?((?<=:)\d{2,3}(?!\d))?:?" *
             raw"((?<=:)\d\d(?!\d))?:?((?<=:)\d\d(?!\d))?([NLSCAQ])?" |> Regex
 
-    if match(regex, s) == nothing || length(match(regex, s).captures) < 3
+    if match(regex, s) === nothing || length(match(regex, s).captures) < 3
         return false
     end
 
