@@ -45,7 +45,7 @@ end
 @testset "@recipe f(::HLAModelResult)" begin
     result = @suppress Escape.run(
         Escape.HLAModel{2}(), Escape.HLADataset("Test").data[1], 
-        iter = 10, chains = 1, warmup = 10, mincount = 2
+        iter = 10, chains = 1, warmup = 10, mincount = 1
     )
     
     @test Escape.calibration_plot(result) isa Plots.Plot
@@ -57,7 +57,7 @@ end
     try
         result = @suppress Escape.run(
             Escape.HLAModel{2}(), Escape.HLADataset("Test"),
-            mincount = 2,
+            mincount = 1,
             result_dir = tempdir(),
             result_name = splitdir(tmp)[end],
             iter = 10, warmup = 10, chains = 1
