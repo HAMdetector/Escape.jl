@@ -3,22 +3,23 @@
 functions {
     vector ll(vector global_pars, vector local_pars, real[] xs, int[] ys) {
         // extracting integer-valued data from ys
-        int D = (num_elements(local_pars) - 3) / 4;
+        int D = (num_elements(local_pars) - 4) / 4;
         int y_counts = ys[1];
         int S = ys[2];
         
-        // extracting global pars
-        real b_phy = global_pars[1];
+        // // extracting global pars
+        // real b_phy = global_pars[1];
 
         // extracting local parameters
         real b0_hla = local_pars[1];
         real aux1_tau = local_pars[2];
         real aux2_tau = local_pars[3];
-        
-        vector[D] aux1_lambda = local_pars[4:(D + 3)];
-        vector[D] aux2_lambda = local_pars[(D + 4):(2*D + 3)];
-        vector[D] z_std = local_pars[(2*D + 4):(3*D + 3)];
-        vector[D] c2 = local_pars[(3*D + 4):(4*D + 3)];
+        real b_phy = local_pars[4];
+
+        vector[D] aux1_lambda = local_pars[5:(D + 4)];
+        vector[D] aux2_lambda = local_pars[(D + 5):(2*D + 4)];
+        vector[D] z_std = local_pars[(2*D + 5):(3*D + 4)];
+        vector[D] c2 = local_pars[(3*D + 5):(4*D + 4)];
 
         // model specification
         real lp = 0;
@@ -73,7 +74,7 @@ transformed data {
     int idxs[R, S] = rep_array(-1, R, S);
 
     int y_r[R, 2 + S + S]; // size(1); S(1); idx(S); y(S)
-    real x_r[R, 1 + D + S + S * D]; // tau_0(1); phy(S); X(S, D, column major) 
+    real x_r[R, 1 + S + S * D]; // tau_0(1); phy(S); X(S, D, column major) 
 
     // get size of y (y_counts) for each replacement, fill ys
     for (i in 1:N) {
@@ -107,7 +108,7 @@ transformed data {
         y_r[i, 1] = y_counts_int[i];
         y_r[i, 2] = S;
         y_r[i, 3:(S + 2)] = idxs[i,];
-        y_r[i, (S + 3):(2 + S * 2)] = ys[i,];
+        y_r[i, (S + 3):(2 + S + S)] = ys[i,];
 
         x_r[i, 1] = tau_0s[i];
         x_r[i, 2:(1 + S)] = to_array_1d(phy[i,]);
@@ -124,26 +125,30 @@ parameters {
     vector<lower=0>[D] c2[R];
     vector[D] z_std[R];
 
-    real b_phy;
+    vector[R] b_phy;
+    real mu_phy;
+    real<lower=0> sigma_phy;
 }
 
 model {
-    b_phy ~ normal(0, 3);
+    mu_phy ~ normal(1, 1);
+    sigma_phy ~ student_t(4, 0, 0.5);
+
+    b_phy ~ normal(mu_phy, sigma_phy);
 
     {
-        vector[3 + 4 * D] local_pars[R];
-        vector[1] global_pars;
-
-        global_pars[1] = b_phy;
+        vector[4 + 4 * D] local_pars[R];
+        vector[0] global_pars;
 
         for (i in 1:R) {
             local_pars[i][1] = b0_hla[i];
             local_pars[i][2] = aux1_tau[i];
             local_pars[i][3] = aux2_tau[i];
-            local_pars[i][4:(D + 3)] = aux1_lambda[i];
-            local_pars[i][(D + 4):(D + D + 3)] = aux2_lambda[i];
-            local_pars[i][(D + D + 4):(D + D + D + 3)] = z_std[i];
-            local_pars[i][(D + D + D + 4):(D + D + D + D + 3)] = c2[i];
+            local_pars[i][4] = b_phy[i];
+            local_pars[i][5:(D + 4)] = aux1_lambda[i];
+            local_pars[i][(D + 5):(D + D + 4)] = aux2_lambda[i];
+            local_pars[i][(D + D + 5):(D + D + D + 4)] = z_std[i];
+            local_pars[i][(D + D + D + 5):(D + D + D + D + 4)] = c2[i];
         }
 
         target += sum(map_rect(ll, global_pars, local_pars, x_r, y_r));

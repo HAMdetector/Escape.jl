@@ -69,7 +69,7 @@ transformed data {
     int idxs[R, S] = rep_array(-1, R, S);
 
     int y_r[R, 2 + S + S]; // size(1); S(1); idx(S); y(S)
-    real x_r[R, 1 + D + S + S * D]; // tau_0(1); Z(D); phy(S); X(S, D, column major) 
+    real x_r[R, 1 + D + S + S * D]; // tau_0(1); X(S, D, column major) 
 
     // get size of y (y_counts) for each replacement, fill ys
     for (i in 1:N) {

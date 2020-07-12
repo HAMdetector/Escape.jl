@@ -3,23 +3,23 @@
 functions {
     vector ll(vector global_pars, vector local_pars, real[] xs, int[] ys) {
         // extracting integer-valued data from ys
-        int D = (num_elements(local_pars) - 3) / 4;
+        int D = (num_elements(local_pars) - 4) / 4;
         int y_counts = ys[1];
         int S = ys[2];
         
         // extracting global pars
-        real b_phy = global_pars[1];
-        real b_epi = global_pars[2];
+        real b_epi = global_pars[1];
 
         // extracting local parameters
         real b0_hla = local_pars[1];
         real aux1_tau = local_pars[2];
         real aux2_tau = local_pars[3];
+        real b_phy = local_pars[4];
         
-        vector[D] aux1_lambda = local_pars[4:(D + 3)];
-        vector[D] aux2_lambda = local_pars[(D + 4):(2*D + 3)];
-        vector[D] z_std = local_pars[(2*D + 4):(3*D + 3)];
-        vector[D] c2 = local_pars[(3*D + 4):(4*D + 3)];
+        vector[D] aux1_lambda = local_pars[5:(D + 4)];
+        vector[D] aux2_lambda = local_pars[(D + 5):(2*D + 4)];
+        vector[D] z_std = local_pars[(2*D + 5):(3*D + 4)];
+        vector[D] c2 = local_pars[(3*D + 5):(4*D + 4)];
 
         // model specification
         real lp = 0;
@@ -128,28 +128,33 @@ parameters {
     vector[D] z_std[R];
 
     real<lower=0> b_epi;
-    real b_phy;
+    real mu_phy;
+    real<lower=0> sigma_phy;
+    vector[R] b_phy;
 }
 
 model {
-    b_phy ~ normal(0, 3);
+    mu_phy ~ normal(1, 1);
+    sigma_phy ~ student_t(4, 0, 0.5);
+
+    b_phy ~ normal(mu_phy, sigma_phy);
     b_epi ~ normal(0, 3);
 
     {
-        vector[3 + 4 * D] local_pars[R];
-        vector[2] global_pars;
+        vector[4 + 4 * D] local_pars[R];
+        vector[1] global_pars;
 
-        global_pars[1] = b_phy;
-        global_pars[2] = b_epi;
+        global_pars[1] = b_epi;
 
         for (i in 1:R) {
             local_pars[i][1] = b0_hla[i];
             local_pars[i][2] = aux1_tau[i];
             local_pars[i][3] = aux2_tau[i];
-            local_pars[i][4:(D + 3)] = aux1_lambda[i];
-            local_pars[i][(D + 4):(D + D + 3)] = aux2_lambda[i];
-            local_pars[i][(D + D + 4):(D + D + D + 3)] = z_std[i];
-            local_pars[i][(D + D + D + 4):(D + D + D + D + 3)] = c2[i];
+            local_pars[i][4] = b_phy[i];
+            local_pars[i][5:(D + 4)] = aux1_lambda[i];
+            local_pars[i][(D + 5):(D + D + 4)] = aux2_lambda[i];
+            local_pars[i][(D + D + 5):(D + D + D + 4)] = z_std[i];
+            local_pars[i][(D + D + D + 5):(D + D + D + D + 4)] = c2[i];
         }
 
         target += sum(map_rect(ll, global_pars, local_pars, x_r, y_r));
