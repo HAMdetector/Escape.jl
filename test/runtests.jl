@@ -10,6 +10,7 @@ using Loo
 using MetaGraphs
 using Plots
 using Serialization
+using StanInterface
 using StaticArrays
 using Statistics
 using Suppressor

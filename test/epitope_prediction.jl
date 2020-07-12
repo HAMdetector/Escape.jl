@@ -89,5 +89,5 @@ end
     expected[13, :] = [0, 1, 1, 0, 0, 0, 0, 0, 1, 1]
     expected[14, :] = [0, 1, 1, 0, 0, 0, 0, 0, 1, 1]
 
-    @test Escape.epitope_feature_matrix(hla_data) == expected
+    @test @suppress Escape.epitope_feature_matrix(hla_data) == expected
 end
