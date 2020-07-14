@@ -18,6 +18,7 @@ let
     end
 
     tmp = tempname()
+    tmp_2 = tempname()
 
     try
         result = @suppress Escape.run(
@@ -48,8 +49,16 @@ let
         @testset "Base.length(::HLAModelResultIO)" begin
             @test length(result) == 2
         end
+        
+        @testset "moved HLAModelResultIO folder" begin
+            cp(tmp, tmp_2)
 
+            result = Escape.hla_model_result_io(tmp_2)
+            @test result isa Escape.HLAModelResultIO
+            @test result[1] isa HLAModelResult
+        end
     finally
         rm(tmp, force = true, recursive = true)
+        rm(tmp_2, force = true, recursive = true)
     end
 end
