@@ -45,7 +45,7 @@ dataset(result::HLAModelResultIO) = result.ds
 function hla_model_result_io(dir::String)
     result = deserialize(joinpath(dir, "result.jls"))
 
-    return result
+    return Escape.HLAModelResultIO(result.model, result.ds, dir)
 end
 
 function Base.getindex(result::HLAModelResultIO, i::Int)
