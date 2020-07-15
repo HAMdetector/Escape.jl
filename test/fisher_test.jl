@@ -11,7 +11,7 @@ end
 
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     replacement = Replacement("test", 2, 'S', false)
-    hla_data = HLAData("test", fasta_path, hla_types, missing)
+    hla_data = HLAData("test", fasta_path, hla_types, missing, missing)
 
     y = Bool[0, 0, 1, 1, 1] # representation for replacement
     x = Bool[1, 1, 1, 0, 0] # allele vector for A01

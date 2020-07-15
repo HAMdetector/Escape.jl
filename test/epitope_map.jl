@@ -24,7 +24,7 @@ end
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01"))]
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
-    hla_data = HLAData("test", fasta_path, hla_types, missing)
+    hla_data = HLAData("test", fasta_path, hla_types, missing, missing)
 
     map = Escape.epitope_map(hla_data)
 

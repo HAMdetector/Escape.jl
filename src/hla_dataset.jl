@@ -14,8 +14,8 @@ function Escape.HLADataset(::Val{:Test})
                             parse_allele("B53"), parse_allele("B56"),
                             missing, missing))
     hla_types[6] = HLAType((missing, missing, missing, missing, missing, missing))
-    hla_data_1 = HLAData("protein_1", fasta_path, hla_types, missing)
-    hla_data_2 = HLAData("protein_2", fasta_path, rand(HLAType, 15), missing)
+    hla_data_1 = HLAData("protein_1", fasta_path, hla_types, missing, missing)
+    hla_data_2 = HLAData("protein_2", fasta_path, rand(HLAType, 15), missing, missing)
 
     dataset = HLADataset("Test", [hla_data_1, hla_data_2])
 
