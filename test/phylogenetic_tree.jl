@@ -10,9 +10,9 @@ end
 @testset "phylogenetic_tree(::AbstractHLAData)" begin
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_types = rand(HLAType, 5)
-    hla_data = HLAData("test", fasta_path, hla_types, missing)
+    hla_data = HLAData("test", fasta_path, hla_types, missing, missing)
 
-    @test phylogenetic_tree(hla_data) isa PhylogeneticTree
+    @test Escape.phylogenetic_tree(hla_data) isa PhylogeneticTree
 end
 
 @testset "add_to_graph!(::AbstractMetaGraph, ::Int, ::String)" begin
@@ -71,7 +71,7 @@ end
 
 @testset "leaves(::PhylogeneticTree)" begin
     fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
-    hla_data = HLAData("test", fasta_path, rand(HLAType, 6), missing)
+    hla_data = HLAData("test", fasta_path, rand(HLAType, 6), missing, missing)
     tree = phylogenetic_tree(hla_data)
 
     @test leaves(tree) == [2,4,6,8,10,11]
@@ -79,7 +79,7 @@ end
 
 @testset "isleaf(v::Int, tree::Phylogenetic)" begin
     fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
-    hla_data = HLAData("test", fasta_path, rand(HLAType, 6), missing)
+    hla_data = HLAData("test", fasta_path, rand(HLAType, 6), missing, missing)
     tree = phylogenetic_tree(hla_data)
 
     @test isleaf(2, tree)
@@ -89,7 +89,7 @@ end
 
 @testset "get_property(::PhylogeneticTree, ::Int, ::Symbol)" begin
     fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
-    hla_data = HLAData("test", fasta_path, rand(HLAType, 6), missing)
+    hla_data = HLAData("test", fasta_path, rand(HLAType, 6), missing, missing)
     tree = phylogenetic_tree(hla_data)
 
     @test get_property(tree, 1, :name) == "root"
@@ -101,7 +101,7 @@ end
 
 @testset "set_property!(::PhylogeneticTree, ::Int, ::Symbol)" begin
     fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
-    hla_data = HLAData("test", fasta_path, rand(HLAType, 6), missing)
+    hla_data = HLAData("test", fasta_path, rand(HLAType, 6), missing, missing)
     tree = phylogenetic_tree(hla_data)
 
     @test get_property(tree, 1, :name) == "root"
@@ -112,7 +112,7 @@ end
 @testset "annotate!(::PhylogeneticTree, ::HLAData, ::Replacement)" begin
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     r = Replacement("test", 2, 'S', false)
-    hla_data = HLAData("test", fasta_path, rand(HLAType, 5), missing)
+    hla_data = HLAData("test", fasta_path, rand(HLAType, 5), missing, missing)
     tree = phylogenetic_tree(hla_data)
 
     annotation = Dict("1" => "0", "2" => "0", "3" => "1", "4" => "1", "5" => "1")
@@ -126,7 +126,7 @@ end
 
 @testset "matching(::PhylogeneticTree, ::HLAData)" begin
     fasta_path = joinpath(@__DIR__, "data", "phylogeny.fasta")
-    hla_data = HLAData("test", fasta_path, rand(HLAType, 6), missing)
+    hla_data = HLAData("test", fasta_path, rand(HLAType, 6), missing, missing)
     tree = phylogenetic_tree(hla_data)
 
     @test Escape.matching(tree, hla_data)
@@ -135,7 +135,7 @@ end
     @test Escape.matching(tree, hla_data) isa ErrorException
 
     short_hla_data = HLAData("short", joinpath(@__DIR__, "data", "test.fasta"),
-                             rand(HLAType, 5), missing)
+                             rand(HLAType, 5), missing, missing)
     @test Escape.matching(tree, short_hla_data) isa DimensionMismatch
 end
 

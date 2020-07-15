@@ -21,7 +21,7 @@ function phylogenetic_tree(newick_string::String)
 end
 
 function phylogenetic_tree(data::AbstractHLAData)
-    !ismissing(data.phylogenetic_tree) && return data.phylogenetic_tree
+    !ismissing(data.tree) && return data.tree
 
     temp_fasta = tempname() * ".fasta"
     temp_name = basename(tempname())

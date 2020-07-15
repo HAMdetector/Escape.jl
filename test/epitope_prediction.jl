@@ -51,7 +51,7 @@ end
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01")),
                  HLAType(parse_allele("A01", "A01", "B01", "B01", "C01", "C01"))]
     fasta_file = joinpath(@__DIR__, "data", "test.fasta")
-    data = HLAData("test", fasta_file, hla_types, missing)
+    data = HLAData("test", fasta_file, hla_types, missing, missing)
 
     df = Escape.epitope_prediction(data, rank_threshold = 100)
 
@@ -66,7 +66,7 @@ end
                  HLAType(parse_allele("A02", "A04", "B03", "B04", "C03", "C07"))]
 
     fasta_file = joinpath(@__DIR__, "data", "test.fasta")
-    hla_data = HLAData("test", fasta_file, hla_types, missing)
+    hla_data = HLAData("test", fasta_file, hla_types, missing, missing)
 
     # predicted epitopes at:
     # A02: 4-14, A03: 4-14, C*03: 1-14, C*07: 6
