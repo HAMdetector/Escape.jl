@@ -242,7 +242,7 @@ uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[Loo]]
-deps = ["CSV", "Distributions", "HypothesisTests", "LinearAlgebra", "PrettyTables", "Random", "Requires", "SortingAlgorithms", "StanInterface", "Statistics", "StatsBase", "StatsFuns", "Suppressor", "Test"]
+deps = ["CSV", "DataFrames", "Distributions", "HypothesisTests", "LinearAlgebra", "PrettyTables", "Random", "Requires", "SortingAlgorithms", "StanInterface", "Statistics", "StatsBase", "StatsFuns", "Suppressor", "Test"]
 path = "../Loo"
 uuid = "17760cec-3789-11e9-196f-659854311368"
 version = "0.1.0"
