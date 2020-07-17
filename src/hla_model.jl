@@ -24,6 +24,8 @@ function stan_input(
     model::AbstractHLAModel, data::AbstractHLAData;
     depth::Int = 1, mincount::Int = 1
 )
+    ismissing(data.stan_input) || return data.stan_input
+
     hla_types = Escape.hla_types(data)
     X = Float64.(hla_matrix(hla_types; depth = depth))
     for i in 1:size(X)[2]
@@ -31,8 +33,11 @@ function stan_input(
     end
 
     r = replacements(data, mincount = mincount)
+    println("replacements done")
     phy = phylogeny_information(model, data, r)
+    println("phylogeny done")
     Z = epitope_information(model, data, r, depth)
+    println("epitope done")
     y = Int[]
     rs = Int[]
     idx = Int[]
@@ -88,7 +93,7 @@ function phylogeny_information(
         p = Progress(R, 0, "phylogeny")
 
         phy = Matrix{Float64}(undef, R, N)
-        @threads for i in 1:R
+        for i in 1:R
             phy[i, :] = phylogeny_probabilities(r[i], data, tree)
             next!(p)
         end
