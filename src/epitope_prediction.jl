@@ -60,15 +60,10 @@ function epitope_prediction(
     end
 
     relevant_alleles = sort(unique(relevant_alleles))
-    allele_partitions = collect.(Base.Iterators.partition(relevant_alleles, 85))
-    dfs = []
+    allele_partitions = collect.(Base.Iterators.partition(relevant_alleles, 10))
 
-    p = Progress(length(allele_partitions), 0, "epitope prediction")
-    
-    @threads for alleles in collect.(Base.Iterators.partition(relevant_alleles, 85))
-        df = epitope_prediction_limited(query, alleles, rank_threshold = rank_threshold)
-        push!(dfs, df)
-        next!(p)
+    dfs = @showprogress "epitope prediction " pmap(allele_partitions) do x
+        epitope_prediction_limited(query, x, rank_threshold = rank_threshold)
     end
 
     combined_df = dfs[1]
