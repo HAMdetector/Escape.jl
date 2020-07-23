@@ -21,15 +21,16 @@ function Escape.run(
     isdir(result_dir) || throw(ArgumentError("directory $result_dir does not exist"))
     if result_name == "escape_result"
         throw(ArgumentError("$result_name must not be 'escape_result'"))
-    elseif isdir(joinpath(result_dir, result_name))
-        throw(ArgumentError("a directory with name $result_name already exists."))
     end
 
     mkpath(joinpath(result_dir, result_name))
     for (i, data) in enumerate(ds.data)
-        res = Escape.run(model, data; kwargs...)
+        result_file = joinpath(result_dir, result_name, "$i.jls")
 
-        serialize(joinpath(result_dir, result_name, "$i.jls"), res)
+        if !isfile(result_file)
+            res = Escape.run(model, data; kwargs...)
+            serialize(joinpath(result_dir, result_name, "$i.jls"), res)
+        end
     end
 
     result = HLAModelResultIO(model, ds, joinpath(result_dir, result_name))

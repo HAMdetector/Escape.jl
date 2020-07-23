@@ -3,6 +3,8 @@
 test/data/testrun/*
 test/data/tree.jld2
 test/data/tree.jls
+test/data/*.jls
+data/test_sequences/*.jls
 
 deps/build.log
 data/stan/*

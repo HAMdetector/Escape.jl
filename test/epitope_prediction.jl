@@ -53,7 +53,7 @@ end
     fasta_file = joinpath(@__DIR__, "data", "test.fasta")
     data = HLAData("test", fasta_file, hla_types, missing, missing)
 
-    df = Escape.epitope_prediction(data, rank_threshold = 100)
+    df = @suppress Escape.epitope_prediction(data, rank_threshold = 100)
 
     @test nrow(df) > 0
 end
