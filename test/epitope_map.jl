@@ -26,7 +26,7 @@ end
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_data = HLAData("test", fasta_path, hla_types, missing, missing)
 
-    map = Escape.epitope_map(hla_data)
+    map = @suppress Escape.epitope_map(hla_data)
 
     @test map isa Escape.EpitopeMap
     @test map.maplength == 14

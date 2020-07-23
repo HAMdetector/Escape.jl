@@ -33,11 +33,9 @@ function stan_input(
     end
 
     r = replacements(data, mincount = mincount)
-    println("replacements done")
     phy = phylogeny_information(model, data, r)
-    println("phylogeny done")
     Z = epitope_information(model, data, r, depth)
-    println("epitope done")
+
     y = Int[]
     rs = Int[]
     idx = Int[]
