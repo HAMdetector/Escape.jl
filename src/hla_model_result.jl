@@ -28,7 +28,7 @@ function replacement_summary(result::HLAModelResult)
         for d in 1:D
             beta_hla = posterior["beta_hla.$r.$d"]
             lower, upper = quantile(beta_hla, (0.025, 0.975))
-            p_value = fisher.p_values[alleles[d]]
+            p_value = fisher.p_values[1][alleles[d]]
 
             push!(df, 
                 [ 

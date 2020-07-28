@@ -2,6 +2,43 @@
 @userplot Phylogeny_Calibration
 @userplot Proportion_Plot
 
+@recipe function f(c::Calibration_Plot)
+    legend := false
+    grid --> false
+    seriescolor --> "#B2001D"
+    markerstrokecolor --> "#B2001D"
+    xguide --> "observed event percentage"
+    yguide --> "expected event percentage"
+    formatter := x -> string(Int(round(x * 100))) * "%"
+    
+    (c, c.args...)
+end
+
+@recipe function f(::Calibration_Plot, result::HLAModelResult; bins = 15, samples = 200,
+        title = "")
+    df = binned_intervals(result, bins = bins, samples = samples)
+
+    # diagonal line
+    @series begin
+        seriestype := :path
+        linecolor := "black"
+        linestyle := :dash
+        [0, 1], [0, 1]
+    end
+
+    # error bars
+    for row in eachrow(df)
+        @series begin
+            seriestype := :path
+            # linecolor := plotattributes[:linecolor]
+            x := [row[:expected], row[:expected]]
+            y := [row[:lower], row[:upper]]
+            ()
+        end
+        
+    end
+end
+
 @recipe function f(c::Phylogeny_Calibration)
     legend := false
     grid --> false
@@ -24,68 +61,6 @@ end
 
     theta = [result.sf.data["phy"][rs[i], idx[i]] for i in 1:N]
     y = result.sf.data["y"]
-
-    @series begin
-        seriestype := :calibration
-        theta, y
-    end
-
-    @series begin
-        seriestype := :path
-        linecolor := "black"
-        linestyle := :dash
-        [0, 1], [0, 1]
-    end
-end
-
-@recipe function f(c::Calibration_Plot)
-    legend := false
-    grid --> false
-    seriescolor --> "#B2001D"
-    markerstrokecolor --> "#B2001D"
-    xguide --> "observed event percentage"
-    yguide --> "bin midpoint"
-    formatter := x -> string(Int(round(x * 100))) * "%"
-    
-    (c, c.args...)
-end
-
-@recipe function f(c::Calibration_Plot, result::HLAModelResultIO)
-    layout --> (ceil(Int, length(result) / 2), 2)
-
-    for (i, res) in enumerate(result)
-        @series begin
-            title := result.ds.data[i].name
-            subplot := i
-            (c, res)
-        end
-    end
-    
-    plots = ceil(Int, length(result) / 2) * 2
-    for i in (length(result) + 1):plots
-        @series begin
-            subplot := 3
-            legend := false
-            grid := false
-            foreground_color_subplot := :white
-            ()
-        end
-    end
-end
-
-@recipe function f(::Calibration_Plot, result::HLAModelResult)
-    N = result.sf.data["N"]
-    indices = 1:N
-    posterior = StanInterface.extract(result.sf)
-    theta = Vector{Float64}(undef, length(indices))
-    y = Vector{Bool}(undef, length(indices))
-
-    for (i, idx) in enumerate(indices)
-        r = result.sf.data["rs"][idx]
-        n = result.sf.data["idx"][idx]
-        theta[i] = mean(theta_i(result.sf, posterior, i))
-        y[i] = result.sf.data["y"][idx]
-    end
 
     @series begin
         seriestype := :calibration
@@ -214,4 +189,61 @@ function check_calibration_arguments(x, y)
     elseif !all(0 .<= x .<= 1)
         error("elements of x must be between 0 and 1.")
     end
+end
+
+function binned_intervals(result::HLAModelResult; bins = 20, samples = 200)
+    stan_input = Escape.stan_input(result)
+    
+    theta = posterior_predictions(result.sf, stan_input, samples = samples)
+    binned_indices = Escape.binned_indices(theta, bins = bins)
+    predictions = rand.(Bernoulli.(theta))
+
+    df = DataFrame(
+        expected = Float64[], observed = Float64[], 
+        lower = Float64[], upper = Float64[]
+    )
+
+    for indices in binned_indices
+        length(indices) > 0 || continue
+        
+        expected = map(x -> mean(predictions[x, indices]), 1:samples)
+        observed = mean(stan_input["y"][indices])
+        lower = minimum(expected)
+        upper = maximum(expected)
+
+        push!(df, [mean(expected), observed, lower, upper])
+    end
+
+    return df
+end
+
+function binned_indices(theta::Matrix; bins = 20)
+    cutpoints = range(0, 1, length = bins)
+    bins = [Int[] for i in 1:bins]
+
+    for i in 1:size(theta, 2)
+        m = median(theta[:, i])
+
+        for (j, (low, high)) in enumerate(zip(cutpoints[1:end-1], cutpoints[2:end]))
+            if low <= m <= high
+                push!(bins[j], i)
+            end
+        end
+    end
+
+    return bins
+end
+
+function posterior_predictions(sf::StanInterface.Stanfit, stan_input::Dict; samples = 200)
+    posterior = StanInterface.extract(sf)
+    theta = Matrix{Float64}(undef, samples, stan_input["N"])
+
+    p = Progress(size(theta, 2), desc = "theta_i ")
+
+    @threads for i in 1:size(theta, 2)
+        theta[:, i] .= Escape.theta_i(sf, posterior, i)[1:samples]
+        next!(p)
+    end
+
+    return theta
 end

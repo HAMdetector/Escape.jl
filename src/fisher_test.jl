@@ -3,10 +3,10 @@ export FisherTest, FisherTestResult
 struct FisherTest <: AbstractHLAModel end
 
 struct FisherTestResult <: AbstractHLAModelResult
-    replacement::Replacement
-    counts::Dict{HLAAllele, Array{Int, 2}}
-    p_values::Dict{HLAAllele, Float64}
-    log_odds::Dict{HLAAllele, Float64}
+    replacements::Vector{Replacement}
+    counts::Vector{Dict{HLAAllele, Array{Int, 2}}}
+    p_values::Vector{Dict{HLAAllele, Float64}}
+    log_odds::Vector{Dict{HLAAllele, Float64}}
 end
 
 function Escape.run(model::FisherTest, data::AbstractHLAData, replacement::Replacement;
@@ -30,7 +30,7 @@ function Escape.run(model::FisherTest, data::AbstractHLAData, replacement::Repla
         log_odds[allele] = beta
     end
 
-    return FisherTestResult(replacement, counts, p_values, log_odds)
+    return FisherTestResult([replacement], [counts], [p_values], [log_odds])
 end
 
 function fisher_exact_test(a::AbstractVector{Bool}, b::AbstractVector{Bool})

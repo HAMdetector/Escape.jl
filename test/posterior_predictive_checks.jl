@@ -34,37 +34,11 @@ end
     end
 end
 
-@testset "@recipe f(::Type{Val{:calibration}}, x, y, z)" begin
-    theta = range(0, 1, length = 1000)
-    y = map(x -> rand(Bernoulli(x)), theta)
-
-    @test Plots.plot(theta, y, seriestype = :calibration) isa Plots.Plot
-    @test Plots.plot(theta, y, bins = 20, seriestype = :calibration) isa Plots.Plot
-end
-
 @testset "@recipe f(::HLAModelResult)" begin
     result = @suppress Escape.run(
         Escape.HLAModel{2}(), Escape.HLADataset("Test").data[1], 
         iter = 10, chains = 1, warmup = 10, mincount = 1
     )
     
-    @test Escape.calibration_plot(result) isa Plots.Plot
-end
-
-@testset "@recipe f(::HLAModelResultIO)" begin
-    tmp = tempname()
-
-    try
-        result = @suppress Escape.run(
-            Escape.HLAModel{2}(), Escape.HLADataset("Test"),
-            mincount = 1,
-            result_dir = tempdir(),
-            result_name = splitdir(tmp)[end],
-            iter = 10, warmup = 10, chains = 1
-        )
-
-        @test Escape.calibration_plot(result) isa Plots.Plot
-    finally
-        rm(tmp, force = true, recursive = true)
-    end
+    @test @suppress Escape.calibration_plot(result, samples = 10) isa Plots.Plot
 end
