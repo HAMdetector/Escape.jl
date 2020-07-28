@@ -19,9 +19,9 @@ end
     result = Escape.run(FisherTest(), hla_data, replacement)
     counts, p, beta = Escape.fisher_exact_test(y, x)
 
-    @test result.counts[parse_allele("A01")] == counts
-    @test result.p_values[parse_allele("A01")] == p
-    @test result.log_odds[parse_allele("A01")] == beta 
+    @test result.counts[1][parse_allele("A01")] == counts
+    @test result.p_values[1][parse_allele("A01")] == p
+    @test result.log_odds[1][parse_allele("A01")] == beta 
 end
 
 @testset "fisher_exact_test(::Vector{Bool}, ::Vector{Bool}" begin
