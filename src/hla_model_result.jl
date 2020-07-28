@@ -1,4 +1,4 @@
-function replacement_summary(result::HLAModelResult)
+function replacement_summary(result::HLAModelResult; fdr::Bool = true)
     sf = stanfit(result)
     stan_input = Escape.stan_input(result)
     data = hla_data(result)
@@ -21,14 +21,15 @@ function replacement_summary(result::HLAModelResult)
     R = stan_input["R"]
     D = stan_input["D"]
     Z = stan_input["Z"]
-    
+    fisher = Escape.run(Escape.FisherTest(), data; fdr = fdr)
+
     for r in 1:R
-        fisher = Escape.run(Escape.FisherTest(), data, replacements[r])
+        fisher_idx = findfirst(x -> x == replacements[r], fisher.replacements)
 
         for d in 1:D
             beta_hla = posterior["beta_hla.$r.$d"]
             lower, upper = quantile(beta_hla, (0.025, 0.975))
-            p_value = fisher.p_values[1][alleles[d]]
+            p_value = fisher.p_values[fisher_idx][alleles[d]]
 
             push!(df, 
                 [ 
