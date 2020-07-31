@@ -77,7 +77,7 @@ transformed data {
 
 parameters {
     vector[R] b0_hla;
-    vector<lower=0>[D] beta_hla[R];
+    vector[D] beta_hla[R];
 }
 
 model {
