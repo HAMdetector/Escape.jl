@@ -1,6 +1,6 @@
 function Escape.run(
     model::HLAModel{T}, data::AbstractHLAData;
-    p0::Real = 3,
+    p0::Real = 10,
     mincount::Int = 1,
     depth::Int = 1,
     stan_kwargs... 
@@ -21,6 +21,51 @@ function Escape.run(
 end
 
 function stan_input(
+    model::HLAModel{5}, data::AbstractHLAData;
+    depth::Int = 1, mincount::Int = 1
+)
+    ismissing(data.stan_input) || return data.stan_input
+
+    hla_types = Escape.hla_types(data)
+    X = Float64.(hla_matrix(hla_types; depth = depth))
+    println(X[1:5, 1:5])
+    
+    r = replacements(data, mincount = mincount)
+    phy = phylogeny_information(model, data, r)
+    Z = epitope_information(model, data, r, depth)
+
+    y = Int[]
+    rs = Int[]
+    idx = Int[]
+
+    for i in 1:length(r)
+        y_i = targets(r[i], data)
+        c = .!ismissing.(y_i)
+
+        append!(y, y_i[c])
+        append!(rs, repeat([i], sum(c)))
+        append!(idx, findall(x -> x == true, c))
+    end
+
+    d = Dict(
+        "N" => length(y),
+        "S" => size(X)[1],
+        "D" => size(X)[2],
+        "R" => length(r),
+        "X" => X,
+        "y" => y,
+        "rs" => rs,
+        "phy" => phy,
+        "Z" => Z,
+        "idx" => idx,
+        "p0" => 3
+    )
+
+    return d
+end
+
+
+function stan_input(
     model::AbstractHLAModel, data::AbstractHLAData;
     depth::Int = 1, mincount::Int = 1
 )
@@ -28,10 +73,6 @@ function stan_input(
 
     hla_types = Escape.hla_types(data)
     X = Float64.(hla_matrix(hla_types; depth = depth))
-    for i in 1:size(X)[2]
-        X[:, i] .= (X[:, i] .- mean(X[:, i])) ./ std(X[:, i])
-    end
-
     r = replacements(data, mincount = mincount)
     phy = phylogeny_information(model, data, r)
     Z = epitope_information(model, data, r, depth)

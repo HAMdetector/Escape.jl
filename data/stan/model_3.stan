@@ -1,3 +1,4 @@
+// DO NOT USE, DOES NOT IMPLEMENT PROPER SPARSITY ASSUMPTIONS YET!
 // like model 4, but without epitope prediction
 
 functions {
