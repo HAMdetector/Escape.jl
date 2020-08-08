@@ -30,7 +30,7 @@ functions {
         lp += inv_gamma_lpdf(c2 | 2.5, 2.5);
         lp += inv_gamma_lpdf(aux2_tau | 0.5, 0.5);
         lp += inv_gamma_lpdf(aux2_lambda | 0.5, 
-            (b_epi * to_vector(xs[2:(D + 1)]) + 1) ./ 2);
+            (1 ./ (2 * square(to_vector(segment(xs, 2 + D + S + S * D, D))))) .* (b_epi * to_vector(xs[2:(D + 1)]) + 1));
 
         {
             real tau = aux1_tau * sqrt(aux2_tau) * xs[1];
@@ -71,11 +71,12 @@ transformed data {
     vector[R] pseudo_variances;
     vector[R] pseudo_sigmas;
     vector[R] tau_0s;
+    vector[D] s_j_sq;
     int ys[R, S] = rep_array(-1, R, S);
     int idxs[R, S] = rep_array(-1, R, S);
 
     int y_r[R, 2 + S + S]; // size(1); S(1); idx(S); y(S)
-    real x_r[R, 1 + D + S + S * D]; // tau_0(1); Z(D); phy(S); X(S, D, column major) 
+    real x_r[R, 1 + D + S + S * D + D]; // tau_0(1); Z(D); phy(S); X(S, D, column major); s_j_sq(D)
 
     // get size of y (y_counts) for each replacement, fill ys
     for (i in 1:N) {
@@ -104,6 +105,11 @@ transformed data {
         tau_0s[i] = (p0 / (D - p0)) * (pseudo_sigmas[i] / sqrt(y_counts[i]));
     }
 
+    // variable variances
+    for (i in 1:D) {
+        s_j_sq[i] = variance(X[, i]);
+    }
+
     // fill y_r and x_r, this is indexing madness
     for (i in 1:R) {
         y_r[i, 1] = y_counts_int[i];
@@ -115,6 +121,7 @@ transformed data {
         x_r[i, 2:(D + 1)] = to_array_1d(Z[i,]);
         x_r[i, (D + 2):(1 + D + S)] = to_array_1d(phy[i,]);
         x_r[i, (2 + D + S):(1 + D + S + S * D)] = to_array_1d(X);
+        x_r[i, (2 + D + S + S * D):(1 + D + S + S * D + D)] = to_array_1d(s_j_sq);
     }
 }
 
@@ -138,7 +145,7 @@ model {
     sigma_phy ~ student_t(4, 0, 0.5);
 
     b_phy ~ normal(mu_phy, sigma_phy);
-    b_epi ~ normal(0, 3);
+    b_epi ~ normal(0, 1);
 
     {
         vector[4 + 4 * D] local_pars[R];
