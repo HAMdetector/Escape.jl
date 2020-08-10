@@ -29,9 +29,8 @@ functions {
         lp += std_normal_lpdf(aux1_tau | );
         lp += inv_gamma_lpdf(c2 | 2.5, 2.5);
         lp += inv_gamma_lpdf(aux2_tau | 0.5, 0.5);
-        lp += inv_gamma_lpdf(aux2_lambda | 0.5, 
-            (1 ./ (2 * square(to_vector(segment(xs, 2 + D + S + S * D, D))))) .* (b_epi * to_vector(xs[2:(D + 1)]) + 1));
-
+        lp += inv_gamma_lpdf(aux2_lambda | 0.5, (square(to_vector(segment(xs, 2 + D + S + S * D, D))) * 0.5) .* (1 + b_epi * to_vector(xs[2:(D + 1)])));
+            
         {
             real tau = aux1_tau * sqrt(aux2_tau) * xs[1];
             vector[D] lambda = aux1_lambda .* sqrt(aux2_lambda);
