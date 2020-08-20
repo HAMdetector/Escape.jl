@@ -36,7 +36,7 @@ end
 
 @testset "@recipe f(::HLAModelResult)" begin
     result = @suppress Escape.run(
-        Escape.HLAModel{2}(), Escape.HLADataset("Test").data[1], 
+        Escape.HLAModel{1}(), Escape.HLADataset("Test").data[1], 
         iter = 10, chains = 1, warmup = 10, mincount = 1
     )
     

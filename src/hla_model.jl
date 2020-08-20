@@ -8,7 +8,7 @@ function Escape.run(
 
     input = stan_input(model, data, depth = depth, mincount = mincount)
     replacements = Escape.replacements(data, mincount = mincount)
-    alleles = sort(unique_alleles(hla_types(data), depth = depth))
+    alleles = sort(unique_alleles(Escape.hla_types(data), depth = depth))
     input["p0"] = p0
 
     sf = StanInterface.stan(
@@ -27,7 +27,7 @@ function stan_input(
     ismissing(data.stan_input) || return data.stan_input
 
     hla_types = Escape.hla_types(data)
-    X = Float64.(hla_matrix(hla_types; depth = depth))
+    X = Float64.(hla_matrix_standardized(hla_types; depth = depth))
     r = replacements(data, mincount = mincount)
     phy = phylogeny_information(model, data, r)
     Z = epitope_information(model, data, r, depth)
@@ -56,7 +56,7 @@ function stan_input(
         "phy" => phy,
         "Z" => Z,
         "idx" => idx,
-        "p0" => 3
+        "p0" => 10
     )
 
     return d

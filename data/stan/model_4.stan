@@ -23,24 +23,28 @@ functions {
 
         // model specification
         real lp = 0;
-        lp += normal_lpdf(b0_hla | 0, 5);
+        lp += normal_lpdf(b0_hla | 0, 100);
         lp += std_normal_lpdf(z_std | );
         lp += std_normal_lpdf(aux1_lambda | );
         lp += std_normal_lpdf(aux1_tau | );
-        lp += inv_gamma_lpdf(c2 | 2.5, 2.5);
-        lp += inv_gamma_lpdf(aux2_tau | 0.5, 0.5 * square(xs[1]));
-        lp += inv_gamma_lpdf(aux2_lambda | 0.5, (1 + b_epi * to_vector(segment(xs, 2, D))) * 0.5);
+        lp += inv_gamma_lpdf(c2 | 3.5, 3.5);
+        lp += inv_gamma_lpdf(aux2_tau | 0.5, 0.5);
+        lp += inv_gamma_lpdf(aux2_lambda | 0.5, 0.5);
             
         {
-            real tau = aux1_tau * sqrt(aux2_tau);
-            vector[D] lambda = aux1_lambda .* sqrt(aux2_lambda);
+            real tau = (aux1_tau * sqrt(aux2_tau)) * xs[1];
+            vector[D] lambda = (aux1_lambda .* sqrt(aux2_lambda)) .* 
+                sqrt(to_vector(segment(xs, 2 + D + S + S * D, D))) .* 
+                exp(b_epi * to_vector(segment(xs, 2, D)));
             vector[D] lambda_tilde = sqrt((c2 .* square(lambda)) ./ 
                 (c2 + square(tau) * square(lambda)));
             vector[D] beta_hla = z_std .* (tau * lambda_tilde);
 
             lp += bernoulli_logit_glm_lpmf(segment(ys, 3 + S, S)[segment(ys, 3, y_counts)] | 
                 to_matrix(segment(xs, 2 + D + S, S * D), S, D)[segment(ys, 3, y_counts)], 
-                b0_hla + b_phy * logit(to_vector(segment(xs, 2 + D, S))[segment(ys, 3, y_counts)]), beta_hla); //b_phy * logit(to_vector(segment(xs, 2 + D, S))[segment(ys, 3, y_counts)]) + b0_hla, 
+                b0_hla + 
+                b_phy * logit(to_vector(segment(xs, 2 + D, S))[segment(ys, 3, y_counts)]), 
+                beta_hla);
         }
 
         return [lp]';
@@ -74,7 +78,8 @@ transformed data {
     int idxs[R, S] = rep_array(-1, R, S);
 
     int y_r[R, 2 + S + S]; // size(1); S(1); idx(S); y(S)
-    real x_r[R, 1 + D + S + S * D + D]; // tau_0(1); Z(D); phy(S); X(S, D, column major); s_j_sq(D)
+    real x_r[R, 1 + D + S + S * D + D]; // tau_0(1); Z(D); phy(S); X(S, D, column major); 
+        // s_j_sq(D)
 
     // get size of y (y_counts) for each replacement, fill ys
     for (i in 1:N) {
@@ -169,8 +174,9 @@ generated quantities {
     vector[D] beta_hla[R];
 
     for (r in 1:R) {
-        real tau = aux1_tau[r] * sqrt(aux2_tau[r]);
-        vector[D] lambda = aux1_lambda[r] .* sqrt(aux2_lambda[r]);
+        real tau = (aux1_tau[r] * sqrt(aux2_tau[r])) * tau_0s[r];
+        vector[D] lambda = (aux1_lambda[r] .* sqrt(aux2_lambda[r])) .* sqrt(s_j_sq) .*
+            exp(b_epi * to_vector(Z[r,]));
         vector[D] lambda_tilde = sqrt(c2[r] .* square(lambda) ./ 
                 (c2[r] + square(tau) * square(lambda)));
         beta_hla[r] = z_std[r] .* (tau * lambda_tilde);
