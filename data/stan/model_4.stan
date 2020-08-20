@@ -9,13 +9,13 @@ functions {
         
         // extracting global pars
         real b_epi = global_pars[1];
+        // real b_var = global_pars[2];
 
         // extracting local parameters
         real b0_hla = local_pars[1];
         real aux1_tau = local_pars[2];
         real aux2_tau = local_pars[3];
         real b_phy = local_pars[4];
-        
         vector[D] aux1_lambda = local_pars[5:(D + 4)];
         vector[D] aux2_lambda = local_pars[(D + 5):(2*D + 4)];
         vector[D] z_std = local_pars[(2*D + 5):(3*D + 4)];
@@ -28,20 +28,19 @@ functions {
         lp += std_normal_lpdf(aux1_lambda | );
         lp += std_normal_lpdf(aux1_tau | );
         lp += inv_gamma_lpdf(c2 | 2.5, 2.5);
-        lp += inv_gamma_lpdf(aux2_tau | 0.5, 0.5);
-        lp += inv_gamma_lpdf(aux2_lambda | 0.5, (square(to_vector(segment(xs, 2 + D + S + S * D, D))) * 0.5) .* (1 + b_epi * to_vector(xs[2:(D + 1)])));
+        lp += inv_gamma_lpdf(aux2_tau | 0.5, 0.5 * square(xs[1]));
+        lp += inv_gamma_lpdf(aux2_lambda | 0.5, (1 + b_epi * to_vector(segment(xs, 2, D))) * 0.5);
             
         {
-            real tau = aux1_tau * sqrt(aux2_tau) * xs[1];
+            real tau = aux1_tau * sqrt(aux2_tau);
             vector[D] lambda = aux1_lambda .* sqrt(aux2_lambda);
-            vector[D] lambda_tilde = sqrt(c2 .* square(lambda) ./ 
+            vector[D] lambda_tilde = sqrt((c2 .* square(lambda)) ./ 
                 (c2 + square(tau) * square(lambda)));
             vector[D] beta_hla = z_std .* (tau * lambda_tilde);
 
             lp += bernoulli_logit_glm_lpmf(segment(ys, 3 + S, S)[segment(ys, 3, y_counts)] | 
                 to_matrix(segment(xs, 2 + D + S, S * D), S, D)[segment(ys, 3, y_counts)], 
-                b_phy * logit(to_vector(segment(xs, 2 + D, S))[segment(ys, 3, y_counts)]) + b0_hla, 
-                beta_hla);
+                b0_hla + b_phy * logit(to_vector(segment(xs, 2 + D, S))[segment(ys, 3, y_counts)]), beta_hla); //b_phy * logit(to_vector(segment(xs, 2 + D, S))[segment(ys, 3, y_counts)]) + b0_hla, 
         }
 
         return [lp]';
@@ -142,9 +141,8 @@ parameters {
 model {
     mu_phy ~ normal(1, 1);
     sigma_phy ~ student_t(4, 0, 0.5);
-
     b_phy ~ normal(mu_phy, sigma_phy);
-    b_epi ~ normal(0, 1);
+    b_epi ~ normal(0, 3);
 
     {
         vector[4 + 4 * D] local_pars[R];
@@ -171,7 +169,7 @@ generated quantities {
     vector[D] beta_hla[R];
 
     for (r in 1:R) {
-        real tau = aux1_tau[r] * sqrt(aux2_tau[r]) * x_r[r, 1];
+        real tau = aux1_tau[r] * sqrt(aux2_tau[r]);
         vector[D] lambda = aux1_lambda[r] .* sqrt(aux2_lambda[r]);
         vector[D] lambda_tilde = sqrt(c2[r] .* square(lambda) ./ 
                 (c2[r] + square(tau) * square(lambda)));
