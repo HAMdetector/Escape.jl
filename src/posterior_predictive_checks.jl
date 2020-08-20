@@ -30,7 +30,6 @@ end
     for row in eachrow(df)
         @series begin
             seriestype := :path
-            # linecolor := plotattributes[:linecolor]
             x := [row[:expected], row[:expected]]
             y := [row[:lower], row[:upper]]
             ()
@@ -52,9 +51,13 @@ end
 end
 
 @recipe function f(
-    ::Phylogeny_Calibration, 
-    result::Union{HLAModelResult{3}, HLAModelResult{4}}
-)   
+    ::Phylogeny_Calibration, result::HLAModelResult
+)
+
+    if !("phy" ∈ keys(result.sf.data["phy"]))
+        error("HLAModelResult does not contain phylogeny information.")
+    end
+
     N = result.sf.data["N"]
     rs = result.sf.data["rs"]
     idx = result.sf.data["idx"]

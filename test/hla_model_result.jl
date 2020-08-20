@@ -33,5 +33,5 @@ end
 
     result = deserialize(joinpath(@__DIR__, "data", "result.jls"))
 
-    @test Escape.replacement_summary(result) isa DataFrame
+    @test @suppress Escape.replacement_summary(result) isa DataFrame
 end

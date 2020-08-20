@@ -12,6 +12,7 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = true)
         position = Int[], 
         replacement = Char[],
         posterior_p = Float64[],
+        inclusion_p = Float64[],
         log_odds_lower_95 = Float64[],
         log_odds_upper_95 = Float64[],
         fisher_p = Float64[],
@@ -30,13 +31,21 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = true)
             beta_hla = posterior["beta_hla.$r.$d"]
             lower, upper = quantile(beta_hla, (0.025, 0.975))
             p_value = fisher.p_values[fisher_idx][alleles[d]]
-
+            inclusion_p = let 
+                if "shrinkage.$r.$d" in keys(posterior)
+                    mean(1 .- posterior["shrinkage.$r.$d"])
+                else
+                    mean(beta_hla .> 0)
+                end
+            end
+                
             push!(df, 
                 [ 
                     alleles[d],
                     position(replacements[r]), 
                     replacement(replacements[r]),
                     mean(beta_hla .> 0),
+                    inclusion_p,
                     lower,
                     upper,
                     p_value,
@@ -46,7 +55,7 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = true)
         end
     end
 
-    sort!(df, :posterior_p, rev = true)
+    sort!(df, :inclusion_p, rev = true)
 
     return df
 end
