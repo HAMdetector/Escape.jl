@@ -40,7 +40,7 @@ function hla_matrix(data::Vector{HLAType}; depth::Int = 1)
             a = limit_hla_accuracy(allele, depth = depth)
             (ismissing(a) || hla_accuracy(a) != depth) && continue
 
-            m[i, findfirst(x -> x == a, alleles)] += 1
+            m[i, findfirst(x -> x == a, alleles)] = 1
         end
     end
 

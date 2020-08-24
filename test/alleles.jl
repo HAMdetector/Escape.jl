@@ -13,7 +13,7 @@ end
     hla_types = [HLAType(parse_allele("A11", "A03", "B7", "B7", "C7", "C7")),
                  HLAType(parse_allele("A33", "A03", "B7", "B7", "C7", "C7"))]
 
-    @test Escape.hla_matrix(hla_types) == [1 1 0 2 2; 1 0 1 2 2]
+    @test Escape.hla_matrix(hla_types) == [1 1 0 1 1; 1 0 1 1 1]
 end
 
 @testset "hla_matrix_standardized(::Vector{HLAType})" begin
