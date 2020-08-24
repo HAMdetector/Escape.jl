@@ -27,7 +27,7 @@ function stan_input(
     ismissing(data.stan_input) || return data.stan_input
 
     hla_types = Escape.hla_types(data)
-    X = Float64.(hla_matrix_standardized(hla_types; depth = depth))
+    X = Float64.(hla_matrix(hla_types; depth = depth))
     r = replacements(data, mincount = mincount)
     phy = phylogeny_information(model, data, r)
     Z = epitope_information(model, data, r, depth)
