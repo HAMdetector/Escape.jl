@@ -1,4 +1,4 @@
-function replacement_summary(result::HLAModelResult; fdr::Bool = true)
+function replacement_summary(result::HLAModelResult; fdr::Bool = false)
     sf = stanfit(result)
     stan_input = Escape.stan_input(result)
     data = hla_data(result)
@@ -16,7 +16,9 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = true)
         log_odds_lower_95 = Float64[],
         log_odds_upper_95 = Float64[],
         fisher_p = Float64[],
-        in_predicted_epitope = Int[]
+        in_predicted_epitope = Int[],
+        n_replacement_total = Int[],
+        n_replacement_with_hla = Int[]
     )
 
     R = stan_input["R"]
@@ -31,13 +33,7 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = true)
             beta_hla = posterior["beta_hla.$r.$d"]
             lower, upper = quantile(beta_hla, (0.025, 0.975))
             p_value = fisher.p_values[fisher_idx][alleles[d]]
-            inclusion_p = let 
-                if "shrinkage.$r.$d" in keys(posterior)
-                    mean(1 .- posterior["shrinkage.$r.$d"])
-                else
-                    mean(beta_hla .> 0)
-                end
-            end
+            inclusion_p = mean(beta_hla .> 0)
                 
             push!(df, 
                 [ 
@@ -49,7 +45,9 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = true)
                     lower,
                     upper,
                     p_value,
-                    Z[r, d]
+                    Z[r, d],
+                    sum(fisher.counts[fisher_idx][alleles[d]][:, 1]),
+                    fisher.counts[fisher_idx][alleles[d]][1, 1]
                 ]
             )
         end
