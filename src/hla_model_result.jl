@@ -1,11 +1,11 @@
 function replacement_summary(result::HLAModelResult; fdr::Bool = false)
     sf = stanfit(result)
-    stan_input = Escape.stan_input(result)
+    si = stan_input(result)
     data = hla_data(result)
     posterior = extract(sf)
 
     alleles = hla_alleles(result)
-    replacements = Escape.replacements(result)
+    rs = replacements(result)
 
     df = DataFrame(
         allele = HLAAllele[],
@@ -21,13 +21,13 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = false)
         n_replacement_with_hla = Int[]
     )
 
-    R = stan_input["R"]
-    D = stan_input["D"]
-    Z = stan_input["Z"]
+    R = si["R"]
+    D = si["D"]
+    Z = si["Z"]
     fisher = Escape.run(Escape.FisherTest(), data; fdr = fdr)
 
     for r in 1:R
-        fisher_idx = findfirst(x -> x == replacements[r], fisher.replacements)
+        fisher_idx = findfirst(x -> x == rs[r], fisher.replacements)
 
         for d in 1:D
             beta_hla = posterior["beta_hla.$r.$d"]
@@ -38,8 +38,8 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = false)
             push!(df, 
                 [ 
                     alleles[d],
-                    position(replacements[r]), 
-                    replacement(replacements[r]),
+                    position(rs[r]), 
+                    replacement(rs[r]),
                     mean(beta_hla .> 0),
                     inclusion_p,
                     lower,
@@ -53,7 +53,7 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = false)
         end
     end
 
-    sort!(df, :inclusion_p, rev = true)
+    sort!(df, :posterior_p, rev = true)
 
     return df
 end
