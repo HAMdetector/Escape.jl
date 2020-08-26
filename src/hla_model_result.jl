@@ -1,3 +1,15 @@
+function add_shrinkage_factors!(result::HLAModelResult{1})
+    si = stan_input(result)
+    R = si["R"]
+    D = si["D"]
+
+    for res_d in result.sf.result
+        for r in 1:R, d in 1:D
+            res_d["kappa.$r.$d"] = zeros(length(res_d["lp__"]))
+        end
+    end
+end
+
 function add_shrinkage_factors!(result::Union{HLAModelResult{4}, HLAModelResult{5}})
     si = stan_input(result)
     R = si["R"]
