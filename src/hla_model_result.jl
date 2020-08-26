@@ -64,7 +64,7 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = false)
             beta_hla = posterior["beta_hla.$r.$d"]
             lower, upper = quantile(beta_hla, (0.025, 0.975))
             p_value = fisher.p_values[fisher_idx][alleles[d]]
-            inclusion_p = mean(beta_hla .> 0)
+            inclusion_p = median(1 .- posterior["kappa.$r.$d"])
                 
             push!(df, 
                 [ 

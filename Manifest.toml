@@ -131,12 +131,6 @@ git-tree-sha1 = "21fe8727469b4eeb5a006e0399588180f5dc9db4"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
 version = "0.23.5"
 
-[[Escape]]
-deps = ["BioSequences", "DataFrames", "DelimitedFiles", "Distributed", "Distributions", "ExcelReaders", "FASTX", "HypothesisTests", "LightGraphs", "LinearAlgebra", "Loo", "MetaGraphs", "MultipleTesting", "ProgressMeter", "RecipesBase", "Serialization", "StanInterface", "StaticArrays", "Statistics", "StatsBase", "StatsFuns", "Suppressor", "Test"]
-path = "."
-uuid = "c9e4727e-aca6-11e8-18a9-b13bcfc7f449"
-version = "0.1.0"
-
 [[ExcelReaders]]
 deps = ["DataValues", "Dates", "PyCall", "Test"]
 git-tree-sha1 = "6f9db420dd362bd5bcea3a0f6dabf8bda587fec3"
@@ -170,12 +164,6 @@ version = "0.4.1"
 [[Future]]
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
-
-[[HLADatasets]]
-deps = ["BioSequences", "CSV", "DataFrames", "Distributed", "Escape", "FASTX", "Loo", "Serialization", "StanInterface", "Test"]
-path = "../HLADatasets"
-uuid = "bb3db2aa-ad5d-11e8-126d-811329b02806"
-version = "0.1.0"
 
 [[HypothesisTests]]
 deps = ["Combinatorics", "Distributions", "LinearAlgebra", "Random", "Rmath", "Roots", "Statistics", "StatsBase"]
