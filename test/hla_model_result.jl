@@ -35,11 +35,3 @@ end
 
     @test @suppress Escape.replacement_summary(result) isa DataFrame
 end
-
-@testset "add_shrinkage_factors!(::Union{HLAModelResult{4}, HLAModelResult{5}})" begin
-    result = deserialize(joinpath(@__DIR__, "data", "result.jls"))
-    @test !("kappa.1.1" in keys(result.sf.result[1]))
-
-    Escape.add_shrinkage_factors!(result)
-    @test "kappa.1.1" in keys(result.sf.result[1])
-end
