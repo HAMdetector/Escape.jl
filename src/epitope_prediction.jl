@@ -62,7 +62,10 @@ function epitope_prediction(
     relevant_alleles = sort(unique(relevant_alleles))
     allele_partitions = collect.(Base.Iterators.partition(relevant_alleles, 10))
 
-    dfs = @showprogress "epitope prediction " pmap(allele_partitions) do x
+    p = Progress(length(allele_partitions), desc = "epitope prediction ")
+
+    dfs = asyncmap(allele_partitions, ntasks = Threads.nthreads()) do x
+        next!(p)
         epitope_prediction_limited(query, x, rank_threshold = rank_threshold)
     end
 
