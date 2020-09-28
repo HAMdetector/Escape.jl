@@ -30,9 +30,9 @@ function epitope_map(data::AbstractHLAData; rank_threshold::Real = 100)
     df = epitope_prediction(data, rank_threshold = rank_threshold)
     
     epitopes = df[!, :peptide]
-    starts = df[!, :position]
-    stops = df[!, :position] .+ length.(df[!, :peptide]) .- 1
-    alleles = df[!, :allele]
+    starts = df[!, :pos] .+ 1
+    stops = starts .+ length.(df[!, :peptide]) .- 1
+    alleles = parse_allele.(df[!, :best_allele])
     maplength = sequence_length(data)
 
     map = EpitopeMap(name(data), epitopes, starts, stops, alleles, maplength)
