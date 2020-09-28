@@ -10,7 +10,11 @@ function add_shrinkage_factors!(result::HLAModelResult{1})
     end
 end
 
-function replacement_summary(result::HLAModelResult; fdr::Bool = false)
+function replacement_summary(
+    result::HLAModelResult; 
+    fdr::Bool = false,
+    fisher_p::Bool = false
+)
     sf = stanfit(result)
     si = stan_input(result)
     data = hla_data(result)
@@ -35,16 +39,21 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = false)
     R = si["R"]
     D = si["D"]
     Z = si["Z"]
-    fisher = Escape.run(Escape.FisherTest(), data; fdr = fdr)
+
+    if fisher_p
+        fisher = Escape.run(Escape.FisherTest(), data; fdr = fdr)
+    end
 
     for r in 1:R
-        fisher_idx = findfirst(x -> x == rs[r], fisher.replacements)
+        fisher_idx = fisher_p ? findfirst(x -> x == rs[r], fisher.replacements) : 0
 
         for d in 1:D
             beta_hla = posterior["beta_hla.$r.$d"]
             lower, upper = quantile(beta_hla, (0.025, 0.975))
-            p_value = fisher.p_values[fisher_idx][alleles[d]]
-                
+            p_value = fisher_p ? fisher.p_values[fisher_idx][alleles[d]] : 0
+            n_total = fisher_p ? sum(fisher.counts[fisher_idx][alleles[d]][:, 1]) : 0
+            n_with_hla = fisher_p ? fisher.counts[fisher_idx][alleles[d]][1, 1] : 0
+
             push!(df, 
                 [ 
                     alleles[d],
@@ -55,8 +64,8 @@ function replacement_summary(result::HLAModelResult; fdr::Bool = false)
                     upper,
                     p_value,
                     Z[r, d],
-                    sum(fisher.counts[fisher_idx][alleles[d]][:, 1]),
-                    fisher.counts[fisher_idx][alleles[d]][1, 1]
+                    n_total,
+                    n_with_hla
                 ]
             )
         end
