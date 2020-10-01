@@ -54,7 +54,7 @@ end
     ::Phylogeny_Calibration, result::HLAModelResult
 )
 
-    if !("phy" ∈ keys(result.sf.data["phy"]))
+    if !("phy" ∈ keys(result.sf.data))
         error("HLAModelResult does not contain phylogeny information.")
     end
 
