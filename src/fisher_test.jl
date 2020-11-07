@@ -9,7 +9,7 @@ struct FisherTestResult <: AbstractHLAModelResult
     log_odds::Vector{Dict{HLAAllele, Float64}}
 end
 
-function Escape.run(model::FisherTest, data::AbstractHLAData; fdr::Bool = true,
+function Escape.run(model::FisherTest, data::AbstractHLAData; fdr::Bool = false,
                     mincount::Int = 1, depth::Int = 1)
 
     r = replacements(data, mincount = mincount)

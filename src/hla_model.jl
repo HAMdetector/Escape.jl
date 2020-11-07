@@ -1,6 +1,5 @@
 function Escape.run(
     model::HLAModel{T}, data::AbstractHLAData;
-    p0::Real = 10,
     mincount::Int = 1,
     depth::Int = 1,
     stan_kwargs... 
@@ -9,12 +8,11 @@ function Escape.run(
     input = stan_input(model, data, depth = depth, mincount = mincount)
     replacements = Escape.replacements(data, mincount = mincount)
     alleles = sort(unique_alleles(Escape.hla_types(data), depth = depth))
-    input["p0"] = p0
 
     sf = StanInterface.stan(
-        joinpath(@__DIR__, "..", "data", "stan", "model_$(T)"), input;
+        joinpath(@__DIR__, "..", "models", "model_$(T)"), input;
         stan_args = "adapt delta=0.85 algorithm=hmc engine=nuts max_depth=10",
-        stan_kwargs...
+        iter = 600, refresh = 1, stan_kwargs...
     )
 
     return HLAModelResult(model, data, sf, replacements, alleles)
@@ -55,8 +53,7 @@ function stan_input(
         "rs" => rs,
         "phy" => phy,
         "Z" => Z,
-        "idx" => idx,
-        "p0" => 10
+        "idx" => idx
     )
 
     return d

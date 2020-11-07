@@ -1,10 +1,10 @@
 function epitope_feature_matrix(
-    data::AbstractHLAData; rank_threshold::Real = 2,
+    data::AbstractHLAData; rank_threshold::Real = 2, depth::Int = 1,
 )
-    df = epitope_prediction(data, rank_threshold = rank_threshold)
+    df = epitope_prediction(data, rank_threshold = rank_threshold, depth = depth)
     
     hla_types = Escape.hla_types(data)
-    alleles = sort(unique_alleles(hla_types))
+    alleles = sort(unique_alleles(hla_types, depth = depth))
     
     positions = sequence_length(records(data))
 
@@ -20,10 +20,10 @@ function epitope_feature_matrix(
     return m
 end
 
-function epitope_prediction(data::AbstractHLAData; rank_threshold::Real = 2)
+function epitope_prediction(data::AbstractHLAData; rank_threshold::Real = 2, depth::Int = 1)
     records = Escape.records(data)
     consensus = replace(consensus_sequence(records), '-' => 'X')
-    alleles = unique_alleles(hla_types(data))
+    alleles = unique_alleles(hla_types(data), depth = depth)
 
     df = epitope_prediction(consensus, alleles, rank_threshold = rank_threshold)
 
