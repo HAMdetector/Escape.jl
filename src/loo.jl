@@ -64,6 +64,7 @@ function theta_i(sf::StanInterface.Stanfit, p::Dict, i::Int)
     end
 
     b_phy = "b_phy.$r" in keys(p) ? p["b_phy.$r"] : 0
+
     theta = @. logistic(p["b0_hla.$r"] + (b_phy * logit(phy[r, idx[i]])) + nu)
 
     return theta

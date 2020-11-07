@@ -1,15 +1,3 @@
-function add_shrinkage_factors!(result::HLAModelResult{1})
-    si = stan_input(result)
-    R = si["R"]
-    D = si["D"]
-
-    for res_d in result.sf.result
-        for r in 1:R, d in 1:D
-            res_d["kappa.$r.$d"] = zeros(length(res_d["lp__"]))
-        end
-    end
-end
-
 function replacement_summary(
     result::HLAModelResult; 
     fdr::Bool = false,
@@ -51,7 +39,7 @@ function replacement_summary(
             beta_hla = posterior["beta_hla.$r.$d"]
             lower, upper = quantile(beta_hla, (0.025, 0.975))
             p_value = fisher_p ? fisher.p_values[fisher_idx][alleles[d]] : 0
-            n_total = fisher_p ? sum(fisher.counts[fisher_idx][alleles[d]][:, 1]) : 0
+            n_total = fisher_p ? sum(fisher.counts[fisher_idx][alleles[d]][1, :]) : 0
             n_with_hla = fisher_p ? fisher.counts[fisher_idx][alleles[d]][1, 1] : 0
 
             push!(df, 
