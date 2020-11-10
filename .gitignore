@@ -10,3 +10,13 @@ deps/build.log
 data/stan/*
 !data/stan/*.stan
 data/netMHC-4.0/*
+
+# LaTeX
+
+*.aux
+*.fdb_latexmk
+*.fls
+manuscript.log
+manuscript.out
+*.synctex.gz
+*.toc

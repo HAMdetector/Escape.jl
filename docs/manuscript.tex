@@ -1,0 +1,93 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[fleqn,11pt]{SelfArx} % Document font size and equations flushed left
+
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{svg}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage[english]{babel} % Specify a different language here - english by default
+\usepackage{listings}
+\usepackage{fontspec}
+\usepackage{transparent}
+% \usepackage{lipsum} % Required to insert dummy text. To be removed otherwise
+\setmainfont{TeX Gyre Termes}
+%----------------------------------------------------------------------------------------
+%	COLUMNS
+%----------------------------------------------------------------------------------------
+
+\setlength{\columnsep}{0.55cm} % Distance between the two columns of text
+\setlength{\fboxrule}{1pt} % Width of the border around the abstract
+
+%----------------------------------------------------------------------------------------
+%	COLORS
+%----------------------------------------------------------------------------------------
+
+\definecolor{color1}{RGB}{124,0,0} % Color of the article title and sections
+\definecolor{color2}{RGB}{150,150,150} % Color of the boxes behind the abstract and headings
+
+%----------------------------------------------------------------------------------------
+%	HYPERLINKS
+%----------------------------------------------------------------------------------------
+
+\usepackage{hyperref} % Required for hyperlinks
+\hypersetup{hidelinks,colorlinks,breaklinks=true,urlcolor=color2,citecolor=color1,
+  linkcolor=color1,bookmarksopen=false,pdftitle={Title},pdfauthor={Author}}
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE INFORMATION
+%----------------------------------------------------------------------------------------
+
+\PaperTitle{
+    Predicting HLA associated mutations with a \\ Bayesian regression model
+} % Article title
+
+\Authors{} % Authors
+% \affiliation{\textsuperscript{1}\textit{Department of Biology, University of Examples, London, United Kingdom}} % Author affiliation
+% \affiliation{\textsuperscript{2}\textit{Department of Chemistry, University of Examples, London, United Kingdom}} % Author affiliation
+% \affiliation{*\textbf{Corresponding author}: john@smith.com} % Corresponding author
+
+\Keywords{} % Keywords - if you don't want any simply remove all the text between the curly brackets
+\newcommand{\keywordname}{Keywords} % Defines the keywords heading name
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+
+\Abstract{
+  
+}
+
+%----------------------------------------------------------------------------------------
+\begin{document}
+
+\flushbottom % Makes all text pages the same height
+
+\maketitle % Print the title and abstract box
+
+{
+  \hypersetup{linkcolor=black}
+  \tableofcontents
+}
+
+
+\thispagestyle{empty} % Removes page numbering from the first page
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+
+\FloatBarrier
+
+%----------------------------------------------------------------------------------------
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------
+\phantomsection
+\bibliographystyle{unsrt}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
