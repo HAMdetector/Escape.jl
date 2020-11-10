@@ -42,15 +42,17 @@
 %----------------------------------------------------------------------------------------
 
 \PaperTitle{
-    Predicting HLA associated mutations with a \\ Bayesian regression model
+    HAMFinder: Combining information to predict HLA-associated mutations with a
+    Bayesian regression model
 } % Article title
 
-\Authors{} % Authors
-% \affiliation{\textsuperscript{1}\textit{Department of Biology, University of Examples, London, United Kingdom}} % Author affiliation
+\Authors{Daniel Habermann\textsuperscript{1}, Daniel Hoffmann\textsuperscript{1}} % Authors
+\affiliation{\textsuperscript{1}\textit{Department of Biology, University of Duisburg-Essen, Essen, Germany}} % Author affiliation
 % \affiliation{\textsuperscript{2}\textit{Department of Chemistry, University of Examples, London, United Kingdom}} % Author affiliation
 % \affiliation{*\textbf{Corresponding author}: john@smith.com} % Corresponding author
 
-\Keywords{} % Keywords - if you don't want any simply remove all the text between the curly brackets
+\Keywords{human leucocyte anigen system, multiple sequence alignment, escape mutations, 
+  Bayesian inference, sparsity, horseshoe, epitope prediction} % Keywords - if you don't want any simply remove all the text between the curly brackets
 \newcommand{\keywordname}{Keywords} % Defines the keywords heading name
 
 %----------------------------------------------------------------------------------------
@@ -58,7 +60,44 @@
 %----------------------------------------------------------------------------------------
 
 \Abstract{
-  
+  % - what are HLA associated mutations and why identifying HLA escape is important
+  % 
+  % - current methods lack important aspects
+  % - Progress in Bayesian methods are not reflected in current HLA models
+  % - Bayesian statistics provides a coherent framework to combine information from different sources
+  % - Using this kind of imformation and new methods improve predicted performance tremendously
+  % -
+  \\
+  \textbf{Motivation} \\
+  The human leucoyte antigen system (HLA) is of paramount importance to combat viral
+  infections by presenting peptides on the cell surface via MHC I.
+  In this way, CD8+ cytotoxic T-Lymphocytes exert a strong selection pressure towards
+  virus variants that escape that immune recognition pathway, e.g. through point 
+  mutations that decrease binding of the respective peptide to MHC I. \\
+
+  Reliably identifying HLA-associated mutations is important for understanding viral
+  evolution, but experimental methods like binding assays are prohibitively expensive
+  for large-scale use and fail to recognize other mechanisms of immune escape like
+  proteasomal processing.
+
+  One step in finding these mutations is through the statistical analysis
+  of sequence data. However, existing methods are based on nullhypothesis significance 
+  testing and do not make use of all the available information and therefore have poor
+  real-world performance. \\
+
+  \textbf{Results} \\
+  Here, we present a Bayesian regression model that is easily extensible to include 
+  information from different sources (e.g. epitope prediction software) 
+  and makes use of recent advances in Bayesian inference, e.g. by using a sparsifying 
+  prior. We show that including this kind of information improves predictive performance 
+  considerably over state-of-the-art methods. \\
+
+  \textbf{Availability and Implementation} \\
+  The source code of this software is available at 
+  \url{http://gogs.uni-due.de/habermann/Escape.git} under a permissive MIT license. \\
+
+  \textbf{Supplementary information} \\
+  \url{google.de}[Supplementary data] are available at \textit{Bioinformatics} online. \\
 }
 
 %----------------------------------------------------------------------------------------
@@ -73,6 +112,14 @@
   \tableofcontents
 }
 
+\pagebreak
+
+\section{Introduction}
+\section{System and methods}
+\section{Algorithm}
+\section{Implementation}
+\section{Discussion}
+\section{References}
 
 \thispagestyle{empty} % Removes page numbering from the first page
 %----------------------------------------------------------------------------------------
