@@ -12,7 +12,7 @@
 \usepackage[english]{babel} % Specify a different language here - english by default
 \usepackage{listings}
 \usepackage{fontspec}
-\usepackage{transparent}
+\usepackage{hyperref}
 % \usepackage{lipsum} % Required to insert dummy text. To be removed otherwise
 \setmainfont{TeX Gyre Termes}
 %----------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@
 } % Article title
 
 \Authors{Daniel Habermann\textsuperscript{1}, Daniel Hoffmann\textsuperscript{1}} % Authors
-\affiliation{\textsuperscript{1}\textit{Department of Biology, University of Duisburg-Essen, Essen, Germany}} % Author affiliation
+\affiliation{\textsuperscript{1}\textit{Bioinformatics \& Computational Biophysics, Faculty of Biology, University of Duisburg-Essen, 45117 Essen, Germany}} % Author affiliation
 % \affiliation{\textsuperscript{2}\textit{Department of Chemistry, University of Examples, London, United Kingdom}} % Author affiliation
 % \affiliation{*\textbf{Corresponding author}: john@smith.com} % Corresponding author
 
@@ -69,7 +69,7 @@
   % -
   \\
   \textbf{Motivation} \\
-  The human leucoyte antigen system (HLA) is of paramount importance to combat viral
+  The human leucocyte antigen system (HLA) is of paramount importance to combat viral
   infections by presenting peptides on the cell surface via MHC I.
   In this way, CD8+ cytotoxic T-Lymphocytes exert a strong selection pressure towards
   virus variants that escape that immune recognition pathway, e.g. through point 
@@ -82,8 +82,8 @@
 
   One step in finding these mutations is through the statistical analysis
   of sequence data. However, existing methods are based on nullhypothesis significance 
-  testing and do not make use of all the available information and therefore have poor
-  real-world performance. \\
+  testing and do not make use of all the available information and therefore have
+  unsatisfactory real-world performance. \\
 
   \textbf{Results} \\
   Here, we present a Bayesian regression model that is easily extensible to include 
@@ -97,7 +97,7 @@
   \url{http://gogs.uni-due.de/habermann/Escape.git} under a permissive MIT license. \\
 
   \textbf{Supplementary information} \\
-  \url{google.de}[Supplementary data] are available at \textit{Bioinformatics} online. \\
+  \href{https://google.com}{Supplementary data} are available at \textit{Bioinformatics} online. \\
 }
 
 %----------------------------------------------------------------------------------------
@@ -115,6 +115,9 @@
 \pagebreak
 
 \section{Introduction}
+
+
+
 \section{System and methods}
 \section{Algorithm}
 \section{Implementation}
