@@ -42,7 +42,7 @@
 %----------------------------------------------------------------------------------------
 
 \PaperTitle{
-    HAMFinder: Combining information to predict HLA-associated mutations with a
+    HAMDetector: Combining information to predict HLA-associated mutations with a
     Bayesian regression model
 } % Article title
 
@@ -51,8 +51,8 @@
 % \affiliation{\textsuperscript{2}\textit{Department of Chemistry, University of Examples, London, United Kingdom}} % Author affiliation
 % \affiliation{*\textbf{Corresponding author}: john@smith.com} % Corresponding author
 
-\Keywords{human leucocyte anigen system, multiple sequence alignment, escape mutations, 
-  Bayesian inference, sparsity, horseshoe, epitope prediction} % Keywords - if you don't want any simply remove all the text between the curly brackets
+\Keywords{human leucocyte antigen system, HLA, multiple sequence alignment, escape mutations, 
+  viral escape, Bayesian inference, sparsity, horseshoe, epitope prediction} % Keywords - if you don't want any simply remove all the text between the curly brackets
 \newcommand{\keywordname}{Keywords} % Defines the keywords heading name
 
 %----------------------------------------------------------------------------------------
@@ -60,13 +60,6 @@
 %----------------------------------------------------------------------------------------
 
 \Abstract{
-  % - what are HLA associated mutations and why identifying HLA escape is important
-  % 
-  % - current methods lack important aspects
-  % - Progress in Bayesian methods are not reflected in current HLA models
-  % - Bayesian statistics provides a coherent framework to combine information from different sources
-  % - Using this kind of imformation and new methods improve predicted performance tremendously
-  % -
   \\
   \textbf{Motivation} \\
   The human leucocyte antigen system (HLA) is of paramount importance to combat viral
@@ -116,7 +109,65 @@
 
 \section{Introduction}
 
+% - subset of peptidome presented on the cell surface via MHC I.
+% - Cytotoxic t cells are selected to not recognize self.
+% - by rule of exclusion, recognized peptides are foreign
+% - t cells induce cytolytic activity and recruit other immune cells, reference
 
+% - basic function of statistical analysis of sequence data
+% - state of the art + brumme paper, phylogeny, linkage disequilibrium and codon covariation
+% cite brumme and other paper
+
+% - problems of p value based methods and statistical significance testing
+% - highlight benefits of Bayesian approaches
+\subsection{The HLA system}
+
+One way how the human immune system is able to recognize intracellular viral infections
+is through the human leucocyte antigen system:
+In cells with active protein biosynthesis, proteins are continuously synthesized
+and also degraded by a process called proteasomal degradation, which cleaves
+proteins into linear peptides of varying length.
+A small subset of these peptides is presented on the cell surface via
+receptors called MHC class I. The genomic region encoding for MHC I is known to be
+highly polymorphic, with more than 20000 different HLA alleles described today.
+The resulting gene products differ in their binding properties, which means that
+cells from different individuals present a highly diverse set of peptides on their
+surface.
+Cytotoxic T cells are selected during maturation to only weakly bind to 
+peptide/MHC I complexes when the peptide originated from proteins of the usual proteome, 
+but might be able to strongly bind to complexes of MHC I with peptides which are 
+generated through proteosomal degradation of a viral protein.
+Upon activation, T cells induce cytolytic activity and recruit other immune cells.
+
+\subsection{HLA escape}
+In this way, the HLA system exerts a strong selection pressure towards virus variants
+that escape T cell recognition, for example through a point mutation
+that results in reduced binding of an immunogenic peptide to MHC I or through a
+set of mutations that alters the viral protein in such a way that it is cleaved into 
+different peptides that are not recognized by the host's T cell repertoire.
+
+The evolutionary events are complex and occur not only on the level of individuals, 
+where a virus adapts to specific features of the host, but also on the population level,
+because HLA alleles differ in their frequency across geographic region, as they are inherited
+according to standard Mendelian rules.
+
+Upon transmission, HLA escape mutations typically quickly revert to their wild type
+as they usually reduce viral replicative capacity (if a mutation would increase
+viral replicative capacity regardless of the presence of a given HLA allele, it would
+probably already be the wild type). Kawashima et al
+describe an escape mutation that is selected by HLA allele B\*53,
+does not strongly affect viral replicative capacity and therefore slowly enriches
+over time in Japan, where B\*53 commonly occurs.
+How quickly a given escape mutation is selected upon transmission in a host depends on the
+magnitude of the reduction in viral replicative capacity, on the strength of selection
+pressure and also on the genetic background, e.g. some escape mutations require compensatory 
+mutations which partly attenuate the negative impact on viral replicative capacity.
+
+Studying HLA escape therefore provides the unique opportunity to gain insight into
+viral evolution, on the host level but also on the population level.
+Unfortunately, identifying HLA escape mutations is difficult in practice.
+
+\subsection{Identifying HLA-escape mutations}
 
 \section{System and methods}
 \section{Algorithm}
