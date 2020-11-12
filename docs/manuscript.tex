@@ -136,7 +136,7 @@ surface.
 Cytotoxic T cells are selected during maturation to only weakly bind to 
 peptide/MHC I complexes when the peptide originated from proteins of the usual proteome, 
 but might be able to strongly bind to complexes of MHC I with peptides which are 
-generated through proteosomal degradation of a viral protein.
+generated from of a viral protein.
 Upon activation, T cells induce cytolytic activity and recruit other immune cells.
 
 \subsection{HLA escape}
@@ -148,13 +148,13 @@ different peptides that are not recognized by the host's T cell repertoire.
 
 The evolutionary events are complex and occur not only on the level of individuals, 
 where a virus adapts to specific features of the host, but also on the population level,
-because HLA alleles differ in their frequency across geographic region, as they are inherited
+because HLA alleles differ in their frequency across geographic regions, as they are inherited
 according to standard Mendelian rules.
 
 Upon transmission, HLA escape mutations typically quickly revert to their wild type
 as they usually reduce viral replicative capacity (if a mutation would increase
 viral replicative capacity regardless of the presence of a given HLA allele, it would
-probably already be the wild type). Kawashima et al
+probably already be the wild type). Kawashima et al.
 describe an escape mutation that is selected by HLA allele B\*53,
 does not strongly affect viral replicative capacity and therefore slowly enriches
 over time in Japan, where B\*53 commonly occurs.
@@ -163,11 +163,28 @@ magnitude of the reduction in viral replicative capacity, on the strength of sel
 pressure and also on the genetic background, e.g. some escape mutations require compensatory 
 mutations which partly attenuate the negative impact on viral replicative capacity.
 
-Studying HLA escape therefore provides the unique opportunity to gain insight into
+Studying HLA escape therefore provides an unique opportunity to gain insight into
 viral evolution, on the host level but also on the population level.
 Unfortunately, identifying HLA escape mutations is difficult in practice.
 
 \subsection{Identifying HLA-escape mutations}
+
+There are several experimental methods available to study HLA escape:
+Recombinant MHC-I molecules can be used in binding assays: Upon complex formation
+with a peptide, a change in conformation can be detected with conformation-specific
+antibodies. This method is relatively fast, but only measures binding affinity of a
+peptide to MHC-I and does not account for antigen processing or immunodominance, 
+which describes the observation that a peptide may be presented via MHC-I on the cell surface but does
+not induce an immune response.
+An experimental setup that resembles the conditions in-vitro more closely but is also
+more time-consuming is to measure
+CD8+ T cell responses instead. This is usually done by stimulating PBMCs with prototype
+and variant peptides and measuring the secretion of IFN-gamma by intracellular cytokine
+staining and fluorescence-assisted cell sorting.
+To analyse CD8+ T cell responses against endogenously processed antigens it is necessary
+to generate cell-lines stably expressing the antigen in question and adding antigen-specific
+CD8+ T cells. This method scales poorly as it requires transfection of cell lines and
+antigen-specific expansion of CD8+ T cells.
 
 \section{System and methods}
 \section{Algorithm}
