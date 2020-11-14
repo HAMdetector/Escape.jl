@@ -42,7 +42,7 @@
 %----------------------------------------------------------------------------------------
 
 \PaperTitle{
-    HAMDetector: Combining information to predict HLA-associated mutations with a
+    HAMDetector: Combining information to detect HLA-associated mutations with a
     Bayesian regression model
 } % Article title
 
@@ -186,7 +186,93 @@ to generate cell-lines stably expressing the antigen in question and adding anti
 CD8+ T cells. This method scales poorly as it requires transfection of cell lines and
 antigen-specific expansion of CD8+ T cells.
 
+\subsection{Computational methods}
+
+Because the currently available experimental methods do not scale well enough to analyze
+whole viral genomes, a useful strategy might be to use annotated sequence data to identfiy 
+candidate HLA escape mutations that can then be verified experimentally.
+
+As the selection pressure exerted by cytotoxic T cells depends on successful recognition
+of viral peptides on the cell surface, escape mutations are often HLA-allele specific
+and can therefore  be detected as HLA-allele dependent footprints in sequence
+alignments of viral proteins: At certain alignment positions, a replacement
+might be more frequently observed in sequences from hosts with a specific HLA allele than in 
+sequences from hosts without that HLA allele. By quantifying this difference
+for all replacement and HLA allele pairs it is possible to idenfify replacements that
+are enriched in sequences coming from hosts with certain HLA alleles and are therefore
+likely to be HLA escape mutations.
+
+One way of quantifying this enrichment is Fisher\'s exact test.
+For a given replacement \(R_{i}\) at alignment position \(i\) and HLA allele \(H\),
+a 2-by-2 contingency table is constructed containing the absolute counts of the
+number of sequences in the four possible categories: 
+(\(R_{i}\), \(H\)), (\(R_{i}\), \(!H\)), (\(!R_{i}\), \(H\)) and (\(!R_{i}\), \(H\)),
+where \(!R_{i}\) denotes any replacement except \(R_{i}\) and \(!H\) denotes any HLA allele
+except \(H\).
+Fisher\'s exact test is a conventional nullhypothesis significance test (NHST) that
+generates p-values. In this case, the nullhypothesis is that HLA allele \(H\) and 
+replacement \(R_{i}\) are independent, and the p-value is the probability of
+observing a deviation from independence that is at least as extreme as in the data at hand,
+under the assumption that the nullhypothesis is true.
+
+Fisher\'s exact test has the advantage of being easy to apply, but has also several 
+disadvantages that are outlined in Carlson et al.
+The most striking one is that viral sequences share a common phylogenetic history and therfore,
+treating sequences as independent and identically distributed samples may under- or
+overestimate effect sizes and in the context of hypothesis testing leads to
+increased false positive and false negative rates.
+Another issue of applying Fisher\'s exact test is that HLA class I loci are located in
+close proximity on chromosome 6 and are therefore in linkage disquilibrium, which means 
+that HLA alleles are not inherited completely independent of each other, so that
+inheritance of one HLA allele correlates with inheritance of another HLA allele.
+When using a statistical method that tests each HLA allele individually without
+considering the whole set of alleles present, spurious associations might occur
+: If HLA allele \(H_{1}\) is associated with an amino acid replacement \(R\), but
+\(H_{1}\) is in linkage disequilibrium with another allele \(H_{2}\), this also means that
+we observe an association between replacement \(R\) and \(H_{2}\), even in
+absence of any underlying escape mechanism.
+
+Correlations can not only occur between HLA alleles, but also between replacements.
+This kind of codon covariation occurs for example in compensatory mutations that
+attenuate the negative impact of immune escape mutations. For instance,
+a compensatory mutation might lead to a conformational change in such a way that
+the mutated protein resembles the original wild type more closely.
+
+Carlson et. al. developed a method called Phylogenetic Dependency Network
+that accounts for phylogenetic bias, HLA linkage disequilibrium and codon covariation.
+and is based on nullhypothesis significance tests.
+
+\subsection{Issues with using p-values as a screening tool}
+
+In addition to the aforementioned biological reasons why Fisher's exact test is 
+not suited for the analysis of sequence data, there are also more fundamental statistical
+issues that universally occur when using p-values as a screening tool.
+
+In the presence of small effect sizes and high variance between measurements, as 
+it is typically the case when working with biological data, statistically significant
+results can often be misleading and are likely to be in the wrong direction
+(a so-called type S error) or greatly overestimate an effect (a so-called type M error).
+This problem has recently been widely appreciated in the literature in the context
+of the current \glqq replication crisis\grqq{}, which describes the circumstance that
+scientific claims with seemingly strong statistical evidence fail to replicate.
+
+Another issue that occurs when using p-values as a screening tool is the problem
+of multiple comparisons. When applying a statistical test, the probability  of 
+obtaining a statistically significant result increases with
+each additional test, even in absence of any real effect. When using p-values as a filter
+it is therefore likely to obtain significant effects that are in fact not real.
+To circumvent this problem, a common strategy is to control the false discovery
+rate, which is the expected proportion of false positives.
+These adjustment procedures have the problem that, when performing many of such comparisons,
+none but the very largest effects remain.
+Instead of performing many hypothesis tests and trying to adjust for them, we instead prefer
+to fit a single, multilevel model that contains all comparisons of interest.
+In this setting, the problem of multiple comparisons can disappear entirely and also
+yield more valid estimates.
+
 \section{System and methods}
+
+
 \section{Algorithm}
 \section{Implementation}
 \section{Discussion}
