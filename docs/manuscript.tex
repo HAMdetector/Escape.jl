@@ -42,7 +42,7 @@
 %----------------------------------------------------------------------------------------
 
 \PaperTitle{
-    HAMDetector: Combining information to detect HLA-associated mutations with a
+    HAMdetector: Combining information to detect HLA-associated mutations with a
     Bayesian regression model
 } % Article title
 
@@ -87,7 +87,7 @@
 
   \textbf{Availability and Implementation} \\
   The source code of this software is available at 
-  \url{http://gogs.uni-due.de/habermann/Escape.git} under a permissive MIT license. \\
+  \url{http://github.com} under a permissive MIT license. \\
 
   \textbf{Supplementary information} \\
   \href{https://google.com}{Supplementary data} are available at \textit{Bioinformatics} online. \\
@@ -109,17 +109,6 @@
 
 \section{Introduction}
 
-% - subset of peptidome presented on the cell surface via MHC I.
-% - Cytotoxic t cells are selected to not recognize self.
-% - by rule of exclusion, recognized peptides are foreign
-% - t cells induce cytolytic activity and recruit other immune cells, reference
-
-% - basic function of statistical analysis of sequence data
-% - state of the art + brumme paper, phylogeny, linkage disequilibrium and codon covariation
-% cite brumme and other paper
-
-% - problems of p value based methods and statistical significance testing
-% - highlight benefits of Bayesian approaches
 \subsection{The HLA system}
 
 One way how the human immune system is able to recognize intracellular viral infections
@@ -155,9 +144,9 @@ Upon transmission, HLA escape mutations typically quickly revert to their wild t
 as they usually reduce viral replicative capacity (if a mutation would increase
 viral replicative capacity regardless of the presence of a given HLA allele, it would
 probably already be the wild type). Kawashima et al.
-describe an escape mutation that is selected by HLA allele B\*53,
+describe an escape mutation that is selected by HLA allele B*51,
 does not strongly affect viral replicative capacity and therefore slowly enriches
-over time in Japan, where B\*53 commonly occurs.
+over time in Japan, where B*53 commonly occurs.
 How quickly a given escape mutation is selected upon transmission in a host depends on the
 magnitude of the reduction in viral replicative capacity, on the strength of selection
 pressure and also on the genetic background, e.g. some escape mutations require compensatory 
@@ -174,8 +163,8 @@ Recombinant MHC-I molecules can be used in binding assays: Upon complex formatio
 with a peptide, a change in conformation can be detected with conformation-specific
 antibodies. This method is relatively fast, but only measures binding affinity of a
 peptide to MHC-I and does not account for antigen processing or immunodominance, 
-which describes the observation that a peptide may be presented via MHC-I on the cell surface but does
-not induce an immune response.
+which describes the observation that a peptide may be presented via MHC-I on the cell 
+surface but does not induce an immune response.
 An experimental setup that resembles the conditions in-vitro more closely but is also
 more time-consuming is to measure
 CD8+ T cell responses instead. This is usually done by stimulating PBMCs with prototype
@@ -215,13 +204,13 @@ replacement \(R_{i}\) are independent, and the p-value is the probability of
 observing a deviation from independence that is at least as extreme as in the data at hand,
 under the assumption that the nullhypothesis is true.
 
-Fisher\'s exact test has the advantage of being easy to apply, but has also several 
+Fisher's exact test has the advantage of being easy to apply, but has also several 
 disadvantages that are outlined in Carlson et al.
 The most striking one is that viral sequences share a common phylogenetic history and therfore,
 treating sequences as independent and identically distributed samples may under- or
 overestimate effect sizes and in the context of hypothesis testing leads to
 increased false positive and false negative rates.
-Another issue of applying Fisher\'s exact test is that HLA class I loci are located in
+Another issue of applying Fisher's exact test is that HLA class I loci are located in
 close proximity on chromosome 6 and are therefore in linkage disquilibrium, which means 
 that HLA alleles are not inherited completely independent of each other, so that
 inheritance of one HLA allele correlates with inheritance of another HLA allele.
@@ -265,12 +254,93 @@ To circumvent this problem, a common strategy is to control the false discovery
 rate, which is the expected proportion of false positives.
 These adjustment procedures have the problem that, when performing many of such comparisons,
 none but the very largest effects remain.
-Instead of performing many hypothesis tests and trying to adjust for them, we instead prefer
+Instead of performing many hypothesis tests and trying to adjust for them we instead prefer
 to fit a single, multilevel model that contains all comparisons of interest.
-In this setting, the problem of multiple comparisons can disappear entirely and also
-yield more valid estimates.
+When using multilevel models, the problem of multiple comparisons can disappear entirely and 
+also yield more valid estimates.
+
 
 \section{System and methods}
+
+When possible, we choose to fit Bayesian models. By using prior information,
+adding problem-specific structure and partial pooling, the accuracy of estimates
+can often be noticably improved. Prior information does not necessarily mean to
+use external data, even a rough idea about the expected magnitude of estimates is often
+surprisingly effective.
+Additionally, Bayesian statistics provides an accessible way to test models:
+By comparing data generated under the model's assumptions to the actually observed data,
+it is possible to identify important aspects of the dataset that the models fails to
+capture and subsequently improve the model until it is consistent with the observed data.
+
+In the context of identifying HLA-associated mutations we propose to improve existing
+methods by the following additions, which can be broadly divided into additional information
+and model structure:
+\subsection*{Additional information}
+
+  \textit{Binding affinity prediction}
+
+    HLA-associated mutations are expected to lie more frequently in regions of known
+    epitopes. There are vast experimental binding affinity data available of different
+    peptides and MHC I molecule pairs and there are well-established computational
+    methods that use these data to extrapolate HLA binding for untested peptides.
+    We show that by including the outcome of these computational tools as input for a
+    probabilistic model, the prediction of HLA-associated mutations can be improved.
+
+  \textit{Antigen processing prediction}
+  
+  Similarly, there are also HLA-allele independent effects like antigen processing
+  that influence presentation on MHC I. Second generational tools like
+  MHCFlurry 2.0 use both binding affinity and antigen processing data to improve
+  epitope prediction. For our tool HAMdetector, we use the output of MHCFlurry to
+  benefit from this binding affinity and antigen processing data for predicting
+  HLA-associated mutations.
+
+
+\subsection*{Model structure}
+
+  \textit{Sparsity-inducing priors}
+  
+  Recent advantages in Bayesian inference include so-called sparsity-promoting priors.
+  Sparsity-promoting priors convey the apriori expectation that most coefficients in 
+  a regression model are close to 0.
+  This assumption also applies to HLA-associated mutations, because the number of epitopes
+  that are restricted by a given HLA allele is typically small compared to the number
+  of all possible epitopes. If no epitope spanning a given alignment position is presented
+  on the MHC I molecule, any association between a replacement and the respective HLA allele 
+  is likely to be due to random variation alone (or HLA linkage disequilibrium).
+  
+  It has been shown that using a sparsity-promoting prior when non-zero coefficients
+  are sparse can drastically improve predictive performance because the model is
+  better able to differentiate between signal and noise.
+
+  We show that a simple logistic regression model with a sparsity-promoting prior
+  on the regression coefficients for the HLA alleles alone already performs roughly on-par 
+  with the much more elaborate Phylogenetic Dependency Network approach from Carlson et. al.
+  when using the fraction of identified escapes that lie in known HLA epitopes as a
+  benchmark.
+
+  \textit{Partial pooling of 4-digit HLA alleles}
+  
+  It has recently been appreciated that binding specifities can vary drastically across 
+  HLA alleles from the same allele group, e.g. between HLA-B*51:01 and HLA-B*51:03.
+  For predicting HLA associated mutations, there has therefore been a shift to use
+  4-digit resolution data whenever possible.
+  This is not without downsides however, because overall, binding specifities
+  are more similar for alleles in the same group and therefore, treating them
+  as completely separate might unnecessarily fragment the available data.
+
+  In Bayesian statistics, it is not required to chose one extreme or the other:
+  Instead of either treating all HLA alleles from the same allele group as identical or
+  as completely separate, partial pooling of the estimates allows something inbetween:
+  By partial pooling, estimates do share some information across each other, but they are
+  also allowed to vary if necessary.
+
+  In the context of our model this means that observing a relevant association between
+  a replacement and an HLA allele also makes the model more inclined to estimate
+  relevant associations between that replacement and all other alleles from that allele group.
+  The degree of this partial pooling can be estimated from the data, so if we do observe
+  strong similarity of HLA alleles in a given allele group, the estimates are more
+  influenced by each other than if they do not.
 
 
 \section{Algorithm}
