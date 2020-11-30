@@ -1,0 +1,134 @@
+\begin{thebibliography}{10}
+
+\bibitem{Germain1994}
+Ronald~N. Germain.
+\newblock {MHC}-dependent antigen processing and peptide presentation:
+  Providing ligands for t lymphocyte activation.
+\newblock {\em Cell}, 76(2):287--299, jan 1994.
+
+\bibitem{Goldberg2002}
+Alfred~L Goldberg, Paolo Cascio, Tomo Saric, and Kenneth~L Rock.
+\newblock The importance of the proteasome and subsequent proteolytic steps in
+  the generation of antigenic peptides.
+\newblock {\em Molecular Immunology}, 39(3-4):147--164, oct 2002.
+
+\bibitem{Robinson2014}
+James Robinson, Jason~A. Halliwell, James~D. Hayhurst, Paul Flicek, Peter
+  Parham, and Steven~G.~E. Marsh.
+\newblock The {IPD} and {IMGT}/{HLA} database: allele variant databases.
+\newblock {\em Nucleic Acids Research}, 43(D1):D423--D431, nov 2014.
+
+\bibitem{Murata2007}
+S.~Murata, K.~Sasaki, T.~Kishimoto, S.~i.~Niwa, H.~Hayashi, Y.~Takahama, and
+  K.~Tanaka.
+\newblock Regulation of c8+ t cell development by thymus-specific proteasomes.
+\newblock {\em Science}, 316(5829):1349--1353, jun 2007.
+
+\bibitem{Harty2000}
+John~T. Harty, Amy~R. Tvinnereim, and Douglas~W. White.
+\newblock {CD}8+ t cell effector mechanisms in resistance to infection.
+\newblock {\em Annual Review of Immunology}, 18(1):275--308, apr 2000.
+
+\bibitem{Borrow1997}
+Persephone Borrow, Hanna Lewicki, Xiping Wei, Marc~S. Horwitz, Nancy Peffer,
+  Heather Meyers, Jay~A. Nelson, Jean~Edouard Gairin, Beatrice~H. Hahn,
+  Michael~B.A. Oldstone, and George~M. Shaw.
+\newblock Antiviral pressure exerted by {HIV}-l-specific cytotoxic t
+  lymphocytes ({CTLs}) during primary infection demonstrated by rapid selection
+  of {CTL} escape virus.
+\newblock {\em Nature Medicine}, 3(2):205--211, feb 1997.
+
+\bibitem{Yewdell2002}
+Jonathan~W. Yewdell and Ann~B. Hill.
+\newblock Viral interference with antigen presentation.
+\newblock {\em Nature Immunology}, 3(11):1019--1025, nov 2002.
+
+\bibitem{Kawashima2009}
+Yuka Kawashima, Katja Pfafferott, John Frater, Philippa Matthews, Rebecca
+  Payne, Marylyn Addo, Hiroyuki Gatanaga, Mamoru Fujiwara, Atsuko Hachiya,
+  Hirokazu Koizumi, Nozomi Kuse, Shinichi Oka, Anna Duda, Andrew Prendergast,
+  Hayley Crawford, Alasdair Leslie, Zabrina Brumme, Chanson Brumme, Todd Allen,
+  Christian Brander, Richard Kaslow, James Tang, Eric Hunter, Susan Allen,
+  Joseph Mulenga, Songee Branch, Tim Roach, Mina John, Simon Mallal, Anthony
+  Ogwu, Roger Shapiro, Julia~G. Prado, Sarah Fidler, Jonathan Weber, Oliver~G.
+  Pybus, Paul Klenerman, Thumbi Ndung'u, Rodney Phillips, David Heckerman,
+  P.~Richard Harrigan, Bruce~D. Walker, Masafumi Takiguchi, and Philip Goulder.
+\newblock Adaptation of {HIV}-1 to human leukocyte antigen class i.
+\newblock {\em Nature}, 458(7238):641--645, feb 2009.
+
+\bibitem{Matthews2008}
+Philippa~C. Matthews, Andrew Prendergast, Alasdair Leslie, Hayley Crawford,
+  Rebecca Payne, Christine Rousseau, Morgane Rolland, Isobella Honeyborne,
+  Jonathan Carlson, Carl Kadie, Christian Brander, Karen Bishop, Nonkululeko
+  Mlotshwa, James~I. Mullins, Hoosen Coovadia, Thumbi Ndung{\textquotesingle}u,
+  Bruce~D. Walker, David Heckerman, and Philip J.~R. Goulder.
+\newblock Central role of reverting mutations in {HLA} associations with human
+  immunodeficiency virus set point.
+\newblock {\em Journal of Virology}, 82(17):8548--8559, jul 2008.
+
+\bibitem{Moore2002}
+C.~B. Moore.
+\newblock Evidence of {HIV}-1 adaptation to {HLA}-restricted immune responses
+  at a population level.
+\newblock {\em Science}, 296(5572):1439--1443, may 2002.
+
+\bibitem{Fisher1922}
+R.~A. Fisher.
+\newblock On the interpretation of \chi\textsuperscript{2} from contingency
+  tables, and the calculation of p.
+\newblock {\em Journal of the Royal Statistical Society}, 85(1):87, jan 1922.
+
+\bibitem{Budeus2016}
+Bettina Budeus, Jörg Timm, and Daniel Hoffmann.
+\newblock {SeqFeatR} for the discovery of feature-sequence associations.
+\newblock {\em {PLOS} {ONE}}, 11(1):e0146409, jan 2016.
+
+\bibitem{Carlson2008}
+Jonathan~M. Carlson, Zabrina~L. Brumme, Christine~M. Rousseau, Chanson~J.
+  Brumme, Philippa Matthews, Carl Kadie, James~I. Mullins, Bruce~D. Walker,
+  P.~Richard Harrigan, Philip J.~R. Goulder, and David Heckerman.
+\newblock Phylogenetic dependency networks: Inferring patterns of {CTL} escape
+  and codon covariation in {HIV}-1 gag.
+\newblock {\em {PLoS} Computational Biology}, 4(11):e1000225, nov 2008.
+
+\bibitem{Amrhein2017}
+Valentin Amrhein and Sander Greenland.
+\newblock Remove, rather than redefine, statistical significance.
+\newblock {\em Nature Human Behaviour}, 2(1):4--4, sep 2017.
+
+\bibitem{Gelman2014}
+Andrew Gelman and John Carlin.
+\newblock Beyond power calculations.
+\newblock {\em Perspectives on Psychological Science}, 9(6):641--651, nov 2014.
+
+\bibitem{Ioannidis2005}
+John P.~A. Ioannidis.
+\newblock Why most published research findings are false.
+\newblock {\em {PLoS} Medicine}, 2(8):e124, aug 2005.
+
+\bibitem{Benjamini1995}
+Yoav Benjamini and Yosef Hochberg.
+\newblock Controlling the false discovery rate: A practical and powerful
+  approach to multiple testing.
+\newblock {\em Journal of the Royal Statistical Society: Series B
+  (Methodological)}, 57(1):289--300, jan 1995.
+
+\bibitem{Gelman2012}
+Andrew Gelman, Jennifer Hill, and Masanao Yajima.
+\newblock Why we (usually) don't have to worry about multiple comparisons.
+\newblock {\em Journal of Research on Educational Effectiveness},
+  5(2):189--211, 2012.
+
+\bibitem{Gelman2010}
+Andrew Gelman.
+\newblock Bayesian statistics then and now.
+\newblock {\em Statistical Science}, 25(2):162--165, may 2010.
+
+\bibitem{Gabry2019}
+Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, and Andrew
+  Gelman.
+\newblock Visualization in bayesian workflow.
+\newblock {\em Journal of the Royal Statistical Society: Series A (Statistics
+  in Society)}, 182(2):389--402, jan 2019.
+
+\end{thebibliography}
