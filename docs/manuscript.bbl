@@ -131,4 +131,21 @@ Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, and Andrew
 \newblock {\em Journal of the Royal Statistical Society: Series A (Statistics
   in Society)}, 182(2):389--402, jan 2019.
 
+\bibitem{Ives2014}
+Anthony~R. Ives and Theodore Garland.
+\newblock Phylogenetic regression for binary dependent variables.
+\newblock In {\em Modern Phylogenetic Comparative Methods and Their Application
+  in Evolutionary Biology}, pages 231--261. Springer Berlin Heidelberg, 2014.
+
+\bibitem{Ives2009}
+Anthony~R. Ives and Theodore Garland.
+\newblock Phylogenetic logistic regression for binary dependent variables.
+\newblock {\em Systematic Biology}, 59(1):9--26, nov 2009.
+
+\bibitem{Stamatakis2014}
+Alexandros Stamatakis.
+\newblock {RAxML} version 8: a tool for phylogenetic analysis and post-analysis
+  of large phylogenies.
+\newblock {\em Bioinformatics}, 30(9):1312--1313, jan 2014.
+
 \end{thebibliography}
