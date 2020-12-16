@@ -200,29 +200,41 @@ where \(y_{ij}\) is the binary encoded observation at sequence \(i\) for replace
 
 The regression coefficients \(\beta_{\text{HLA}_{j}}\) are the main focus of interest, as they quantify the association between the occurrence of replacement \(j\) and each of the observed HLA alleles. They are in units of log-odds, so a regression coefficient of somewhere around 2 means that when comparing sequences with and without that particular HLA allele, the log-odds of observing replacement \(j\) in presence of that HLA allele is increased by 2.
 
-Reasoning on the log-odds can sometimes be unintuitive. A useful approximation to interpret logistic regression coefficients on the probability scale is the so-called divide-by-4 rule, which means that a regression coefficient of 2 corresponds to an expected increase on the probability scale of about 2/4 = 50\%. 
+Reasoning about coefficients on the log-odds scale can sometimes be unintuitive. A useful approximation to interpret logistic regression coefficients on the probability scale is the so-called divide-by-4 rule, which means that a regression coefficient of 2 corresponds to an expected increase on the probability scale of about 2/4 = 50\%. 
 
 \subsection*{Including phylogeny}
-\begin{itemize}
-  \item sequence data shares common phylogenetic history and are therefore not i.i.d, cite Brumme paper
-  \item standard approach: multivariate normal intercept where covariance matrix is based on shared branch lengths
-  \item this approach is computationally too expensive because of current limitations in Stan. Would be possible by better inferencealgorithms, see this recently published paper: \sloppy\url{https://proceedings.neurips.cc/paper/2020/file/673de96b04fa3adcae1aacda704217ef-Paper.pdf} but probably omit that?
-  \item Our approach is close to the one in Carlson et al.
-  \item slight tweak: use phylogeny estimation tools for tree likelihoods p(tree | sequences), then bayes rule to invert that conditional probability. Optimize branch lengths for each replacement, but keep tree topology fixed
-  \item advantages: faster (raxml well optimized)
-  \item disadvantages: ad-hoc, close to conventional multivariate normal    approach with off-diagonal elements set to 0, therefore not as flexible. But: should be good enough, phylogeny seems to be not that important (probably omit that?)
-  \item how to include p(replacement | tree) in the model: just add additional intercept
-  \item add coefficient for that information, so model can decide how to make use of that information.
-  \item logit(p(replacement|tree)) used because it cancels out with the logistic
-    link function. therefore: phylogeny information as baseline in absence of any HLA effects
-  \item calibration plots to show that estimated phylogenetic probabilities are reasonably well calibrated.
-  \item meaning: for sequences with an expected probability of observing the replacement of x\%, we really do see that x\% of the sequences have that replacement.
-\end{itemize}
+
+One problem that occurs when analyzing sequence data is that species share a common phylogenetic history. Standard statistical methods usually assume samples to be independent and identically distributed, which may lead to wrong conclusions when this assumption is strongly violated.
+In the context of identifying HLA associations, Bhattacharya et al. demonstrated the importance of correcting for the phylogenetic structure.
+There are many different approaches described in the literature for phylogenetic regression for binary dependent variables (see \cite{Ives2014}), where the most popular approach is to estimate an additional multivariate normally distributed intercept, where the covariance matrix is based on the branch lengths of a given phylogenetic tree \cite{Ives2009}.
+
+This approach showed to be too computationally expensive to include in our model, so we chose a strategy that is similar to the one in Carlson et al. \cite{Carlson2008} for the Phylogenetic Dependency Network:
+
+Consider a phylogenetic tree \(\Psi\) obtained from standard maximum likelihood methods for a given multiple sequence alignment. We are interested in estimating \(P(y_{ij}=1|\Psi)\), that is, the probability of observing the replacement \(j\) in sequence \(i\) based on the underlying phylogenetic model.
+A quantity that can be readily computed using phylogenetic software like RAxML \cite{Stamatakis2014} is \(P(\Psi|y_{ij}=1)\). For this, we keep the tree topology fixed, annotate the tree with the binary observations \(y\) at its leaves and optimize the branch lengths. \(P(\Psi|y_{ij}=1)\) is then the likelihood of the annotated phylogenetic tree. We can then use Bayes' rule to invert that conditional probability by additionally computing \(P(\Psi|y_{ij}=0)\), which is done by altering the annotation for sequence \(i\) and keeping all other observations constant.
+
+In order to check if the inferred probabilities \(P(y_{ij}=1|\Psi)\) faithfully reflect the observed data we use calibration plots (see fig.~\ref{fig:phylogeny-calibration}). All observations are binned according to their inferred probability \(P(y_{ij}=1|\Psi)\). If these probabilities are calibrated correctly, we expect that in a group of observations with an inferred probability \(P(y_{ij}=1|\Psi)\) of around x\% we really do observe \(y_{ij}=1\) around x\% percent of the time.
 
 \begin{figure}[!ht]
   \includegraphics[width=1\linewidth]{plots/phylogeny_calibration.pdf}
-  \caption{Calibration plot and how it works.}
+  \caption{Calibration plot for the HBV dataset. For a description of all datasets used in this study see section~\ref{sec:results}. Calibration plots for the other datasets are shown in the appendix.
+  All observations are first sorted by increasing estimated probability \(P(y_{ij}=1|\Psi)\) and then grouped into \(n\) bins.
+  For each bin, the fraction of observations with \(y_{ij}=1\) (observed event percentage) is compared to the midpoint of each bin (the value in the center between the lowest and highest probability). The error bars show the cutpoints for each bin. If the probabilities are calibrated correctly, each dot is supposed to scatter closely around the diagonal line.}
+  \label{fig:phylogeny-calibration}
 \end{figure}
+
+The estimated probabilities are then included in the model as additional intercepts:
+
+\begin{equation}
+\begin{aligned}
+  y_{ij} & \sim \text{bernoulli}(\theta_{ij}) \\
+  \theta_{ij} & = \text{inv\_logit}(\beta_{0_{j}} + \gamma~\text{logit}(P(y_{ij}=1|\Psi)) \\ + & X_{i}\beta_{\text{HLA}_{j}})
+\end{aligned}
+\end{equation}
+
+The logit transform is used because is cancels out with the logistic link function. This means that the phylogeny information acts as a baseline in absence of any HLA effects. Note that we also include an additional parameter \(\gamma\), that is constrained to be positive. This helps because the inferred probabilities \(P(y_{ij}=1|\Psi)\) might not necessarily reflect the true underlying phylogenetic signal, for example because the phylogenetic tree does not match the observed data well enough.
+
+A straight-forward extension of our model would be to also account for these sources of uncertainty, for example by using a Bayesian method to estimate a posterior distribution over possible tree topologies. The uncertainty over the tree topology and the underlying parameters of the phylogenetic model would then propagate into uncertainty of the estimated probabilities \(P(y_{ij}=1|\Psi)\). However, in order to not increase the runtime of the model further we  use standard maximum likelihood estimates and then include these in a way that allows for measurement error.
 
 \subsection*{Including HLA linkage disequilibrium and codon covariation}
 
@@ -289,7 +301,7 @@ Reasoning on the log-odds can sometimes be unintuitive. A useful approximation t
   Betancourt/Gelman papers to see how it is done there.
 \end{itemize}
 
-\section{Results}
+\section{Results} \label{sec:results}
 
 \begin{itemize}
   \item to show that model works well in several real-world scenarios, versions of the model are run on different datasets: large Brumme HIV, smaller Arevir HIV, larger Düsseldorf HBV, HDV by Michael Roggendorf, Rongge small HIV
