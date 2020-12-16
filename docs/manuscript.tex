@@ -13,6 +13,7 @@
 \usepackage{listings}
 \usepackage{fontspec}
 \usepackage{hyperref}
+\usepackage{amsmath}
 % \usepackage{lipsum} % Required to insert dummy text. To be removed otherwise
 \setmainfont{TeX Gyre Termes}
 %----------------------------------------------------------------------------------------
@@ -185,13 +186,21 @@ In the context of identifying HLA-associated mutations we propose to improve exi
 \section{Implementation}
 
 \subsection*{Model backbone}
-\begin{itemize}
-  \item logistic regression model, because easily extensible
-  \item coefficients are interpretable as expected increase in log-odds of observing  a given replacement (also: average predictive comparisons to transform estimates to probability scale)
-  \item probabilistic model allows us to perform posterior predictive checks
-  \item disadvantages: none? maybe log-odds scale unintuitive. mention divide-by-4 rule
-  \item  establish notation, start simple and expand on that? Maybe confusing because some things change as models get more complex 
-\end{itemize}
+
+We chose a logistic regression model as a backbone for two reasons: First, because it is easily extensible and secondly, because the coefficients are interpretable as expected increases on the log-odds scale, identical to the familiar interpretation of standard logistic regression models.
+We also chose to fit the model in a Bayesian fashion using Stan, mostly because it allows us to make use of the hierarchical structure in the data and the possibility to use posterior predictive checks as a way of model checking.
+Consider the following notation:
+
+\begin{align}
+  y_{ij} & \sim \text{bernoulli}(\theta_{ij}) \\
+  \theta_{ij} & = \text{inv\_logit}(\beta_{0_{j}} + X_{i}\beta_{\text{HLA}_{j}})
+\end{align}, 
+
+where \(y_{ij}\) is the binary encoded observation at sequence \(i\) for replacement \(j\), \(\theta_{ij}\) is the estimated probability that we observe replacement \(j\) in sequence \(i\), \(X_{i}\) is the binary encoded (row) vector of HLA annotations for sequence \(i\), and \(\beta_{\text{HLA}_{j}}\) is the (column) vector of HLA regression coefficients for replacement \(j\) and  \(\text{inv\_logit}\) is the logistic link function. Note that, if we observe N different amino acid states at a certain alignment position, each of those are considered in turn to be the "replacement".
+
+The regression coefficients \(\beta_{\text{HLA}_{j}}\) are the main focus of interest, as they quantify the association between the occurrence of replacement \(j\) and each of the observed HLA alleles. They are in units of log-odds, so a regression coefficient of somewhere around 2 means that when comparing sequences with and without that particular HLA allele, the log-odds of observing replacement \(j\) in presence of that HLA allele is increased by 2.
+
+Reasoning on the log-odds can sometimes be unintuitive. A useful approximation to interpret logistic regression coefficients on the probability scale is the so-called divide-by-4 rule, which means that a regression coefficient of 2 corresponds to an expected increase on the probability scale of about 2/4 = 50\%. 
 
 \subsection*{Including phylogeny}
 \begin{itemize}
