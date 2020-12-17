@@ -238,29 +238,49 @@ A straight-forward extension of our model would be to also account for these sou
 
 \subsection*{Including HLA linkage disequilibrium and codon covariation}
 
-\begin{itemize}
-  \item HLA linkage disequilibrium is accounted for by considering all HLA alleles of a sample at once.
-  \item If strong correlations between HLA alleles: marginal posterior for both of them overlap with 0
-  \item Codon covariation is not accounted for because we are mainly interested in HAMs.
-  \item Model could be extended to include codon covariation by including them as additional predictors. This is possible because we use the horseshoe prior.
-\end{itemize}
+The other two important confounding effects that are recognized in Carlson et al.\cite{Carlson2008} are HLA linkage disequilibrium and codon covariation.
+HLA linkage disequilibrium describes the observation that HLA alleles that lie in proximity to each other on the chromosome are also more likely to be inherited together. When using a statistical method that evaluates each HLA allele individually, this may lead to spurious associations: If some HLA allele \(X\) is associated with replacement \(j\), and HLA allele \(Y\) often co-occurs with HLA allele \(X\), this means that we also identify an association between HLA allele \(Y\) and replacement \(j\).
 
-\subsection*{Including sparsity assumptions}
+This association is correct in a statistical sense, but if the purpose of the model is to identify sites under HLA-mediated selection pressure, these associations due to linkage disequilibrium are most likely unwanted.
 
-\begin{itemize}
-  \item one of the recent advances in Bayesian inference: development of spacial priors to give model useful properties
-  \item we expect most HLA coefficients to be 0, because no epitope spanning that region is presented on the cell surface, therefore no selection pressure and no association with possible replacements
-  \item this is prior knowledge that should be incorporated in the model
-  \item leads to better inferences because uncertainty of the regression coefficients does not propagate into observations.
-  \item works by placing most probability mass very close to 0, but with large tails for non-zero coefficients.
-  \item show formula
-  \item global shrinkage parameter is very small and shrinks most coefficients to 0, local shrinkage parameter is very large and allows some coefficients to escape that shrinkage
-  \item prior can be specified in terms of expected number of non-zero coefficients
-  \item in our case, degree of sparsity can be well estimated from the data because all replacements share the same global shrinkage parameter.
-  \item useful addition for logistic regression models: regularized horseshoe to have some regularization for non-zero coefficients. this helps to deal with issues of separability and colinearity.
-  \item effect of horseshoe prior compared to standard logistic regression model: refer to model testing section. In our benchmark, the horseshoe prior alone is more effective than the model with phylogeny.
-  \item maybe include comparison of marginal posteriors with and without horseshoe prior
-\end{itemize}
+Note that these spurious associations only occur when testing each HLA allele individually. In a regression model where all HLA alleles of a sample are evaluated at once, the marginal poster distributions for correlated predictors become broader to accurately reflect that the model is unable to discern which of these predictors explain the observed association with a replacement.
+
+We do not currently account for codon covariation in our model, as we are interested in identifying all HLA associated mutations (which include for example compensatory mutations). The general structure of the model, in particular the sparsity assumption introduced in section~\ref{sec:sparsity},would allow adding codon covariation by adding all other codons as additional predictors. This would generally not be possible in a frequentist setting because the predictor matrix would become singular and the inverse does not exist. 
+
+\subsection*{Including sparsity assumptions} \label{sec:sparsity}
+
+One of the recent advances in Bayesian inference is the development of special prior distributions which can be used to give models additional useful properties. An example of these special prior distributions are the so-called sparsity-inducing priors, which can be used to convey the assumption that most of the predictors in a regression model are not associated with the outcome and are therefore 0.
+
+In the context of identifying HLA associations we expect most of the HLA coefficients to be very close to 0, as a given alignment position is typically only restricted by none or few HLA alleles.
+This is important prior knowledge that should be incorporated in the model.
+Adding this sparsity assumption can lead to better inferences, because the uncertainty of the non-relevant HLA regression coefficients does not propagate further and therefore the model is able to better discern signal from noise.
+
+There are a variety of different sparsity-promoting priors with slightly different properties. They share the common structure of placing most probability mass very close to 0, with large to tails to accommodate the non-zero coefficients.
+For our model, we use a so-called horse prior~\cite{Carvalho2010}, which is defined as a scale-mixture of gaussians:
+
+\begin{equation}
+  \begin{aligned}
+    \beta_{j} &\sim \text{Normal}(0, \tau\lambda_{j}) \\
+    \lambda_{j} &\sim \text{Cauchy}^{+}(0, 1) \\
+    \tau &\sim \text{Cauchy}^{+}(0, \tau_{0})
+  \end{aligned}
+\end{equation},
+
+where \(\beta_{j}\) are the regression coefficients, \(\tau\) is the so-called global shrinkage parameter, \(lambda_{j}\) are the so-called local shrinkage parameters and \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution.
+
+Intuitively speaking, the global shrinkage parameter \(\tau\) is typically very small and shrinks most of the regression coefficients to 0, whereas the local shrinkage parameters can occasionally be very large to allow some coefficients to escape that shrinkage.
+
+A useful addition to the horseshoe prior is given in Piironen et al.\cite{Piironen2017}, which describes a way to choose the parameter governing the overall degree of sparsity \(\tau_{0}\) based on the expected number of non-zero coefficients. 
+
+For our HLA model, we utilize an extension to the horseshoe prior called the regularized horseshoe prior~\cite{Piironen2017}, which also provides some regularization to the non-zero coefficients. This is particularly useful for logistic regression models, as some shrinkage helps to deal with issues of separability and collinearity.
+
+Figure~\ref{fig:horseshoe-comparison} shows a comparison of marginal posteriors for regression coefficients with and without horseshoe prior.
+
+The improvement of the logistic regression model with the horseshoe prior compared to a standard logistic regression model is considerable (see section~\ref{sec:results}. In our benchmark, the horseshoe prior alone is shown to be more already effective than a model without horseshoe prior but with phylogeny included.
+
+\begin{figure}
+  \label{fig:horseshoe-comparison}
+\end{figure}
 
 \subsection*{Including epitope prediction software}
 
