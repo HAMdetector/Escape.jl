@@ -148,4 +148,14 @@ Alexandros Stamatakis.
   of large phylogenies.
 \newblock {\em Bioinformatics}, 30(9):1312--1313, jan 2014.
 
+\bibitem{Carvalho2010}
+C.~M. Carvalho, N.~G. Polson, and J.~G. Scott.
+\newblock The horseshoe estimator for sparse signals.
+\newblock {\em Biometrika}, 97(2):465--480, apr 2010.
+
+\bibitem{Piironen2017}
+Juho Piironen and Aki Vehtari.
+\newblock Sparsity information and regularization in the horseshoe and other
+  shrinkage priors.
+
 \end{thebibliography}
