@@ -266,17 +266,17 @@ For our model, we use a so-called horse prior~\cite{Carvalho2010}, which is defi
   \end{aligned}
 \end{equation},
 
-where \(\beta_{j}\) are the regression coefficients, \(\tau\) is the so-called global shrinkage parameter, \(lambda_{j}\) are the so-called local shrinkage parameters and \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution.
+where \(\beta_{j}\) are the regression coefficients, \(\tau\) is the so-called global shrinkage parameter, \(\lambda_{j}\) are the so-called local shrinkage parameters and \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution.
 
 Intuitively speaking, the global shrinkage parameter \(\tau\) is typically very small and shrinks most of the regression coefficients to 0, whereas the local shrinkage parameters can occasionally be very large to allow some coefficients to escape that shrinkage.
 
 A useful addition to the horseshoe prior is given in Piironen et al.\cite{Piironen2017}, which describes a way to choose the parameter governing the overall degree of sparsity \(\tau_{0}\) based on the expected number of non-zero coefficients. 
 
-For our HLA model, we utilize an extension to the horseshoe prior called the regularized horseshoe prior~\cite{Piironen2017}, which also provides some regularization to the non-zero coefficients. This is particularly useful for logistic regression models, as some shrinkage helps to deal with issues of separability and collinearity.
+For our HLA model, we utilize an extension to the horseshoe prior called the regularized horseshoe prior~\cite{Piironen2017}, which also provides some regularization for the non-zero coefficients. This is particularly useful for logistic regression models, as some shrinkage helps to deal with issues of separability and collinearity.
 
 Figure~\ref{fig:horseshoe-comparison} shows a comparison of marginal posteriors for regression coefficients with and without horseshoe prior.
 
-The improvement of the logistic regression model with the horseshoe prior compared to a standard logistic regression model is considerable (see section~\ref{sec:results}. In our benchmark, the horseshoe prior alone is shown to be more already effective than a model without horseshoe prior but with phylogeny included.
+The improvement of the logistic regression model with the horseshoe prior is a considerable improvement over a standard logistic regression model (see section~\ref{sec:results}. In our benchmark, the horseshoe prior alone is even shown to be more effective than a model without horseshoe prior but with phylogeny included.
 
 \begin{figure}
   \label{fig:horseshoe-comparison}
@@ -284,21 +284,26 @@ The improvement of the logistic regression model with the horseshoe prior compar
 
 \subsection*{Including epitope prediction software}
 
-\begin{itemize}
-  \item Vast experimental data available.
-  \item HAMs are much more likely to lie in known epitopes
-  \item epitope prediction software works reasonably well and can be included into as
-    input to a probabilitic model
-  \item MHCFlurry is used for epitope prediction and Antigen processing prediction: Input matrix (dimensions: \#replacements x \#HLA alleles) contains a 1 if that position is either expected to be inside a predicted epitope or related to antigen processing, 0 otherwise
-  \item uses some thresholds, but this is not so bad because we just use it as input for a probabilistic model. Maybe play around with different options? The Brumme paper uses some offsets for defining the region of known epitopes, maybe this does make a difference.
-  \item including this kind of information can drastically improve predictive performance, as it is relevant external data.
-  \item Bayesian inference allows us to include informationen from different sources in a consistent manner.
-  \item this information may be imprecise or wrong, but the model is able to learn how much to trust this data if parameterized correctly.
-  \item epitope prediction / antigen processing escape is information about the expected degree of sparsity, i.e. some coefficients are more likely to be non-zero than others.
-  \item can be included into the model by varying the local shrinkage parameter term.
-  \item larger standard deviation of the local shrinkage parameters means that it is more likely that this coefficient is non-zero.
-  \item show formula
-\end{itemize}
+There is vast experimental data on epitope binding motifs available, e.g. through the use of mass spectrometry~\cite{Hunt1992}. Epitope prediction software like MHCFlurry~\cite{ODonnell2020} use these data to extrapolate MHC I binding for new, untested peptides.
+As HLA-associated mutations are much more likely to lie epitopes (e.g. because of selection pressure to escape MHC I binding), using epitope prediction software can provide valuable external data for identifying HLA-associated mutations.
+
+For our model, we use MHCFlurry 2.0 for binding prediction, as it does not only predict HLA binding but also antigen processing. For this, we create an input matrix of dimensions \(R\times D\), where R is the number of evaluated replacements and D is the number of observed HLA alleles in the dataset. The elements of this matrix are binary encoded and contain a 1 if that position is either expected to be inside a predicted epitope or related to antigen processing, and 0 otherwise. Given an amino acid sequence, MHCFlurry 2.0 provides a list of possible epitopes (9-13 mers) and HLA alleles pairs and calculates a rank based on comparisons with random epitope and HLA pairs. For the binarization we use a rank threshold of 0.2\% (as suggested by MHCFlurry).
+
+We typically try to avoid thresholds whenever possible, but in this case we deemed it to be preferable to including the predicted binding affinities, as we expected the binary values to be more reliable than the predicted numeric values.
+Note that the output of these epitope prediction tools may be imprecise or even wrong, but by including it as an input for a probabilistic model, the model is able to learn how much to trust this data if parameterized in a way to allow for measurement error.
+
+Epitope prediction is information about the expected degree of sparsity, i.e. when knowing a certain position is restricted by a certain HLA allele, we expect that this HLA allele is more likely to be associated with the replacement than the other HLA alleles.
+This can be reflected by increasing the scale of the local shrinkage parameters \(\lambda_{j}\):
+
+\begin{equation}
+  \begin{aligned}
+    \lambda_{j} &\sim \text{Cauchy}^{+}(0, \text{exp}(\beta_{\text{epi}}Z_{j})) \\
+    \beta_{\text{epi}} &\sim \text{Normal}^{+}(1, 2)
+  \end{aligned}
+\end{equation},
+ 
+where \(Z_{j}\) is a binary vector denoting which of the alleles is predicted to restrict HLA binding or antigen processing at the alignment position corresponding to replacement \(j\).
+The parameter \(\beta_{\text{epi}}\) governs the increase in scale of the local corresponding local shrinkage parameters. The larger \(\beta_{\text{epi}}\) is, the more likely it is that we expect to see non-zero regression coefficients for the HLA alleles that are predicted to restrict the corresponding alignment position of replacement \(j\).
 
 \subsection*{Partial pooling of 4-digit HLA alleles}
 
