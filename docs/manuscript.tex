@@ -192,34 +192,34 @@ We also chose to fit the model in a Bayesian fashion using Stan, mostly because 
 Consider the following notation:
 
 \begin{align}
-  y_{ij} & \sim \text{bernoulli}(\theta_{ij}) \\
-  \theta_{ij} & = \text{inv\_logit}(\beta_{0_{j}} + X_{i}\beta_{\text{HLA}_{j}})
+  y_{ik} & \sim \text{bernoulli}(\theta_{ik}) \\
+  \theta_{ik} & = \text{inv\_logit}(\beta_{0_{k}} + \sum_{j=1}^{D} X_{ij}\beta_{\text{HLA}_{jk}})
 \end{align}, 
 
-where \(y_{ij}\) is the binary encoded observation at sequence \(i\) for replacement \(j\), \(\theta_{ij}\) is the estimated probability that we observe replacement \(j\) in sequence \(i\), \(X_{i}\) is the binary encoded (row) vector of HLA annotations for sequence \(i\), and \(\beta_{\text{HLA}_{j}}\) is the (column) vector of HLA regression coefficients for replacement \(j\) and  \(\text{inv\_logit}\) is the logistic link function. Note that, if we observe N different amino acid states at a certain alignment position, each of those are considered in turn to be the "replacement".
+where \(y_{ik}\) is the binary encoded observation at sequence \(i\) for replacement \(k\), \(\theta_{ik}\) is the estimated probability that we observe replacement \(k\) in sequence \(i\), \(X_{ij}\) is 1 if sequence \(i\) is annotated with HLA allele \(j\) and 0 otherwise, \(\beta_{\text{HLA}_{jk}}\) is the HLA regression coefficients for HLA allele \(j\) at replacement \(k\), \(D\) is the number of HLA alleles in the dataset, and \(\text{inv\_logit}\) is the logistic link function. Note that, if we observe N different amino acid states at a certain alignment position, each of those are considered in turn to be the “replacement”.
 
-The regression coefficients \(\beta_{\text{HLA}_{j}}\) are the main focus of interest, as they quantify the association between the occurrence of replacement \(j\) and each of the observed HLA alleles. They are in units of log-odds, so a regression coefficient of somewhere around 2 means that when comparing sequences with and without that particular HLA allele, the log-odds of observing replacement \(j\) in presence of that HLA allele is increased by 2.
+The regression coefficients \(\beta_{\text{HLA}_{jk}}\) are the main focus of interest, as they quantify the association between the occurrence of replacement \(k\) and each of the observed HLA alleles. They are in units of log-odds, so a regression coefficient of somewhere around 2 means that when comparing sequences with and without that particular HLA allele, the log-odds of observing replacement \(k\) in presence of that HLA allele is increased by 2.
 
 Reasoning about coefficients on the log-odds scale can sometimes be unintuitive. A useful approximation to interpret logistic regression coefficients on the probability scale is the so-called divide-by-4 rule, which means that a regression coefficient of 2 corresponds to an expected increase on the probability scale of about 2/4 = 50\%. 
 
 \subsection*{Including phylogeny}
 
 One problem that occurs when analyzing sequence data is that species share a common phylogenetic history. Standard statistical methods usually assume samples to be independent and identically distributed, which may lead to wrong conclusions when this assumption is strongly violated.
-In the context of identifying HLA associations, Bhattacharya et al. demonstrated the importance of correcting for the phylogenetic structure.
-There are many different approaches described in the literature for phylogenetic regression for binary dependent variables (see \cite{Ives2014}), where the most popular approach is to estimate an additional multivariate normally distributed intercept, where the covariance matrix is based on the branch lengths of a given phylogenetic tree \cite{Ives2009}.
+In the context of identifying HLA associations, Bhattacharya et al.\cite{Bhattacharya2007} demonstrated the importance of correcting for the phylogenetic structure.
+There are many approaches described in the literature for phylogenetic regression for binary dependent variables (see \cite{Ives2014}), where the most popular approach is to estimate an additional multivariate normally distributed intercept, where the covariance matrix is based on the branch lengths of a given phylogenetic tree \cite{Ives2009}.
 
 This approach showed to be too computationally expensive to include in our model, so we chose a strategy that is similar to the one in Carlson et al. \cite{Carlson2008} for the Phylogenetic Dependency Network:
 
-Consider a phylogenetic tree \(\Psi\) obtained from standard maximum likelihood methods for a given multiple sequence alignment. We are interested in estimating \(P(y_{ij}=1|\Psi)\), that is, the probability of observing the replacement \(j\) in sequence \(i\) based on the underlying phylogenetic model.
-A quantity that can be readily computed using phylogenetic software like RAxML \cite{Stamatakis2014} is \(P(\Psi|y_{ij}=1)\). For this, we keep the tree topology fixed, annotate the tree with the binary observations \(y\) at its leaves and optimize the branch lengths. \(P(\Psi|y_{ij}=1)\) is then the likelihood of the annotated phylogenetic tree. We can then use Bayes' rule to invert that conditional probability by additionally computing \(P(\Psi|y_{ij}=0)\), which is done by altering the annotation for sequence \(i\) and keeping all other observations constant.
+Consider a phylogenetic tree \(\Psi\) obtained from standard maximum likelihood methods for a given multiple sequence alignment. We are interested in estimating \(P(y_{ik}=1|\Psi)\), that is, the probability of observing the replacement \(k\) in sequence \(i\) based on the underlying phylogenetic model.
+A quantity that can be readily computed using phylogenetic software like RAxML \cite{Stamatakis2014} is \(P(\Psi|y_{ik}=1)\). For this, we keep the tree topology fixed, annotate the tree with the binary observations \(y\) at its leaves and optimize the branch lengths. \(P(\Psi|y_{ik}=1)\) is then the likelihood of the annotated phylogenetic tree. We can then use Bayes' rule to invert that conditional probability by additionally computing \(P(\Psi|y_{ik}=0)\), which is done by altering the annotation for sequence \(i\) and keeping all other observations constant.
 
-In order to check if the inferred probabilities \(P(y_{ij}=1|\Psi)\) faithfully reflect the observed data we use calibration plots (see fig.~\ref{fig:phylogeny-calibration}). All observations are binned according to their inferred probability \(P(y_{ij}=1|\Psi)\). If these probabilities are calibrated correctly, we expect that in a group of observations with an inferred probability \(P(y_{ij}=1|\Psi)\) of around x\% we really do observe \(y_{ij}=1\) around x\% percent of the time.
+In order to check if the inferred probabilities \(P(y_{ik}=1|\Psi)\) faithfully reflect the observed data we use calibration plots (see fig.~\ref{fig:phylogeny-calibration}). All observations are binned according to their inferred probability \(P(y_{ik}=1|\Psi)\). If these probabilities are calibrated correctly, we expect that in a group of observations with an inferred probability \(P(y_{ik}=1|\Psi)\) of around x\% we really do observe \(y_{ik}=1\) around x\% percent of the time.
 
 \begin{figure}[!ht]
   \includegraphics[width=1\linewidth]{plots/phylogeny_calibration.pdf}
   \caption{Calibration plot for the HBV dataset. For a description of all datasets used in this study see section~\ref{sec:results}. Calibration plots for the other datasets are shown in the appendix.
-  All observations are first sorted by increasing estimated probability \(P(y_{ij}=1|\Psi)\) and then grouped into \(n\) bins.
-  For each bin, the fraction of observations with \(y_{ij}=1\) (observed event percentage) is compared to the midpoint of each bin (the value in the center between the lowest and highest probability). The error bars show the cutpoints for each bin. If the probabilities are calibrated correctly, each dot is supposed to scatter closely around the diagonal line.}
+  All observations are first sorted by increasing estimated probability \(P(y_{ik}=1|\Psi)\) and then grouped into \(n\) bins.
+  For each bin, the fraction of observations with \(y_{ik}=1\) (observed event percentage) is compared to the midpoint of each bin (the value in the center between the lowest and highest probability). The error bars show the cutpoints for each bin. If the probabilities are calibrated correctly, each dot is supposed to scatter closely around the diagonal line.}
   \label{fig:phylogeny-calibration}
 \end{figure}
 
@@ -227,19 +227,19 @@ The estimated probabilities are then included in the model as additional interce
 
 \begin{equation}
 \begin{aligned}
-  y_{ij} & \sim \text{bernoulli}(\theta_{ij}) \\
-  \theta_{ij} & = \text{inv\_logit}(\beta_{0_{j}} + \gamma~\text{logit}(P(y_{ij}=1|\Psi)) \\ + & X_{i}\beta_{\text{HLA}_{j}})
+  y_{ik} & \sim \text{bernoulli}(\theta_{ik}) \\
+  \theta_{ik} & = \text{inv\_logit}(\beta_{0_{k}} + \gamma~\text{logit}(P(y_{ik}=1|\Psi)) \\ + \sum_{k=1}^{D}X_{ik}\beta_{\text{HLA}_{jk}})
 \end{aligned}
 \end{equation}
 
-The logit transform is used because is cancels out with the logistic link function. This means that the phylogeny information acts as a baseline in absence of any HLA effects. Note that we also include an additional parameter \(\gamma\), that is constrained to be positive. This helps because the inferred probabilities \(P(y_{ij}=1|\Psi)\) might not necessarily reflect the true underlying phylogenetic signal, for example because the phylogenetic tree does not match the observed data well enough.
+The logit transform is used because is cancels out with the logistic link function. This means that the phylogeny information acts as a baseline in absence of any HLA effects. Note that we also include an additional parameter \(\gamma\), that is constrained to be positive. This helps because the inferred probabilities \(P(y_{ik}=1|\Psi)\) might not necessarily reflect the true underlying phylogenetic signal, for example because the phylogenetic tree does not match the observed data well enough.
 
-A straight-forward extension of our model would be to also account for these sources of uncertainty, for example by using a Bayesian method to estimate a posterior distribution over possible tree topologies. The uncertainty over the tree topology and the underlying parameters of the phylogenetic model would then propagate into uncertainty of the estimated probabilities \(P(y_{ij}=1|\Psi)\). However, in order to not increase the runtime of the model further we  use standard maximum likelihood estimates and then include these in a way that allows for measurement error.
+A straight-forward extension of our model would be to also account for these sources of uncertainty, for example by using a Bayesian method to estimate a posterior distribution over possible tree topologies. The uncertainty over the tree topology and the underlying parameters of the phylogenetic model would then propagate into uncertainty of the estimated probabilities \(P(y_{ik}=1|\Psi)\). However, in order to not increase the runtime of the model further we  use standard maximum likelihood estimates and then include these in a way that allows for measurement error.
 
 \subsection*{Including HLA linkage disequilibrium and codon covariation}
 
 The other two important confounding effects that are recognized in Carlson et al.\cite{Carlson2008} are HLA linkage disequilibrium and codon covariation.
-HLA linkage disequilibrium describes the observation that HLA alleles that lie in proximity to each other on the chromosome are also more likely to be inherited together. When using a statistical method that evaluates each HLA allele individually, this may lead to spurious associations: If some HLA allele \(X\) is associated with replacement \(j\), and HLA allele \(Y\) often co-occurs with HLA allele \(X\), this means that we also identify an association between HLA allele \(Y\) and replacement \(j\).
+HLA linkage disequilibrium describes the observation that HLA alleles that lie in proximity to each other on the chromosome are also more likely to be inherited together. When using a statistical method that evaluates each HLA allele individually, this may lead to spurious associations: If some HLA allele \(X\) is associated with replacement \(k\), and HLA allele \(Y\) often co-occurs with HLA allele \(X\), this means that we also identify an association between HLA allele \(Y\) and replacement \(k\).
 
 This association is correct in a statistical sense, but if the purpose of the model is to identify sites under HLA-mediated selection pressure, these associations due to linkage disequilibrium are most likely unwanted.
 
@@ -260,13 +260,13 @@ For our model, we use a so-called horse prior~\cite{Carvalho2010}, which is defi
 
 \begin{equation}
   \begin{aligned}
-    \beta_{j} &\sim \text{Normal}(0, \tau\lambda_{j}) \\
-    \lambda_{j} &\sim \text{Cauchy}^{+}(0, 1) \\
+    \beta_{jk} &\sim \text{Normal}(0, \tau^{2}\lambda^{2}_{jk}) \\
+    \lambda_{jk} &\sim \text{Cauchy}^{+}(0, 1) \\
     \tau &\sim \text{Cauchy}^{+}(0, \tau_{0})
   \end{aligned}
 \end{equation},
 
-where \(\beta_{j}\) are the regression coefficients, \(\tau\) is the so-called global shrinkage parameter, \(\lambda_{j}\) are the so-called local shrinkage parameters and \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution.
+where \(\beta_{jk}\) are the regression coefficients, \(\tau\) is the so-called global shrinkage parameter, \(\lambda_{jk}\) are the so-called local shrinkage parameters and \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution.
 
 Intuitively speaking, the global shrinkage parameter \(\tau\) is typically very small and shrinks most of the regression coefficients to 0, whereas the local shrinkage parameters can occasionally be very large to allow some coefficients to escape that shrinkage.
 
@@ -285,46 +285,64 @@ The improvement of the logistic regression model with the horseshoe prior is a c
 \subsection*{Including epitope prediction software}
 
 There is vast experimental data on epitope binding motifs available, e.g. through the use of mass spectrometry~\cite{Hunt1992}. Epitope prediction software like MHCFlurry~\cite{ODonnell2020} use these data to extrapolate MHC I binding for new, untested peptides.
-As HLA-associated mutations are much more likely to lie epitopes (e.g. because of selection pressure to escape MHC I binding), using epitope prediction software can provide valuable external data for identifying HLA-associated mutations.
+As HLA-associated mutations are much more likely to lie in epitopes (e.g. because of selection pressure to escape MHC I binding), using epitope prediction software can provide valuable external data for identifying HLA-associated mutations.
 
-For our model, we use MHCFlurry 2.0 for binding prediction, as it does not only predict HLA binding but also antigen processing. For this, we create an input matrix of dimensions \(R\times D\), where R is the number of evaluated replacements and D is the number of observed HLA alleles in the dataset. The elements of this matrix are binary encoded and contain a 1 if that position is either expected to be inside a predicted epitope or related to antigen processing, and 0 otherwise. Given an amino acid sequence, MHCFlurry 2.0 provides a list of possible epitopes (9-13 mers) and HLA alleles pairs and calculates a rank based on comparisons with random epitope and HLA pairs. For the binarization we use a rank threshold of 0.2\% (as suggested by MHCFlurry).
+For our model, we use MHCFlurry 2.0 for binding prediction, as it does not only predict HLA binding but also predicts antigen processing. For this, we create an input matrix of dimensions \(R\times D\), where R is the number of evaluated replacements and D is the number of observed HLA alleles in the dataset. The elements of this matrix are binary encoded and contain a 1 if that position is either expected to be inside a predicted epitope or related to antigen processing, and 0 otherwise. Given an amino acid sequence, MHCFlurry 2.0 provides a list of possible epitopes (9-13 mers) and HLA allele pairs and calculates a rank based on comparisons with random epitope and HLA pairs. For the binarization we use a rank threshold of 0.2\% (as suggested by MHCFlurry).
 
 We typically try to avoid thresholds whenever possible, but in this case we deemed it to be preferable to including the predicted binding affinities, as we expected the binary values to be more reliable than the predicted numeric values.
 Note that the output of these epitope prediction tools may be imprecise or even wrong, but by including it as an input for a probabilistic model, the model is able to learn how much to trust this data if parameterized in a way to allow for measurement error.
 
-Epitope prediction is information about the expected degree of sparsity, i.e. when knowing a certain position is restricted by a certain HLA allele, we expect that this HLA allele is more likely to be associated with the replacement than the other HLA alleles.
-This can be reflected by increasing the scale of the local shrinkage parameters \(\lambda_{j}\):
+We use epitope prediction as information about the expected degree of sparsity, i.e. when knowing a certain position is restricted by a certain HLA allele, we expect that this HLA allele is more likely to be associated with the replacement than the other HLA alleles.
+This can be reflected by increasing the scale of the local shrinkage parameters \(\lambda_{jk}\):
 
 \begin{equation}
   \begin{aligned}
-    \lambda_{j} &\sim \text{Cauchy}^{+}(0, \text{exp}(\beta_{\text{epi}}Z_{j})) \\
+    \lambda_{jk} &\sim \text{Cauchy}^{+}(0, \text{exp}(Z_{jk}\beta_{\text{epi}})) \\
     \beta_{\text{epi}} &\sim \text{Normal}^{+}(1, 2)
   \end{aligned}
 \end{equation},
  
-where \(Z_{j}\) is a binary vector denoting which of the alleles is predicted to restrict HLA binding or antigen processing at the alignment position corresponding to replacement \(j\).
-The parameter \(\beta_{\text{epi}}\) governs the increase in scale of the local corresponding local shrinkage parameters. The larger \(\beta_{\text{epi}}\) is, the more likely it is that we expect to see non-zero regression coefficients for the HLA alleles that are predicted to restrict the corresponding alignment position of replacement \(j\).
-
-\subsection*{Partial pooling of 4-digit HLA alleles}
-
-\begin{itemize}
-  \item (this still has to be implemented, but should be a nice feature. If this is going to be too time-consuming I can just leave it out)
-  \item realized through allele group specific intercepts, e.g. HLA-B\*51:01 and  HLA-B\*51:03, ..., share a common intercept.
-  \item show formula
-\end{itemize}
+where \(Z_{jk}\) is 1 if HLA allele \(j\) is predicted to restrict the alignment position corresponding to replacement \(k\) or is associated antigen processing and 0 otherwise.
+The parameter \(\beta_{\text{epi}}\) governs the increase in scale of the  corresponding local shrinkage parameters. The larger the estimated values of \(\beta_{\text{epi}}\) are, the more likely it is to see non-zero regression coefficients for these HLA alleles.
 
 \subsection*{Full model specification}
-\begin{itemize}
-  \item show all formulas
-  \item all models were implemented in Stan. Code is available online in two versions: one optimized for readability, one optimized for speed with multithreading and GPU support
-  \item data can be analyzed using a custom Julia package (tested on linux).
-\end{itemize}
+
+The full specification of the model is given by:
+
+\begin{equation}
+  \label{eq:full}
+  \begin{aligned}
+    y_{ik} &\sim \text{bernoulli}(\theta_{ik})\\
+    \theta_{ik} &= \text{inv\_logit}(\beta_{0_{k}} + \gamma_{k}\text{logit}(P(y_{ik}=1|\Psi))\\
+        +\sum_{k=1}^{D}X_{ij}\beta_{\text{HLA}_{jk}})\\
+    \beta_{0_{k}} &\sim \text{Normal}(0, 100^2)\\
+    \gamma_{k} &\sim \text{Normal}(\mu_{\text{phy}}, \sigma_{\text{phy}}^2)\\
+    \mu_{\text{phy}} &\sim \text{Normal}(1, 1)\\
+    \sigma_{\text{phy}} &\sim \text{Normal}^{+}(0, 0.5)\\
+    \beta_{\text{HLA}_{jk}} &\sim \text{Normal}(0, \tau^{2}\tilde{\lambda}^{2}_{jk})\\
+    \tilde{\lambda}^{2}_{jk} &= \frac{c_{k}^{2}\lambda_{jk}^{2}}{c_{k}^{2} + \tau^{2}\lambda_{jk}^{2}} \\
+    c_{k}^2 &\sim \text{Inv-Gamma}(3.5, 3.5)\\
+    \lambda_{jk} &\sim \text{Cauchy}^{+}(0, \sigma_{j}^2\text{exp}(Z_{jk}\beta_{\text{epi}}))\\
+    \tau &\sim \text{Cauchy}^{+}(0, \tau_{0})\\
+    \tau_{0} &= \frac{2}{D-2}\frac{2}{\sqrt{N}}
+  \end{aligned}
+\end{equation}
+
+The full model specification includes some aspects that were not covered in the previous sections. In particular, the parameters \(\gamma_{k}\) are modelled hierarchically, which allows information to be partially pooled across replacements. However, the model would also work reasonably well with just a single global parameter \(\gamma\). All other additions (\(\tilde{\lambda}_{jk}^{2}\) and \(\tau_0\)) are explained in detail in \cite{Piironen2017}. Briefly, the addition of  \(\tilde{\lambda}_{jk}^{2}\) allows some regularization for the non-zero coefficients and the parameterization of \(tau_{0}\) allows to place a prior on the expected number of non-zero coefficients.
+
+All models were implemented in Stan. The Stan code is available online in two versions: One optimized for readability and one optimized for speed by utilizing Stan's multithreading and GPU capabilities.
+A Julia\cite{Bezanson2017} package is available to run the model on custom data. Due to restrictions of dependencies (MHCFlurry and raxml-ng), HAMdetector is only available on Linux. We additionally provide Docker images to easily run the model on any operating system in a containerized environment, assuming Docker is installed. 
 
 \subsection*{Prior justification}
-\begin{itemize}
-  \item justify priors, mostly based on the expected scales. Compare to some 
-  Betancourt/Gelman papers to see how it is done there.
-\end{itemize}
+
+Prior distributions are labeled with an asterisk in equation~\ref{eq:full}. They are meant to be weakly informative, which means that the goal is to provide some modest amount of shrinkage while still allowing for large absolute values given enough support by the observed data. One exception to this are the intercepts \(\beta_{0_k}\), which are essentially flat because they are well identified by the data alone.
+
+The hierarchical mean and standard deviation of the phylogeny coefficients \(\gamma_{k}\) are chosen to place most probability mass at values of \(\gamma_{k}\) of around 1. In the absence of any HLA effects, a parameter value of 1 would mean that the estimate for the probability of observing replacement \(k\) is identical to the probability based on the phylogenetic model. Intuitively speaking, We therefore treat the phylogeny as a baseline and any observations that cannot be attributed to phylogeny are attributed to the HLA alleles or noise.
+
+The prior on \(c_{k}^{2}\) implies a Student-t prior with 7 degrees of freedom and a scale of 1 on HLA regression coefficients \(\beta_{\text{HLA}_{jk}}\) that are estimated to be away from 0. A Student-t prior with these parameters is a reasonable default choice for logistic regression models. The theoretical justification behind this regularized variant of the horseshoe prior is explained in detail in\cite{Piironen2017}.
+
+The value of \(\tau_{0}\) is chosen to imply 2 effective non-zero HLA regression coefficients per replacement. The rationale behind this parameterization is again outlined in\cite{Piironen2017}. The value of 2 is approximately based on available HIV epitope maps. Please note that this is only an approximate statement about the general magnitude, i.e. we would expect maybe a couple of HLA alleles to be associated with a single replacement, but not 20 or more.
+The model is also parameterized in a way that assumes an equal degree of sparsity across all alignment positions a priori. We also tried to model \(\tau\) hierarchically, but observed sampling issues due to the resulting unfavorable geometry of the posterior.
 
 \section{Results} \label{sec:results}
 
