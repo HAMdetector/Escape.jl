@@ -131,6 +131,15 @@ Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, and Andrew
 \newblock {\em Journal of the Royal Statistical Society: Series A (Statistics
   in Society)}, 182(2):389--402, jan 2019.
 
+\bibitem{Bhattacharya2007}
+T.~Bhattacharya, M.~Daniels, D.~Heckerman, B.~Foley, N.~Frahm, C.~Kadie,
+  J.~Carlson, K.~Yusim, B.~McMahon, B.~Gaschen, S.~Mallal, J.~I. Mullins, D.~C.
+  Nickle, J.~Herbeck, C.~Rousseau, G.~H. Learn, T.~Miura, C.~Brander,
+  B.~Walker, and B.~Korber.
+\newblock Founder effects in the assessment of {HIV} polymorphisms and {HLA}
+  allele associations.
+\newblock {\em Science}, 315(5818):1583--1586, mar 2007.
+
 \bibitem{Ives2014}
 Anthony~R. Ives and Theodore Garland.
 \newblock Phylogenetic regression for binary dependent variables.
@@ -170,5 +179,10 @@ Timothy~J. O'Donnell, Alex Rubinsteyn, and Uri Laserson.
 \newblock {MHCflurry} 2.0: Improved pan-allele prediction of {MHC} class
   i-presented peptides by incorporating antigen processing.
 \newblock {\em Cell Systems}, 11(1):42--48.e7, jul 2020.
+
+\bibitem{Bezanson2017}
+Jeff Bezanson, Alan Edelman, Stefan Karpinski, and Viral~B. Shah.
+\newblock Julia: A fresh approach to numerical computing.
+\newblock {\em {SIAM} Review}, 59(1):65--98, jan 2017.
 
 \end{thebibliography}
