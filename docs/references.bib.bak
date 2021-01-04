@@ -404,4 +404,31 @@
   doi       = {10.1007/11799511_16},
 }
 
+@Article{Kozlov2019,
+  author    = {Alexey M Kozlov and Diego Darriba and Tom{\'{a}}{\v{s}} Flouri and Benoit Morel and Alexandros Stamatakis},
+  journal   = {Bioinformatics},
+  title     = {{RAxML}-{NG}: a fast, scalable and user-friendly tool for maximum likelihood phylogenetic inference},
+  year      = {2019},
+  month     = {may},
+  number    = {21},
+  pages     = {4453--4455},
+  volume    = {35},
+  doi       = {10.1093/bioinformatics/btz305},
+  editor    = {Jonathan Wren},
+  publisher = {Oxford University Press ({OUP})},
+}
+
+@Article{Vehtari2016,
+  author    = {Aki Vehtari and Andrew Gelman and Jonah Gabry},
+  journal   = {Statistics and Computing},
+  title     = {Practical Bayesian model evaluation using leave-one-out cross-validation and {WAIC}},
+  year      = {2016},
+  month     = {aug},
+  number    = {5},
+  pages     = {1413--1432},
+  volume    = {27},
+  doi       = {10.1007/s11222-016-9696-4},
+  publisher = {Springer Science and Business Media {LLC}},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}

@@ -195,4 +195,10 @@ Kirsten Roomp, Niko Beerenwinkel, Tobias Sing, Eugen Schülter, Joachim Büch,
 \newblock In {\em Lecture Notes in Computer Science}, pages 185--194. Springer
   Berlin Heidelberg, 2006.
 
+\bibitem{Vehtari2016}
+Aki Vehtari, Andrew Gelman, and Jonah Gabry.
+\newblock Practical bayesian model evaluation using leave-one-out
+  cross-validation and {WAIC}.
+\newblock {\em Statistics and Computing}, 27(5):1413--1432, aug 2016.
+
 \end{thebibliography}
