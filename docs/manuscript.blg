@@ -5,45 +5,45 @@ The style file: unsrt.bst
 Database file #1: references.bib
 Warning--empty journal in Piironen2017
 Warning--empty year in Piironen2017
-You've used 30 entries,
+You've used 31 entries,
             1791 wiz_defined-function locations,
-            687 strings with 11274 characters,
-and the built_in function-call counts, 9060 in all, are:
-= -- 720
-> -- 622
+            694 strings with 11460 characters,
+and the built_in function-call counts, 9333 in all, are:
+= -- 746
+> -- 633
 < -- 2
-+ -- 219
-- -- 189
-* -- 885
-:= -- 1513
-add.period$ -- 91
-call.type$ -- 30
-change.case$ -- 30
++ -- 223
+- -- 192
+* -- 911
+:= -- 1555
+add.period$ -- 94
+call.type$ -- 31
+change.case$ -- 31
 chr.to.int$ -- 0
-cite$ -- 32
-duplicate$ -- 295
-empty$ -- 741
-format.name$ -- 189
-if$ -- 1868
+cite$ -- 33
+duplicate$ -- 304
+empty$ -- 767
+format.name$ -- 192
+if$ -- 1926
 int.to.chr$ -- 0
-int.to.str$ -- 30
-missing$ -- 30
-newline$ -- 152
-num.names$ -- 30
-pop$ -- 45
+int.to.str$ -- 31
+missing$ -- 31
+newline$ -- 157
+num.names$ -- 31
+pop$ -- 46
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 118
+skip$ -- 121
 stack$ -- 0
-substring$ -- 729
-swap$ -- 47
+substring$ -- 760
+swap$ -- 48
 text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 2
-while$ -- 86
-width$ -- 32
-write$ -- 330
+while$ -- 89
+width$ -- 33
+write$ -- 341
 (There were 2 warnings)
