@@ -14,6 +14,7 @@
 \usepackage{fontspec}
 \usepackage{hyperref}
 \usepackage{amsmath}
+\usepackage{makecell}
 % \usepackage{lipsum} % Required to insert dummy text. To be removed otherwise
 \setmainfont{TeX Gyre Termes}
 %----------------------------------------------------------------------------------------
@@ -446,32 +447,39 @@ Perhaps surprisingly, the model with epitope prediction performs roughly as well
 
 \subsection{A real-world example}
 
-\begin{itemize}
-  \item We had the opportunity to test our model against a set of false positives that were identified by Fisher's exact test. On the HDV dataset, Fisher's exact test was applied to a set of HLA annotated sequences and x statistically significant results were reported. The identified positions were experimentally validated and y positions turned out to be false-positives, where Fisher's exact test showed extremely low p-values but experimental validation failed (how?).
-  \item This kind of data is rare because negative results are usually not published in the literature.
-  \item We ran HAMdetector on the same dataset, the posterior probabilities are shown in table x.
-  \item Note that a larger posterior probability denotes that the model is more confident in that HLA alleles being a HAM.
-  \item For most of the false positives we observe low posterior probabilities, which means that the model correctly identifies these alleles as not being relevant.
-  \item X of the false positives remain, which means that the model is not perfect, but a strong improvement over fisher's exact test.
-  \item these results were published previously using a preliminary version of HAMdetector, cite Roggendorf manuscript.
-\end{itemize}
+We had the opportunity to test our model against a set of associations identified by Fisher's exact test that turned out to be false positives.
+On the HDV dataset, Fisher's exact test was applied to a set of HLA annotated sequences and statistically significant results were reported. The identified positions were experimentally validated and 9 associations turned out to be false-positives.
+This kind of data is rate because negative results are usually not published in the literature.
+We ran HAMdetector on the same dataset, the posterior probabilities are shown in table \ref{tab:false-positives}. They denote the probability that the corresponding regression coefficient is positive. Associations with strong have a posterior probability close to 1, associations with no support a probability close to 0.5 (because the marginal posterior distribution is centered around 0 and allocated half of the probability mass to values greater than 0).
+The table shows that most of the false-positives in Fisher's exact test have low posterior probabilities in our model, which means that these alleles are correctly identified as not being associated with the replacement. The pairs of HLA alleles and replacements that were experimentally validated have the highest posterior probabilities, with the exception of P89T - HLA-B*37, which does not have strong support in our model.
+The results suggest that while our model is not perfect, it is a strong improvement over Fisher's exact test, which is frequently applied in this context. Please note that the results in this subsection have previously been published using a preliminary version of HAMdetector. 
 
-\subsection{Rongge dataset}
-\begin{itemize}
-  \item We ran HLAdetector on a set of X HIVSequences sampled in China. X associations have a posterior mass greater than Y.
-  \item Maybe show a plot of marginal posteriors.
-\end{itemize}
-
+\begin{table}[]
+  \begin{tabular}{c|c|c|c|c}
+  \thead{replacement} & \thead{allele}  & \thead{p-value \\ (Fisher's exact test)} & \thead{post. prob. \\ (HAMdetector)} & \thead{confirmed} \\
+  \hline
+  S170N       & B*15 & \(3\cdot10^{-8}\)      & 0.99                                & +                        \\
+  D101E       & B*37 & 0.0002                        & 0.96                                & +                        \\
+  R105K       & B*27 & 0.0011                        & 0.93                                & +                        \\
+  R139K       & B*41 & 0.0034                        & 0.91                                & +                        \\
+  E47D        & B*18 & 0.0027                        & 0.89                                & +                        \\
+  D33E        & B*13 & 0.0001                        & 0.86                                & -                        \\
+  T134A       & A*68 & 0.0045                        & 0.82                                & -                        \\
+  K43R        & B*13 & 0.0021                        & 0.77                                & -                        \\
+  D47E        & A*30 & 0.0010                        & 0.76                                & -                        \\
+  K113R       & B*13 & 0.0043                        & 0.76                                & -                        \\
+  P89T        & B*37 & 0.0011                        & 0.75                                & +                        \\
+  A107T       & B*14 & 0.0028                        & 0.70                                & -                        \\
+  P49L        & A*30 & 0.0031                        & 0.63                                & -                        \\
+  Q100L       & B*13 & 0.0018                        & 0.61                                & -                        \\
+  D96E        & B*13 & 0.0035                        & 0.50                                & -                       
+  \end{tabular}
+  \end{table}
 
 \section{Discussion}
 
-\begin{itemize}
-  \item We present HAMdetector, a Bayesian model to identify HLA-associated mutations in a sequence alignment
-  \item We propose to use models that include as much information as possible and have shown that including sparsity and epitope prediction software can achieve better performance than existing methods.
-  \item The main advantage of using a logistic regression backbone is that it is easy to modify and the coefficients are interpretable as changes on the log-odds scale, like with a standard logistic regression model.
-  \item We can believe the general model structure can also be used in other contexts, for example in identifying associations in Sequence data and other features.
-  \item Maybe some additional points?
-\end{itemize}
+We present HAMdetector, a Bayesian model to identify HLA-associated mutations in a multiple sequence alignment. We propose to use models that include as much information as possible and have shown, that including sparsity and epitope prediction software can achieve better performance than existing methods. The logistic regression backbone can be easily modified, which allows the model to also be used in other contexts, for example in identifying associations between sequence data and other features.
+
 \thispagestyle{empty} % Removes page numbering from the first page
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
