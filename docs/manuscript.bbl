@@ -131,6 +131,12 @@ Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, and Andrew
 \newblock {\em Journal of the Royal Statistical Society: Series A (Statistics
   in Society)}, 182(2):389--402, jan 2019.
 
+\bibitem{ODonnell2020}
+Timothy~J. O'Donnell, Alex Rubinsteyn, and Uri Laserson.
+\newblock {MHCflurry} 2.0: Improved pan-allele prediction of {MHC} class
+  i-presented peptides by incorporating antigen processing.
+\newblock {\em Cell Systems}, 11(1):42--48.e7, jul 2020.
+
 \bibitem{Bhattacharya2007}
 T.~Bhattacharya, M.~Daniels, D.~Heckerman, B.~Foley, N.~Frahm, C.~Kadie,
   J.~Carlson, K.~Yusim, B.~McMahon, B.~Gaschen, S.~Mallal, J.~I. Mullins, D.~C.
@@ -175,11 +181,9 @@ D.~Hunt, R.~Henderson, J~Shabanowitz, K~Sakaguchi, H~Michel, N~Sevilir, A.~Cox,
   {HLA}-a2.1 by mass spectrometry.
 \newblock {\em Science}, 255(5049):1261--1263, mar 1992.
 
-\bibitem{ODonnell2020}
-Timothy~J. O'Donnell, Alex Rubinsteyn, and Uri Laserson.
-\newblock {MHCflurry} 2.0: Improved pan-allele prediction of {MHC} class
-  i-presented peptides by incorporating antigen processing.
-\newblock {\em Cell Systems}, 11(1):42--48.e7, jul 2020.
+\bibitem{Stan2021}
+{\em Stan Development Team. 2021. Stan Modeling Language Users Guide and
+  Reference Manual, 2.23. https://mc-stan.org}.
 
 \bibitem{Bezanson2017}
 Jeff Bezanson, Alan Edelman, Stefan Karpinski, and Viral~B. Shah.
