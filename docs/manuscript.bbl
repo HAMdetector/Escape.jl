@@ -131,6 +131,21 @@ Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, and Andrew
 \newblock {\em Journal of the Royal Statistical Society: Series A (Statistics
   in Society)}, 182(2):389--402, jan 2019.
 
+\bibitem{ODonnell2020}
+Timothy~J. O'Donnell, Alex Rubinsteyn, and Uri Laserson.
+\newblock {MHCflurry} 2.0: Improved pan-allele prediction of {MHC} class
+  i-presented peptides by incorporating antigen processing.
+\newblock {\em Cell Systems}, 11(1):42--48.e7, jul 2020.
+
+\bibitem{Bhattacharya2007}
+T.~Bhattacharya, M.~Daniels, D.~Heckerman, B.~Foley, N.~Frahm, C.~Kadie,
+  J.~Carlson, K.~Yusim, B.~McMahon, B.~Gaschen, S.~Mallal, J.~I. Mullins, D.~C.
+  Nickle, J.~Herbeck, C.~Rousseau, G.~H. Learn, T.~Miura, C.~Brander,
+  B.~Walker, and B.~Korber.
+\newblock Founder effects in the assessment of {HIV} polymorphisms and {HLA}
+  allele associations.
+\newblock {\em Science}, 315(5818):1583--1586, mar 2007.
+
 \bibitem{Ives2014}
 Anthony~R. Ives and Theodore Garland.
 \newblock Phylogenetic regression for binary dependent variables.
@@ -142,10 +157,52 @@ Anthony~R. Ives and Theodore Garland.
 \newblock Phylogenetic logistic regression for binary dependent variables.
 \newblock {\em Systematic Biology}, 59(1):9--26, nov 2009.
 
-\bibitem{Stamatakis2014}
-Alexandros Stamatakis.
-\newblock {RAxML} version 8: a tool for phylogenetic analysis and post-analysis
-  of large phylogenies.
-\newblock {\em Bioinformatics}, 30(9):1312--1313, jan 2014.
+\bibitem{Kozlov2019}
+Alexey~M Kozlov, Diego Darriba, Tom{\'{a}}{\v{s}} Flouri, Benoit Morel, and
+  Alexandros Stamatakis.
+\newblock {RAxML}-{NG}: a fast, scalable and user-friendly tool for maximum
+  likelihood phylogenetic inference.
+\newblock {\em Bioinformatics}, 35(21):4453--4455, may 2019.
+
+\bibitem{Carvalho2010}
+C.~M. Carvalho, N.~G. Polson, and J.~G. Scott.
+\newblock The horseshoe estimator for sparse signals.
+\newblock {\em Biometrika}, 97(2):465--480, apr 2010.
+
+\bibitem{Piironen2017}
+Juho Piironen and Aki Vehtari.
+\newblock Sparsity information and regularization in the horseshoe and other
+  shrinkage priors.
+
+\bibitem{Hunt1992}
+D.~Hunt, R.~Henderson, J~Shabanowitz, K~Sakaguchi, H~Michel, N~Sevilir, A.~Cox,
+  E~Appella, and V.~Engelhard.
+\newblock Characterization of peptides bound to the class i {MHC} molecule
+  {HLA}-a2.1 by mass spectrometry.
+\newblock {\em Science}, 255(5049):1261--1263, mar 1992.
+
+\bibitem{Stan2021}
+{\em Stan Development Team. 2021. Stan Modeling Language Users Guide and
+  Reference Manual, 2.23. https://mc-stan.org}.
+
+\bibitem{Bezanson2017}
+Jeff Bezanson, Alan Edelman, Stefan Karpinski, and Viral~B. Shah.
+\newblock Julia: A fresh approach to numerical computing.
+\newblock {\em {SIAM} Review}, 59(1):65--98, jan 2017.
+
+\bibitem{Roomp2006}
+Kirsten Roomp, Niko Beerenwinkel, Tobias Sing, Eugen Schülter, Joachim Büch,
+  Saleta Sierra-Aragon, Martin Däumer, Daniel Hoffmann, Rolf Kaiser, Thomas
+  Lengauer, and Joachim Selbig.
+\newblock Arevir: A secure platform for designing personalized antiretroviral
+  therapies against {HIV}.
+\newblock In {\em Lecture Notes in Computer Science}, pages 185--194. Springer
+  Berlin Heidelberg, 2006.
+
+\bibitem{Vehtari2016}
+Aki Vehtari, Andrew Gelman, and Jonah Gabry.
+\newblock Practical bayesian model evaluation using leave-one-out
+  cross-validation and {WAIC}.
+\newblock {\em Statistics and Computing}, 27(5):1413--1432, aug 2016.
 
 \end{thebibliography}

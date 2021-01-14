@@ -3,44 +3,47 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: manuscript.aux
 The style file: unsrt.bst
 Database file #1: references.bib
-You've used 23 entries,
+Warning--empty journal in Piironen2017
+Warning--empty year in Piironen2017
+You've used 32 entries,
             1791 wiz_defined-function locations,
-            638 strings with 9413 characters,
-and the built_in function-call counts, 6757 in all, are:
-= -- 546
-> -- 439
-< -- 1
-+ -- 156
-- -- 133
-* -- 660
-:= -- 1128
-add.period$ -- 70
-call.type$ -- 23
-change.case$ -- 23
+            697 strings with 11587 characters,
+and the built_in function-call counts, 9411 in all, are:
+= -- 751
+> -- 634
+< -- 2
++ -- 224
+- -- 192
+* -- 913
+:= -- 1562
+add.period$ -- 95
+call.type$ -- 32
+change.case$ -- 31
 chr.to.int$ -- 0
-cite$ -- 23
-duplicate$ -- 220
-empty$ -- 566
-format.name$ -- 133
-if$ -- 1392
+cite$ -- 34
+duplicate$ -- 310
+empty$ -- 781
+format.name$ -- 192
+if$ -- 1946
 int.to.chr$ -- 0
-int.to.str$ -- 23
-missing$ -- 23
-newline$ -- 118
-num.names$ -- 23
-pop$ -- 28
+int.to.str$ -- 32
+missing$ -- 31
+newline$ -- 160
+num.names$ -- 31
+pop$ -- 50
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 85
+skip$ -- 125
 stack$ -- 0
-substring$ -- 563
-swap$ -- 32
-text.length$ -- 1
+substring$ -- 760
+swap$ -- 49
+text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 0
-while$ -- 66
-width$ -- 25
-write$ -- 256
+warning$ -- 2
+while$ -- 89
+width$ -- 34
+write$ -- 346
+(There were 2 warnings)
