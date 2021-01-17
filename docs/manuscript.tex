@@ -15,6 +15,7 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{makecell}
+\usepackage{soul}
 % \usepackage{lipsum} % Required to insert dummy text. To be removed otherwise
 \setmainfont{TeX Gyre Termes}
 %----------------------------------------------------------------------------------------
@@ -44,8 +45,7 @@
 %----------------------------------------------------------------------------------------
 
 \PaperTitle{
-    HAMdetector: Combining information to detect HLA-associated mutations with a
-    Bayesian regression model
+    HAMdetector: A Bayesian regression model that integrates information to detect HLA-associated mutations
 } % Article title
 
 \Authors{Daniel Habermann\textsuperscript{1}, ..., Daniel Hoffmann\textsuperscript{1}} % Authors
@@ -64,14 +64,12 @@
 \Abstract{
   \\
   \textbf{Motivation} \\
-  The human leukocyte antigen system (HLA) is of paramount importance to combat viral infections by presenting peptides on the cell surface via MHC I. Thus, CD8\textsuperscript{+} cytotoxic T-Lymphocytes exert a strong selection pressure towards virus variants that escape that immune recognition pathway, e.g. through point mutations that decrease binding of the respective peptide to MHC I. \\
+  The human leukocyte antigen system (HLA) presents viral peptide fragments in MHC I protein-peptide complexes on cell surfaces and in this way alerts CD8\textsuperscript{+} cytotoxic T-Lymphocytes (CTLs), a key component of adaptive immunity. This pathway exerts a strong selection pressure on viruses, favoring viral mutants that escape recognition by the HLA/CTL system, e.g.\ by point mutations that decrease binding of viral peptides to MHC I. Naturally, such immune escape mutations often emerge as HLA-associated mutations (HAMs), specific to the host HLA alleles and its MHC I proteins. The reliable identification of HAMs is not only important to understand viral genomes and their evolution, but it also impacts the development of broadly effective anti-viral treatments and vaccines against variable viruses.\\
 
-  Reliably identifying HLA-associated mutations is important for understanding viral evolution, but experimental methods like binding assays are prohibitively expensive for large-scale use and fail to recognize other mechanisms of immune escape like proteasomal processing.
-
-  One step in finding these mutations is through the statistical analysis of sequence data. However, existing methods are based on null hypothesis significance testing and do not make use of all the available information and therefore have unsatisfactory real-world performance. \\
+  By their very nature HAMs are amenable to detection by statistical methods in paired sequence / HLA data. However, HLA alleles are very polymorphic in the human host population which makes the available data relatively sparse and noisy. Under these circumstances, one way to optimize HAM detection is to integrate all relevant information in a coherent model. Bayesian inference offers a principled approaches to achieve this.\\
 
   \textbf{Results} \\
-  Here, we present a Bayesian regression model that is easily extensible to include information from different sources (e.g. epitope prediction software) and makes use of recent advances in Bayesian inference, e.g. by using a sparsifying prior. We show that including this kind of information improves predictive performance considerably over state-of-the-art methods. \\
+  Here, we present a Bayesian regression model that is easily extensible to include information from different sources, and that makes use of recent advances in Bayesian inference, e.g.\ by using a sparsifying prior. We show that this integrative approach improves performance in HAM detection considerably over state-of-the-art methods. \\
 
   \textbf{Availability and Implementation} \\
   The source code of this software is available at \url{http://github.com} under a permissive MIT license. \\
@@ -97,11 +95,11 @@
 
 \subsection{The HLA system}
 
-One way how the human immune system is able to recognize intracellular viral infections is through the human leukocyte antigen system~\cite{Germain1994}: In cells with active protein biosynthesis, proteins are continuously synthesized and also degraded by a process called proteasomal degradation, which cleaves proteins into linear peptides of varying length~\cite{Goldberg2002}.
+One way of how the human immune system recognizes intracellular viral infections is through the human leukocyte antigen system~\cite{Germain1994}: In cells with active protein biosynthesis, proteins are continuously synthesized and also degraded by proteasomal degradation, which cleaves proteins into peptides~\cite{Goldberg2002}.
 
-A small subset of these peptides is presented on the cell surface via receptors called MHC class I (HLA-A, HLA-B and HLA-C in humans). The genomic region encoding for MHC I is known to be highly polymorphic, with more than 20000 different HLA alleles described today~\cite{Robinson2014}. The resulting gene products differ in their binding properties, which means that cells from different individuals present a highly diverse set of peptides on the cell surface.
+A small subset of these peptides is presented on the cell surface by receptors called MHC class I encoded by HLA genes, e.g.\ in humanc HLA-A, -B, and -C. HLA genes are very polymorphic between human individuals, with more than 20,000 different described HLA alleles~\cite{Robinson2014}. The resulting gene products differ in their binding properties, which means that cells from different individuals present a highly diverse set of peptides on the cell surface.
 
-Cytotoxic T cells are selected during maturation to only weakly bind to peptide/MHC I complexes when the peptide originated from proteins of the usual proteome, but might be able to strongly bind to complexes of MHC I with peptides which are  generated from of a viral protein~\cite{Murata2007}. Upon activation, T cells induce cytolytic activity and recruit other immune cells \nolinebreak\cite{Harty2000}.
+Cytotoxic T-Lymphocytes (CTLs) cells are selected during maturation to only weakly bind to MHC I protein-peptide complexes if the peptide originates from proteins of the self-proteome, but might be able to strongly bind to MHC I protein-peptide complexes with peptides generated from viral proteins~\cite{Murata2007}. Upon activation, T cells induce cytolytic activity and recruit other immune cells~\cite{Harty2000}.
 
 \subsection{HLA escape}
 In this way, the HLA system exerts strong selection pressure towards virus variants that escape T cell recognition~\cite{Borrow1997}, for example through a point mutation that results in reduced binding of an immunogenic peptide to MHC I or through a set of mutations that alters the viral protein in such a way that it is cleaved into different peptides that are not recognized by the host's T cell repertoire~\cite{Yewdell2002}.
@@ -127,7 +125,7 @@ Because the currently available experimental methods do not scale well enough to
 
 As the selection pressure exerted by cytotoxic T cells depends on successful recognition of viral peptides on the cell surface, escape mutations are often HLA-allele specific and can therefore be detected as HLA-allele dependent footprints in sequence alignments of viral proteins~\cite{Moore2002}: At certain alignment positions, a replacement might be more frequently observed in sequences from hosts with a specific HLA allele than in  sequences from hosts without that HLA allele. By quantifying this difference for all replacement and HLA allele pairs, it is possible to identify replacements that are enriched in sequences coming from hosts with certain HLA alleles, and thus are likely to be HLA escape mutations.
 
-One way of quantifying this enrichment is Fisher's exact test~\cite{Fisher1922}: For a given replacement \(R_{i}\) at alignment position \(i\) and HLA allele \(H\), a 2-by-2 contingency table is constructed containing the absolute counts of the number of sequences in the four possible categories  (\(R_{i}\), \(H\)), (\(R_{i}\), \(!H\)), (\(!R_{i}\), \(H\)) and (\(!R_{i}\), \(H\)), where \(!R_{i}\) denotes any replacement except \(R_{i}\), and \(!H\) denotes any HLA allele except \(H\).
+One way of quantifying this enrichment is Fisher's exact test~\cite{Fisher1922}: For a given replacement \(R_{i}\) at alignment position \(i\) and HLA allele \(H\), a 2-by-2 contingency table is constructed containing the absolute counts of the number of sequences in the four possible categories  (\(R_{i}\), \(H\)), (\(R_{i}\), \(\neg H\)), (\(\neg R_{i}\), \(H\)) and (\(\neg R_{i}\), \(H\)), where \(\neg R_{i}\) denotes any replacement except \(R_{i}\), and \(\neg H\) denotes any HLA allele except \(H\).
 
 Fisher's exact test is a conventional null hypothesis significance test (NHST) that generates p-values. In this case, the null hypothesis is that HLA allele \(H\) and  replacement \(R_{i}\) are independent, and the p-value is the probability of observing a deviation from independence that is at least as extreme as in the data at hand under the assumption that the null hypothesis is true.
 
