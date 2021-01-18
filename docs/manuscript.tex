@@ -106,13 +106,13 @@ In this way, the HLA system exerts strong selection pressure towards virus varia
 
 The evolutionary events are complex and occur not only on the level of individuals, where a virus adapts to specific features of the host, but also on the population level, for example because HLA alleles differ in their frequency across geographic regions~\cite{Kawashima2009}. Upon transmission to a new host with different HLA alleles, HLA escape mutations can revert to their wild type, as they are often associated with a reduction in viral replication capacity~\cite{Matthews2008}. If the latter is not the case, such mutations may not revert but be retained in the viral genome~\cite{Kawashima2009}.
 
-Whether and how quickly a given escape mutation is selected in a host depends on several factors, such as the viral genomic background and diversity, the magnitude of the reduction in viral replicative capacity, the availability of compensatory mutations that recover fitness, and the strength of selection pressure. \hl{Hier wäre etwas Literatur gut. Vielleicht ein review zum Thema?}
+Whether and how quickly a given escape mutation is selected in a host depends on several factors, such as the viral genomic background and diversity, the magnitude of the reduction in viral replicative capacity, the availability of compensatory mutations that recover fitness, and the strength of selection pressure. \hl{DaHo: Hier wäre etwas Literatur gut. Vielleicht ein review zum Thema?}
 
-Immune escape is a driver of viral evolution in populations and patients, and therefore of eminent importance for the understanding of many aspects of highly variable viruses such as HIV or HBV \hl{refs?}. This includes the development of treatments and vaccines that rely on effective immune responses. This makes detection of immune escape mutations critical.
+Immune escape is a driver of viral evolution in populations and patients, and therefore of eminent importance for the understanding of many aspects of highly variable viruses such as HIV or HBV \hl{DaHo: refs?}. This includes the development of treatments and vaccines that rely on effective immune responses. This makes detection of immune escape mutations critical.
 
 \subsection{Identifying HLA escape mutations}
 
-There are several experimental methods available to study HLA escape \hl{refs}. However, these methods are relatively slow and costly, especially for screening purposes. A more promising approach is to combine viral genome sequencing, host HLA determination, computational identification by statistical association analysis, and targeted experimental validation. \hl{vielleicht schon hier eine Referenz dazu}
+There are several experimental methods available to study HLA escape \hl{DaHo: refs}. However, these methods are relatively slow and costly, especially for screening purposes. A more promising approach is to combine viral genome sequencing, host HLA determination, computational identification by statistical association analysis, and targeted experimental validation. \hl{DaHo: vielleicht schon hier eine Referenz dazu}
 
 As the selection pressure exerted by cytotoxic T cells depends on successful recognition of viral peptides on the cell surface, escape mutations are often HLA-allele specific and can therefore be detected as HLA-allele dependent footprints in sequence alignments of viral proteins~\cite{Moore2002}: At certain alignment positions, a replacement might be more frequently observed in sequences from hosts with a specific HLA allele than in  sequences from hosts without that HLA allele. By quantifying this difference for all replacement and HLA allele pairs, it is possible to identify replacements that are enriched in sequences coming from hosts with certain HLA alleles, and thus are likely to be HLA escape mutations.
 
@@ -134,7 +134,7 @@ In addition to the aforementioned biological reasons why Fisher's exact test is 
 
 In the presence of small effect sizes and high variance between measurements, as  it is typically the case when working with biological data, statistically significant results can often be misleading and are likely to be in the wrong direction (a so-called type S error) or greatly overestimate an effect (a so-called type M error)~\cite{Gelman2014}. This problem has recently been widely appreciated in the literature in the context of the current “replication crisis“, which describes the circumstance that scientific claims with seemingly strong statistical evidence fail to replicate~\cite{Ioannidis2005}.
 
-Another issue that occurs when using p-values as a screening tool is the problem of multiple comparisons. When applying a statistical test, the probability  of  obtaining a statistically significant result increases with each additional test, even in absence of any real effect. When using p-values as a filter, it is therefore likely to obtain significant effects that are in fact not real. To circumvent this problem, a common strategy is to control the false discovery rate, which is the expected proportion of false positives~\cite{Benjamini1995}. These adjustment procedures have the problem that, when performing many of such comparisons, none but the very largest effects remain.
+These problems are exacerbated if the p-values are used for screening purposes (multiple testing problem). The probability  of  obtaining a statistically significant result increases with each additional test, even in absence of any real effect. When using p-values as a filter, it is therefore likely to obtain significant effects that are in fact not real. To circumvent this problem, a common strategy is to control the false discovery rate, which is the expected proportion of false positives~\cite{Benjamini1995}. These adjustment procedures have the problem that, when performing many of such comparisons, none but the very largest effects remain.
 
 Instead of performing many hypothesis tests and trying to adjust for them, we instead prefer to fit a single, multilevel model that contains all comparisons of interest. When using multilevel models, the problem of multiple comparisons can disappear entirely and  also yield more valid estimates~\cite{Gelman2012}.
 
@@ -183,8 +183,8 @@ Consider the following notation:
 
 \begin{align}
   y_{ik} & \sim \text{bernoulli}(\theta_{ik}) \\
-  \theta_{ik} & = \text{inv\_logit}(\beta_{0_{k}} + \sum_{j=1}^{D} X_{ij}\beta_{\text{HLA}_{jk}})
-\end{align}, 
+  \theta_{ik} & = \text{inv\_logit}(\beta_{0_{k}} + \sum_{j=1}^{D} X_{ij}\beta_{\text{HLA}_{jk}}),
+\end{align}
 
 where \(y_{ik}\) is the binary encoded observation at sequence \(i\) for replacement \(k\), \(\theta_{ik}\) is the estimated probability that we observe replacement \(k\) in sequence \(i\), \(X_{ij}\) is 1 if sequence \(i\) is annotated with HLA allele \(j\) and 0 otherwise, \(\beta_{\text{HLA}_{jk}}\) is the HLA regression coefficients for HLA allele \(j\) at replacement \(k\), \(D\) is the number of HLA alleles in the dataset, and \(\text{inv\_logit}\) is the logistic link function. Note that, if we observe N different amino acid states at a certain alignment position, each of those are considered in turn to be the “replacement”.
 
@@ -239,7 +239,7 @@ We do not currently account for codon covariation in our model, as we are intere
 
 \subsection*{Including sparsity assumptions} \label{sec:sparsity}
 
-One of the recent advances in Bayesian inference is the development of special prior distributions which can be used to give models additional useful properties. An example of these special prior distributions are the so-called sparsity-inducing priors, which can be used to convey the assumption that most of the predictors in a regression model are not associated with the outcome and are therefore 0.
+\hl{DaHo: Wiederholung} One of the recent advances in Bayesian inference is the development of special prior distributions which can be used to give models additional useful properties. An example of these special prior distributions are the so-called sparsity-inducing priors, which can be used to convey the assumption that most of the predictors in a regression model are not associated with the outcome and are therefore 0.
 
 In the context of identifying HLA associations we expect most of the HLA coefficients to be very close to 0, as a given alignment position is typically only restricted by none or few HLA alleles.
 This is important prior knowledge that should be incorporated in the model.
@@ -288,9 +288,9 @@ This can be reflected by increasing the scale of the local shrinkage parameters 
 \begin{equation}
   \begin{aligned}
     \lambda_{jk} &\sim \text{Cauchy}^{+}(0, \text{exp}(Z_{jk}\beta_{\text{epi}})) \\
-    \beta_{\text{epi}} &\sim \text{Normal}^{+}(1, 2)
+    \beta_{\text{epi}} &\sim \text{Normal}^{+}(1, 2),
   \end{aligned}
-\end{equation},
+\end{equation}
  
 where \(Z_{jk}\) is 1 if HLA allele \(j\) is predicted to restrict the alignment position corresponding to replacement \(k\) or is associated antigen processing and 0 otherwise.
 The parameter \(\beta_{\text{epi}}\) governs the increase in scale of the  corresponding local shrinkage parameters. The larger the estimated values of \(\beta_{\text{epi}}\) are, the more likely it is to see non-zero regression coefficients for these HLA alleles.
@@ -326,7 +326,7 @@ A Julia~\cite{Bezanson2017} package is available to run the model on custom data
 
 \subsection*{Prior justification}
 
-Prior distributions are labeled with an asterisk in equation~\ref{eq:full}. They are meant to be weakly informative, which means that the goal is to provide some modest amount of shrinkage while still allowing for large absolute values given enough support by the observed data. One exception to this are the intercepts \(\beta_{0_k}\), which are essentially flat because they are well identified by the data alone.
+Prior distributions are labeled with an asterisk \hl{DaHo: * fehlen} in equation~\ref{eq:full}. They are meant to be weakly informative, which means that the goal is to provide some modest amount of shrinkage while still allowing for large absolute values given enough support by the observed data. One exception to this are the intercepts \(\beta_{0_k}\), which are essentially flat because they are well identified by the data alone.
 
 The hierarchical mean and standard deviation of the phylogeny coefficients \(\gamma_{k}\) are chosen to place most probability mass at values of \(\gamma_{k}\) of around 1. In the absence of any HLA effects, a parameter value of 1 would mean that the estimate for the probability of observing replacement \(k\) is identical to the probability based on the phylogenetic model. Intuitively speaking, We therefore treat the phylogeny as a baseline and any observations that cannot be attributed to phylogeny are attributed to the HLA alleles or noise.
 
@@ -361,10 +361,11 @@ As a comparison to existing methods, we also applied Fisher's exact test and the
 
 \subsection*{Convergence diagnostics}
 
+\hl{DaHo: $\hat{R}$ und $n_{\mathrm{eff}}$ sollten in den Methods eingeführt werden}
 For all the Bayesian models, Markov Chain Monte Carlo sampling was done using Stan~\cite{Stan2021}. All model fits showed no signs of inference issues. In total, 4 different chains with 1000 samples each were drawn from the posterior. The effective sample size for all model parameters exceeded 500, R-hat convergence diagnostic values were below 1.01 in all cases.
 
 \subsection*{Posterior predictive checks}
-
+\hl{DaHo: Sollte in den Methods eingeführt werden}
 Bayesian modelling allows a simple yet effective strategy to test models: By simulating data under the model's assumptions and then comparing simulated and observed data, model misspecifications can be identified and highlight possible model improvements.
 
 Here, we compare the calibration of the posterior predictive probability of observing the replacement to the actual observed data using calibration plots.
@@ -384,7 +385,7 @@ An example calibration plot of the HAMdetector model on the Core protein sequenc
 
 When testing models, we prefer to evaluate them on real-world data whenever possible. 
 However, comparing against real-world data is not straight forward when identifying HLA-associated mutations, because if a tool identifies an HLA-associated mutation which is not yet documented, this could be either because it is a false positive, or a yet unknown HLA-associated mutation that has not been documented before. 
-Also, viewing every non-identified HLA-associated mutation that is listed in the literature as a false negative is not correct either, because documented escape mutations do not necessarily have to show in a sequence alignment.
+Also, viewing every non-identified HLA-associated mutation that is listed in the literature as a false negative is not correct either, because documented escape mutations do not necessarily have to show in each sequence alignment.
 A third issue when comparing models is that HLA-associated mutations are not necessarily binary, so the true positive / false negative framework does not work as well.
 
 To circumvent these issues and still compare against real-world data, we chose the following strategy:
@@ -405,12 +406,13 @@ The horseshoe prior alone is a drastic improvement over Fisher's exact test and 
 The logistic regression model with horseshoe prior works roughly as well as the Phylogenetic Dependency Network, which includes much more information.
 Note that the line for the Phylogenetic Dependency Network is shorter because it only outputs associations with a q-value lower than 0.2 by default.
 
-The remaining models are ranked in order of the number of additional features they include. Additionally including phylogeny is a small improvement over the model with the horseshoe prior, while adding epitope prediction shows to larger drastic improvement.
-Note that this model only uses epitope \textit{prediction} software and does not utilize any information of experimentally confirmed epitopes. These are only used for model evaluation. Therefore, our method works even in absence of any experimental epitope information.
+The remaining models are ranked in order of the number of additional features they include. Additionally including phylogeny is a small improvement over the model with the horseshoe prior, while adding epitope prediction provides another strong improvement.
+
+Note that this model only uses epitope \textit{prediction} software and does not use any information of experimentally confirmed epitopes. These are here only used for model evaluation.
 
 \subsection{Leave-one-out cross-validation}
-
-In addition to testing the model against experimentally validated epitopes, we also perform leave-one-out cross-validation. While the comparison against known epitopes compares inferences of the regression coefficients, leave-one-out cross-validation compares different models in regard to their predictive performance, i.e. how well they can predict the presence or absence of a replacement in a sequence based on the available data.
+\hl{DaHo: LOO auch in Methods einführen und kürzen}
+In addition to testing the model against experimentally validated epitopes, we also performed leave-one-out cross-validation. While the comparison against known epitopes compares inferences of the regression coefficients, leave-one-out cross-validation compares different models in regard to their predictive performance, i.e. how well they can predict the presence or absence of a replacement in a sequence based on the available data.
 
 Unlike usual applications of cross-validation, we are not primarily interested in the absolute magnitude of prediction errors, because the main objective of the statistical inference is to quantify the contribution of the HLA alleles.
 However, as the compared models are all special cases of the complete model, we can use cross-validation to gain insight on the relative importance of each aspect of the model.
@@ -425,23 +427,22 @@ elpd is defined as \(\sum_{i=1}^{n}\text{log}(\int p(y_i|\theta)p(\theta|y_{i-1}
 This has the advantage over other performance measures like classification accuracy, that it not only takes the location of the predictive distribution into account (i.e. the number of correct predictions), but also the width (i.e. how confident the model is in its predictions).
 elpd cannot be computed for frequentist models because the parameters of the model are viewed as fixed values.
 
-Table x shows the LOO results for the HBV dataset.
-Using a simple logistic regression model similar to the one used in~\cite{Moore2002} as a baseline, we compare a logistic regression model with horseshoe prior, a logistic regression model with horseshoe prior and phylogeny, and the complete HAMdetector model with horseshoe prior, phylogeny and epitope prediction to each other.
-The table shows expected log-predictive density differences compared to the baseline model (higher values are better).
+Table x \hl{DaHo: fehlt} shows the LOO results for the HBV dataset. Using a simple logistic regression model similar to the one used in~\cite{Moore2002} as a baseline, we compare a logistic regression model with horseshoe prior, a logistic regression model with horseshoe prior and phylogeny, and the complete HAMdetector model with horseshoe prior, phylogeny and epitope prediction to each other. The table shows expected log-predictive density differences compared to the baseline model (higher values are better).
 
 As the models include more and more information, the predictive accuracy increases. Note that this is not due to overfitting, because leave-one-out cross-validation approximates the model performance on unseen data. Additional tables are shown in the supplementary, the results are consistent across all datasets.
 Note that the model with horseshoe prior alone already has a much higher elpd than the standard logistic regression model, even though it does not use any additional external data. This is because including the sparsity assumption allows the model to better separate signal from noise and the uncertainty of the close-to-zero coefficients does not propagate into uncertainty of the estimated y.
 Including phylogeny further improves model performance, as the assumption of independent and identically distributed data does not hold for sequence data that share a common phylogenetic history.
-Perhaps surprisingly, the model with epitope prediction performs roughly as well as the model without. This is true from a perspective of predictive accuracy, however, in determining which HLA alleles are associated with a given replacement, adding epitope prediction is highly useful, as shown in the previous section. This observation is explained by the circumstance that leave-one-out cross-validation takes all positions and replacements into account, but a given HLA allele is only restricting a subset of all positions in a sequence alignment. Additionally, the benefit of accurately identifying an associated HLA allele is only relevant for the samples which do have that allele, which for most alleles is only a small subset of all available samples. Therefore, looking at predictive accuracy alone is misleading in that regard, because we are more interested in the predictors than in the predictions themselves.
+Perhaps surprisingly, the model with epitope prediction performs roughly as well as the model without. This is true from a perspective of predictive accuracy. However, in determining which HLA alleles are associated with a given replacement, adding epitope prediction is highly useful, as shown in the previous section. This observation is explained by the circumstance that leave-one-out cross-validation takes all positions and replacements into account, but a given HLA allele is only restricting a subset of all positions in a sequence alignment. Additionally, the benefit of accurately identifying an associated HLA allele is only relevant for the samples that do have that allele, which for most alleles is only a small subset of all available samples. Therefore, looking at predictive accuracy alone is misleading in that regard, because we are more interested in the predictors than in the predictions themselves. \hl{DaHo: diesen Abschnitt etwas klarer schreiben}
 
 \subsection{A real-world example}
 
-We had the opportunity to test our model against a set of associations identified by Fisher's exact test that turned out to be false positives.
+We had the opportunity to test our model against a set of associations identified by Fisher's exact test that turned out to be false positives \hl{DaHo: diesen Abschnitt  glattziehen}. A comparison with a preliminary version of HAMdetector have been published recently. Here we provide a comparison between results from Fisher's exact test~\cite{Budeus2016} and the mature version of HAMdetector used in this work.
+
 On the HDV dataset, Fisher's exact test was applied to a set of HLA annotated sequences and statistically significant results were reported. The identified positions were experimentally validated and 9 associations turned out to be false-positives.
 This kind of data is rate because negative results are usually not published in the literature.
 We ran HAMdetector on the same dataset, the posterior probabilities are shown in table \ref{tab:false-positives}. They denote the probability that the corresponding regression coefficient is positive. Associations with strong support have a posterior probability close to 1, associations with no support a probability close to 0.5 (because the marginal posterior distribution is centered around 0 and allocated half of the probability mass to values greater than 0).
 The table shows that most of the false-positives in Fisher's exact test have low posterior probabilities in our model, which means that these alleles are correctly identified as not being associated with the replacement. The pairs of HLA alleles and replacements that were experimentally validated have the highest posterior probabilities, with the exception of P89T - HLA-B*37, which does not have strong support in our model.
-The results suggest that while our model is not perfect, it is a strong improvement over Fisher's exact test, which is frequently applied in this context. Please note that the results in this subsection have previously been published using a preliminary version of HAMdetector. 
+
 
 \begin{table}[]
   \begin{tabular}{c|c|c|c|c}
@@ -469,6 +470,8 @@ The results suggest that while our model is not perfect, it is a strong improvem
 \section{Discussion}
 
 We present HAMdetector, a Bayesian model to identify HLA-associated mutations in a multiple sequence alignment. We propose to use models that include as much information as possible and have shown that including sparsity and epitope prediction software can achieve better performance than existing methods. The logistic regression backbone can be easily extended, which allows the model to also be used in other contexts, for example in identifying associations between sequence data and other features.
+
+\hl{DaHo: wir haben zwar mehrere Datensätze, gehen aber praktisch nicht auf die Resultate mit diesen Datensätzen ein. Wie besprochen sollte dieses Manuskript eher methodisch sein, d.h.~es ist ok, dass wir nicht *viel* auf die virologische/immunologische Seite eingehen. Aber, dass wir überhaupt nichts zu den Resultaten sagen, ist etwas zu wenig. Z.B. könnte man die Vielfalt der Datensätze nutzen um den Punkt zu machen, dass die Verbesserungen nicht von den Details des Virus abhängen. Vielleicht fällt Dir ja noch was dazu ein.}
 
 \thispagestyle{empty} % Removes page numbering from the first page
 %----------------------------------------------------------------------------------------
