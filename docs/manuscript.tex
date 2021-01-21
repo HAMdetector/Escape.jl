@@ -3,7 +3,7 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass[fleqn,11pt]{SelfArx} % Document font size and equations flushed left
-
+\usepackage[justification=justified]{caption}
 \usepackage{parskip}
 \usepackage{microtype}
 \usepackage{svg}
@@ -89,7 +89,6 @@
   \hypersetup{linkcolor=black}
   \tableofcontents
 }
-
 
 \section{Introduction}
 
@@ -411,14 +410,13 @@ The remaining models are ranked in order of the number of additional features th
 Note that this model only uses epitope \textit{prediction} software and does not use any information of experimentally confirmed epitopes. These are here only used for model evaluation.
 
 \subsection{Leave-one-out cross-validation}
-\hl{DaHo: LOO auch in Methods einführen und kürzen}
+\hl{DaHo: LOO auch in Methods einführen}
 In addition to testing the model against experimentally validated epitopes, we also performed leave-one-out cross-validation. While the comparison against known epitopes compares inferences of the regression coefficients, leave-one-out cross-validation compares different models in regard to their predictive performance, i.e. how well they can predict the presence or absence of a replacement in a sequence based on the available data.
 
-Unlike usual applications of cross-validation, we are not primarily interested in the absolute magnitude of prediction errors, because the main objective of the statistical inference is to quantify the contribution of the HLA alleles.
-However, as the compared models are all special cases of the complete model, we can use cross-validation to gain insight on the relative importance of each aspect of the model.
+As the compared models are all special cases of the complete model, we can use cross-validation to gain insight on the relative importance of each aspect of the model.
 
 Performing leave-one-out cross-validation has historically been challenging to apply for Bayesian models, because fitting a model once for each left out data-point is often infeasible because of computational constrains.
-Recently, Pareto-smoothed importance sampling has gained popularity to perform approximate leave-one-out cross-validation for Bayesian models. Pareto-smoothed importance sampling approximates the leave-one-out posterior by re-weighting existing draws from the posterior distribution and has the advantage of allowing to perform leave-one-out cross-validation by only fitting the model once. Additionally, the method provides good diagnostics to identify cases where the approximation is unreliable~\cite{Vehtari2016}.
+Recently, Pareto-smoothed importance sampling has gained popularity to perform approximate leave-one-out cross-validation for Bayesian models. This method  approximates the leave-one-out posterior by re-weighting existing draws from the posterior distribution and has the advantage of allowing to perform leave-one-out cross-validation by only fitting the model once. Additionally, the method provides good diagnostics to identify cases where the approximation is unreliable~\cite{Vehtari2016}.
 
 Several utility (or cost) functions are used in practice to compare the predictive performance of models. For frequentist approaches, classification accuracy or receiver operator characteristic curves (ROC curves) are most common.
 For Bayesian models, expected log-predictive density (elpd) is used most frequently. 
@@ -427,12 +425,31 @@ elpd is defined as \(\sum_{i=1}^{n}\text{log}(\int p(y_i|\theta)p(\theta|y_{i-1}
 This has the advantage over other performance measures like classification accuracy, that it not only takes the location of the predictive distribution into account (i.e. the number of correct predictions), but also the width (i.e. how confident the model is in its predictions).
 elpd cannot be computed for frequentist models because the parameters of the model are viewed as fixed values.
 
-Table x \hl{DaHo: fehlt} shows the LOO results for the HBV dataset. Using a simple logistic regression model similar to the one used in~\cite{Moore2002} as a baseline, we compare a logistic regression model with horseshoe prior, a logistic regression model with horseshoe prior and phylogeny, and the complete HAMdetector model with horseshoe prior, phylogeny and epitope prediction to each other. The table shows expected log-predictive density differences compared to the baseline model (higher values are better).
+Table \ref{loo} shows a comparison of models with increasing complexity run on the HBe protein in the HDV dataset.
 
-As the models include more and more information, the predictive accuracy increases. Note that this is not due to overfitting, because leave-one-out cross-validation approximates the model performance on unseen data. Additional tables are shown in the supplementary, the results are consistent across all datasets.
+\begin{table}[h!]
+  \renewcommand{\arraystretch}{1.3}
+  \centering
+  \caption{Differences in elpd for models with increasing model complexity (HBe protein of the HBV dataset).
+  The numbers in column \(\text{elpd}_\text{diff}\) show increases in elpd compared to the previous model (higher is better), e.g. the difference in elpd of the model with horseshoe prior is 949.8 compared to the baseline model, and the difference in elpd for the model with phylogeny and horseshoe prior is 4440.9 compared to the model just with the horseshoe prior. All differences in elpd are larger than several times the estimated standard error (column \(\text{se}_\text{diff}\)), indicating that models which account for more information are expected to have a better predictive performance.}
+  \begin{tabular}{l|r|rll}
+  \multicolumn{1}{l|}{} & \multicolumn{1}{c|}{\(\text{elpd}_\text{diff}\)} & \multicolumn{1}{c}{\(\text{se}_\text{diff}\)} &  &  \\ \cline{1-3}
+  logistic regression (baseline) & 0.0  & 0.0 &  &  \\
+  + horseshoe prior     & 949.8  & 65.2 &  &  \\
+  + phylogeny & 4440.9 & 94.4 &  &  \\
+  + epitope prediction & 63.1   & 18.9 &  & 
+  \end{tabular}
+  \label{loo}
+\end{table}
+
+Predictive accuracy increases as the models include more and more information.
+Note that this is not due to overfitting, because leave-one-out cross-validation approximates the model performance on unseen data. Additional tables are shown in the supplementary, the results are consistent across all datasets.
+
 Note that the model with horseshoe prior alone already has a much higher elpd than the standard logistic regression model, even though it does not use any additional external data. This is because including the sparsity assumption allows the model to better separate signal from noise and the uncertainty of the close-to-zero coefficients does not propagate into uncertainty of the estimated y.
+
 Including phylogeny further improves model performance, as the assumption of independent and identically distributed data does not hold for sequence data that share a common phylogenetic history.
-Perhaps surprisingly, the model with epitope prediction performs roughly as well as the model without. This is true from a perspective of predictive accuracy. However, in determining which HLA alleles are associated with a given replacement, adding epitope prediction is highly useful, as shown in the previous section. This observation is explained by the circumstance that leave-one-out cross-validation takes all positions and replacements into account, but a given HLA allele is only restricting a subset of all positions in a sequence alignment. Additionally, the benefit of accurately identifying an associated HLA allele is only relevant for the samples that do have that allele, which for most alleles is only a small subset of all available samples. Therefore, looking at predictive accuracy alone is misleading in that regard, because we are more interested in the predictors than in the predictions themselves. \hl{DaHo: diesen Abschnitt etwas klarer schreiben}
+
+Inclusion of epitope prediction does not improve elpd as much as inclusion of phylogeny and the sparsity assumption. This is because while addition of sparsity and phylogeny has an effect on all replacements and samples, epitope prediction only influences those replacements which are restricted by a given HLA allele and only those samples which are annotated with the allele. However, inclusion of epitope prediction is highly useful for determining which HLA alleles are associated with the occurrence of a replacement, as shown in the previous section.
 
 \subsection{A real-world example}
 
