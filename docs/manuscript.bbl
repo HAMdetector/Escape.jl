@@ -66,6 +66,62 @@ Philippa~C. Matthews, Andrew Prendergast, Alasdair Leslie, Hayley Crawford,
   immunodeficiency virus set point.
 \newblock {\em Journal of Virology}, 82(17):8548--8559, jul 2008.
 
+\bibitem{Kloverpris2016}
+Henrik~N. Kl{\o}verpris, Alasdair Leslie, and Philip Goulder.
+\newblock Role of {HLA} adaptation in {HIV} evolution.
+\newblock {\em Frontiers in Immunology}, 6, jan 2016.
+
+\bibitem{Alizon2011}
+Samuel Alizon, Fabio Luciani, and Roland~R. Regoes.
+\newblock Epidemiological and clinical consequences of within-host evolution.
+\newblock {\em Trends in Microbiology}, 19(1):24--32, jan 2011.
+
+\bibitem{Allen2005}
+Todd~M. Allen, Marcus Altfeld, Shaun~C. Geer, Elizabeth~T. Kalife, Corey Moore,
+  Kristin~M. O{\textquotesingle}Sullivan, Ivna DeSouza, Margaret~E. Feeney,
+  Robert~L. Eldridge, Erica~L. Maier, Daniel~E. Kaufmann, Matthew~P. Lahaie,
+  Laura Reyor, Giancarlo Tanzi, Mary~N. Johnston, Christian Brander, Rika
+  Draenert, Jurgen~K. Rockstroh, Heiko Jessen, Eric~S. Rosenberg, Simon~A.
+  Mallal, and Bruce~D. Walker.
+\newblock Selective escape from cd8+ t-cell responses represents a major
+  driving force of human immunodeficiency virus type 1 ({HIV}-1) sequence
+  diversity and reveals constraints on {HIV}-1 evolution.
+\newblock {\em Journal of Virology}, 79(21):13239--13249, nov 2005.
+
+\bibitem{Rousseau2008}
+Christine~M. Rousseau, Marcus~G. Daniels, Jonathan~M. Carlson, Carl Kadie,
+  Hayley Crawford, Andrew Prendergast, Philippa Matthews, Rebecca Payne,
+  Morgane Rolland, Dana~N. Raugi, Brandon~S. Maust, Gerald~H. Learn, David~C.
+  Nickle, Hoosen Coovadia, Thumbi Ndung{\textquotesingle}u, Nicole Frahm,
+  Christian Brander, Bruce~D. Walker, Philip J.~R. Goulder, Tanmoy
+  Bhattacharya, David~E. Heckerman, Bette~T. Korber, and James~I. Mullins.
+\newblock {HLA} class i-driven evolution of human immunodeficiency virus type 1
+  subtype c proteome: Immune escape and viral load.
+\newblock {\em Journal of Virology}, 82(13):6434--6446, apr 2008.
+
+\bibitem{Lumley2018}
+Sheila~F. Lumley, Anna~L. McNaughton, Paul Klenerman, Katrina~A. Lythgoe, and
+  Philippa~C. Matthews.
+\newblock Hepatitis b virus adaptation to the cd8+ t cell response:
+  Consequences for host and pathogen.
+\newblock {\em Frontiers in Immunology}, 9, jul 2018.
+
+\bibitem{Timm2004}
+Joerg Timm, Georg~M. Lauer, Daniel~G. Kavanagh, Isabelle Sheridan, Arthur~Y.
+  Kim, Michaela Lucas, Thillagavathie Pillay, Kei Ouchi, Laura~L. Reyor,
+  Julian~Schulze zur Wiesch, Rajesh~T. Gandhi, Raymond~T. Chung, Nina Bhardwaj,
+  Paul Klenerman, Bruce~D. Walker, and Todd~M. Allen.
+\newblock {CD}8 epitope escape and reversion in acute {HCV} infection.
+\newblock {\em Journal of Experimental Medicine}, 200(12):1593--1604, dec 2004.
+
+\bibitem{Carlson2012}
+J.~M. Carlson, J.~Listgarten, N.~Pfeifer, V.~Tan, C.~Kadie, B.~D. Walker,
+  T.~Ndung{\textquotesingle}u, R.~Shapiro, J.~Frater, Z.~L. Brumme, P.~J.~R.
+  Goulder, and D.~Heckerman.
+\newblock Widespread impact of {HLA} restriction on immune control and escape
+  pathways of {HIV}-1.
+\newblock {\em Journal of Virology}, 86(9):5230--5243, feb 2012.
+
 \bibitem{Moore2002}
 C.~B. Moore.
 \newblock Evidence of {HIV}-1 adaptation to {HLA}-restricted immune responses
@@ -204,5 +260,18 @@ Aki Vehtari, Andrew Gelman, and Jonah Gabry.
 \newblock Practical bayesian model evaluation using leave-one-out
   cross-validation and {WAIC}.
 \newblock {\em Statistics and Computing}, 27(5):1413--1432, aug 2016.
+
+\bibitem{Karimzadeh2019}
+Hadi Karimzadeh, Muthamia~M. Kiraithe, Valerie Oberhardt, Elahe~Salimi Alizei,
+  Jan Bockmann, Julian~Schulze zur Wiesch, Bettina Budeus, Daniel Hoffmann,
+  Heiner Wedemeyer, Markus Cornberg, Adalbert Krawczyk, Jassin
+  Rashidi-Alavijeh, Francisco Rodr{\'{\i}}guez-Fr{\'{\i}}as, Rosario Casillas,
+  Maria Buti, Antonina Smedile, Seyed~Moayed Alavian, Andreas Heinold, Florian
+  Emmerich, Marcus Panning, Emma Gostick, David~A. Price, Jörg Timm, Maike
+  Hofmann, Bijan Raziorrouh, Robert Thimme, Ulrike Protzer, Michael Roggendorf,
+  and Christoph Neumann-Haefelin.
+\newblock Mutations in hepatitis d virus allow it to escape detection by cd8+ t
+  cells and evolve at the population level.
+\newblock {\em Gastroenterology}, 156(6):1820--1833, may 2019.
 
 \end{thebibliography}
