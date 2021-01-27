@@ -264,6 +264,9 @@ Figure~\ref{fig:horseshoe-comparison} shows a comparison of marginal posteriors 
 Supplying information about the expected degree of sparsity with the horseshoe prior is a considerable improvement over a standard logistic regression model  (section~\ref{sec:results}).
 
 \begin{figure}
+  \includegraphics[width=1\linewidth]{plots/without_horseshoe.pdf}
+  \includegraphics[width=1\linewidth]{plots/with_horseshoe.pdf}
+  \caption{Marginal posterior distributions of a subset of regression coefficients for replacement 11D of the HIV integrase, based on the Arevir dataset. The graphic shows regression coefficients for two HLA alleles: For HLA-A*01, the data does not show evidence of an association with replacement 11D, whereas for HLA-B*44, the data is consistent with a strong association. The horseshoe prior has the effect of shrinking regression coefficients with weak evidence of an association with the replacement strongly towards 0, while leaving the coefficients that are far away from 0 mostly unshrunk. Shrinking the irrelevant regression coefficients to 0 has the advantage of reducing the standard error for the remaining coefficients, which can be observed by the much smaller width of the histogram of HLA-B*44 in the model with horseshoe prior.}
   \label{fig:horseshoe-comparison}
 \end{figure}
 
@@ -489,7 +492,7 @@ One important exception is P89T~-~HLA-B*37, which was experimentally validated b
 
 We present HAMdetector, a Bayesian model to identify HLA-associated mutations in a multiple sequence alignment. We propose to use models that include as much information as possible and have shown that including sparsity and epitope prediction software can achieve better performance than existing methods. The logistic regression backbone can be easily extended, which allows the model to also be used in other contexts, for example in identifying associations between sequence data and other features.
 
-% \hl{DaHo: wir haben zwar mehrere Datensätze, gehen aber praktisch nicht auf die Resultate mit diesen Datensätzen ein. Wie besprochen sollte dieses Manuskript eher methodisch sein, d.h.~es ist ok, dass wir nicht *viel* auf die virologische/immunologische Seite eingehen. Aber, dass wir überhaupt nichts zu den Resultaten sagen, ist etwas zu wenig. Z.B. könnte man die Vielfalt der Datensätze nutzen um den Punkt zu machen, dass die Verbesserungen nicht von den Details des Virus abhängen. Vielleicht fällt Dir ja noch was dazu ein.}
+\hl{DaHo: wir haben zwar mehrere Datensätze, gehen aber praktisch nicht auf die Resultate mit diesen Datensätzen ein. Wie besprochen sollte dieses Manuskript eher methodisch sein, d.h.~es ist ok, dass wir nicht *viel* auf die virologische/immunologische Seite eingehen. Aber, dass wir überhaupt nichts zu den Resultaten sagen, ist etwas zu wenig. Z.B. könnte man die Vielfalt der Datensätze nutzen um den Punkt zu machen, dass die Verbesserungen nicht von den Details des Virus abhängen. Vielleicht fällt Dir ja noch was dazu ein.}
 
 \thispagestyle{empty} % Removes page numbering from the first page
 %----------------------------------------------------------------------------------------
