@@ -451,14 +451,17 @@ Including phylogeny further improves model performance, as the assumption of ind
 
 Inclusion of epitope prediction does not improve elpd as much as inclusion of phylogeny and the sparsity assumption. This is because while addition of sparsity and phylogeny has an effect on all replacements and samples, epitope prediction only influences those replacements which are restricted by a given HLA allele and only those samples which are annotated with the allele. However, inclusion of epitope prediction is highly useful for determining which HLA alleles are associated with the occurrence of a replacement, as shown in the previous section.
 
+\subsection{Generalization}
+no overfitting but improvements show for different data sets and different viruses
+supplementary figures
 
-\subsection{A real-world example}
+\subsection{A real-world application}
 
 We had the opportunity to test our model against a set of associations identified by Fisher's exact test where some of them turned out to be false positives~\cite{Karimzadeh2019}. This data is rare because negative results are usually not published in the literature, but provide a useful way to access model performance.
 A comparison with a preliminary version of HAMdetector was published recently. Here we provide a comparison with results from Fisher's exact test~\cite{Budeus2016} and the mature version of HAMdetector used in this work.
 
-Fisher's exact test and  HAMdetector were applied to the same data (table~\ref{tab:false-positives}).
-The posterior probabilities given by HAmdetector denote the probability that the corresponding regression coefficient is positive. Associations with strong support in our model have a posterior probability close to 1, associations with no support a probability close to 0.5 (corresponding to a regression coefficient centered around 0).
+Fisher's exact test and HAMdetector were applied to the same data (table~\ref{tab:false-positives}).
+The posterior probabilities given by HAMdetector denote the probability that the corresponding regression coefficient is positive. Associations with strong support in our model have a posterior probability close to 1, associations with no support a probability close to 0.5 (corresponding to a regression coefficient centered around 0).
 
 The results show low posterior probabilities for most of the false-positives and high posterior probabilities for most replacements that could be experimentally validated in IFN gamma production assays.
 One important exception is P89T~-~HLA-B*37, which was experimentally validated but does not have strong support in our model.
@@ -489,6 +492,12 @@ One important exception is P89T~-~HLA-B*37, which was experimentally validated b
  \end{table}
 
 \section{Discussion}
+
+if quality is the same for all viruses: differences between immune/virus interactions become visible
+
+recombinant forms
+
+4-digit partial pooling
 
 We present HAMdetector, a Bayesian model to identify HLA-associated mutations in a multiple sequence alignment. We propose to use models that include as much information as possible and have shown that including sparsity and epitope prediction software can achieve better performance than existing methods. The logistic regression backbone can be easily extended, which allows the model to also be used in other contexts, for example in identifying associations between sequence data and other features.
 
