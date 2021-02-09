@@ -180,6 +180,17 @@ Andrew Gelman.
 \newblock Bayesian statistics then and now.
 \newblock {\em Statistical Science}, 25(2):162--165, may 2010.
 
+\bibitem{ODonnell2020}
+Timothy~J. O'Donnell, Alex Rubinsteyn, and Uri Laserson.
+\newblock {MHCflurry} 2.0: Improved pan-allele prediction of {MHC} class
+  i-presented peptides by incorporating antigen processing.
+\newblock {\em Cell Systems}, 11(1):42--48.e7, jul 2020.
+
+\bibitem{Piironen2017}
+Juho Piironen and Aki Vehtari.
+\newblock Sparsity information and regularization in the horseshoe and other
+  shrinkage priors.
+
 \bibitem{Gabry2019}
 Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, and Andrew
   Gelman.
@@ -187,11 +198,25 @@ Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, and Andrew
 \newblock {\em Journal of the Royal Statistical Society: Series A (Statistics
   in Society)}, 182(2):389--402, jan 2019.
 
-\bibitem{ODonnell2020}
-Timothy~J. O'Donnell, Alex Rubinsteyn, and Uri Laserson.
-\newblock {MHCflurry} 2.0: Improved pan-allele prediction of {MHC} class
-  i-presented peptides by incorporating antigen processing.
-\newblock {\em Cell Systems}, 11(1):42--48.e7, jul 2020.
+\bibitem{Stan2021}
+{\em Stan Development Team. 2021. Stan Modeling Language Users Guide and
+  Reference Manual, 2.25. https://mc-stan.org}.
+
+\bibitem{Betancourt2017}
+Michael Betancourt, Simon Byrne, Sam Livingstone, and Mark Girolami.
+\newblock The geometric foundations of hamiltonian monte carlo.
+\newblock {\em Bernoulli}, 23(4A):2257--2298, nov 2017.
+
+\bibitem{Gelman1992}
+Andrew Gelman and Donald~B. Rubin.
+\newblock Inference from iterative simulation using multiple sequences.
+\newblock {\em Statistical Science}, 7(4):457--472, nov 1992.
+
+\bibitem{Vehtari2016}
+Aki Vehtari, Andrew Gelman, and Jonah Gabry.
+\newblock Practical bayesian model evaluation using leave-one-out
+  cross-validation and {WAIC}.
+\newblock {\em Statistics and Computing}, 27(5):1413--1432, aug 2016.
 
 \bibitem{Bhattacharya2007}
 T.~Bhattacharya, M.~Daniels, D.~Heckerman, B.~Foley, N.~Frahm, C.~Kadie,
@@ -225,21 +250,12 @@ C.~M. Carvalho, N.~G. Polson, and J.~G. Scott.
 \newblock The horseshoe estimator for sparse signals.
 \newblock {\em Biometrika}, 97(2):465--480, apr 2010.
 
-\bibitem{Piironen2017}
-Juho Piironen and Aki Vehtari.
-\newblock Sparsity information and regularization in the horseshoe and other
-  shrinkage priors.
-
 \bibitem{Hunt1992}
 D.~Hunt, R.~Henderson, J~Shabanowitz, K~Sakaguchi, H~Michel, N~Sevilir, A.~Cox,
   E~Appella, and V.~Engelhard.
 \newblock Characterization of peptides bound to the class i {MHC} molecule
   {HLA}-a2.1 by mass spectrometry.
 \newblock {\em Science}, 255(5049):1261--1263, mar 1992.
-
-\bibitem{Stan2021}
-{\em Stan Development Team. 2021. Stan Modeling Language Users Guide and
-  Reference Manual, 2.23. https://mc-stan.org}.
 
 \bibitem{Bezanson2017}
 Jeff Bezanson, Alan Edelman, Stefan Karpinski, and Viral~B. Shah.
@@ -254,12 +270,6 @@ Kirsten Roomp, Niko Beerenwinkel, Tobias Sing, Eugen Schülter, Joachim Büch,
   therapies against {HIV}.
 \newblock In {\em Lecture Notes in Computer Science}, pages 185--194. Springer
   Berlin Heidelberg, 2006.
-
-\bibitem{Vehtari2016}
-Aki Vehtari, Andrew Gelman, and Jonah Gabry.
-\newblock Practical bayesian model evaluation using leave-one-out
-  cross-validation and {WAIC}.
-\newblock {\em Statistics and Computing}, 27(5):1413--1432, aug 2016.
 
 \bibitem{Karimzadeh2019}
 Hadi Karimzadeh, Muthamia~M. Kiraithe, Valerie Oberhardt, Elahe~Salimi Alizei,

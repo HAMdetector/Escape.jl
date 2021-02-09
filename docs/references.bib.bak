@@ -432,7 +432,7 @@
 }
 
 @Manual{Stan2021,
-  title = {Stan Development Team. 2021. Stan Modeling Language Users Guide and Reference Manual, 2.23. https://mc-stan.org},
+  title = {Stan Development Team. 2021. Stan Modeling Language Users Guide and Reference Manual, 2.25. https://mc-stan.org},
 }
 
 @Article{Kloverpris2016,
@@ -563,7 +563,7 @@
 @Article{Karimzadeh2019,
   author    = {Hadi Karimzadeh and Muthamia M. Kiraithe and Valerie Oberhardt and Elahe Salimi Alizei and Jan Bockmann and Julian Schulze zur Wiesch and Bettina Budeus and Daniel Hoffmann and Heiner Wedemeyer and Markus Cornberg and Adalbert Krawczyk and Jassin Rashidi-Alavijeh and Francisco Rodr{\'{\i}}guez-Fr{\'{\i}}as and Rosario Casillas and Maria Buti and Antonina Smedile and Seyed Moayed Alavian and Andreas Heinold and Florian Emmerich and Marcus Panning and Emma Gostick and David A. Price and Jörg Timm and Maike Hofmann and Bijan Raziorrouh and Robert Thimme and Ulrike Protzer and Michael Roggendorf and Christoph Neumann-Haefelin},
   journal   = {Gastroenterology},
-  title     = {Mutations in Hepatitis D Virus Allow It to Escape Detection by CD8$\mathplus$ T Cells and Evolve at the Population Level},
+  title     = {Mutations in Hepatitis D Virus Allow It to Escape Detection by CD8+ T Cells and Evolve at the Population Level},
   year      = {2019},
   month     = {may},
   number    = {6},
@@ -571,6 +571,32 @@
   volume    = {156},
   doi       = {10.1053/j.gastro.2019.02.003},
   publisher = {Elsevier {BV}},
+}
+
+@Article{Betancourt2017,
+  author    = {Michael Betancourt and Simon Byrne and Sam Livingstone and Mark Girolami},
+  journal   = {Bernoulli},
+  title     = {The geometric foundations of Hamiltonian Monte Carlo},
+  year      = {2017},
+  month     = {nov},
+  number    = {4A},
+  pages     = {2257--2298},
+  volume    = {23},
+  doi       = {10.3150/16-bej810},
+  publisher = {Bernoulli Society for Mathematical Statistics and Probability},
+}
+
+@Article{Gelman1992,
+  author    = {Andrew Gelman and Donald B. Rubin},
+  journal   = {Statistical Science},
+  title     = {Inference from Iterative Simulation Using Multiple Sequences},
+  year      = {1992},
+  month     = {nov},
+  number    = {4},
+  pages     = {457--472},
+  volume    = {7},
+  doi       = {10.1214/ss/1177011136},
+  publisher = {Institute of Mathematical Statistics},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}
