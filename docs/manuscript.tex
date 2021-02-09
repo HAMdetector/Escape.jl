@@ -141,8 +141,6 @@ Instead of performing many hypothesis tests and trying to adjust for them, we in
 
 When possible, we choose to fit Bayesian models. By using prior information, adding problem-specific structure and partial pooling, the accuracy of estimates can often be noticeably improved~\cite{Gelman2010}. Prior information does not necessarily mean to use external data, even a rough idea about the expected magnitude of estimates is often surprisingly effective.
 
-Additionally, Bayesian statistics provides an accessible way to test models: By comparing data generated under the model's assumptions to the actually observed data, it is possible to identify important aspects of the dataset that the models fails to capture and subsequently improve the model until it is consistent with the observed data~\cite{Gabry2019}.
-
 In the context of identifying HLA-associated mutations we propose to improve existing methods by the following additions, which can be broadly divided into  additional information and model structure:
 \subsection*{Additional information}
 
@@ -152,17 +150,49 @@ In the context of identifying HLA-associated mutations we propose to improve exi
 
   \textit{Antigen processing prediction}
   
-    Similarly, there are also HLA-allele independent effects like antigen processing that influence presentation on MHC I. Second generational tools like MHCFlurry 2.0~\cite{ODonnell2020} use both binding affinity and antigen processing data to improve epitope prediction. For our tool HAMdetector, we use the output of MHCFlurry to benefit from this binding affinity and antigen processing data in order to predict HLA-associated mutations.
+    Similarly, there are also HLA-allele independent effects like antigen processing that influence presentation on MHC I. Second generational tools like MHCFlurry 2.0~\cite{ODonnell2020} use both binding affinity and antigen processing data to improve epitope prediction. For our tool HAMdetector, we use the output of MHCFlurry to benefit from this data in order to predict HLA-associated mutations.
+
 
 \subsection*{Model structure}
 
   \textit{Sparsity-inducing priors}
   
-  Recent advantages in Bayesian inference include so-called sparsity-promoting priors. Sparsity-promoting priors convey the a priori expectation that most coefficients in a regression model are close to 0. This assumption also applies to HLA-associated mutations, because the number of epitopes that are restricted by a given HLA allele is typically small compared to the number of all possible epitopes. If no epitope spanning a given alignment position is presented on the MHC I molecule, any association between a replacement and the respective HLA allele  is likely to be due to random variation alone (or HLA linkage disequilibrium).
+  Recent advantages in Bayesian inference include so-called sparsity-promoting priors~\cite{Piironen2017}. Sparsity-promoting priors convey the a priori expectation that most coefficients in a regression model are close to 0. This assumption also applies to HLA-associated mutations, because the number of epitopes that are restricted by a given HLA allele is typically small compared to the number of all possible epitopes. If no epitope spanning a given alignment position is presented on the MHC I molecule, any association between a replacement and the respective HLA allele  is likely to be due to random variation alone (or HLA linkage disequilibrium).
   
   It has been shown that using a sparsity-promoting prior when non-zero coefficients are sparse can drastically improve predictive performance, because the model is better able to differentiate between signal and noise.
 
   We show that a simple logistic regression model with a sparsity-promoting prior on the regression coefficients for the HLA alleles alone already performs roughly on-par  with the much more elaborate Phylogenetic Dependency Network approach from Carlson et al. when using the fraction of identified escapes that lie in known HLA epitopes as a benchmark.
+
+
+  \subsection{Model diagnostics}
+
+  \textit{Posterior predictive checks}
+
+  Additionally, Bayesian statistics provides an accessible way to test models: By comparing data generated under the model's assumptions to the actually observed data, it is possible to identify important aspects of the dataset that the models fails to capture and subsequently improve the model until it is consistent with the observed data~\cite{Gabry2019}.
+
+  Here, we use these so-called posterior predictive checks to compare the calibration of the predicted probabilities of observing the replacement to the actual observed data. 
+
+  \textit{Convergence diagnostics}
+
+  We use Stan (version 2.23)~\cite{Stan2021} to specify and fit our Bayesian models.
+  Stan provides an implementation of a dynamic Hamilitonian Monte Carlo sampler, which is a powerful technique to approximate expectations with respect to the posterior distribution~\cite{Betancourt2017}. One advantage of using such methods is that they provide sensitive diagnostics to identify a wide range of possible sampling issues.
+  We use the split-\(\hat{R}\) convergence diagnostic~\cite{Gelman1992} to identify convergence issues. We require a value of \(\hat{R}\) below 1.01 for all model parameters. Additionally, we require that the effective sample size \(N_{\text{eff}}\) is above 500 for all model parameters and that sampling occurs without any divergent transitions. A detailed explanation of these quantities is provided in the Stan reference manual.
+
+  \textit{Leave-one-out cross-validation}
+
+  In addition to testing our model on real-world data, we also performed leave-one-out cross-validation to examine the relative importance of the additions of epitope prediction, sparsity and phylogeny with respect to predictive performance.
+  For this, we create several variations of the model that are all special cases of the full HAMdetector model.
+  By comparing the model performance of these variations, we can gain insight on the relative importance of each aspect of the model.
+  
+  Leave-one-out cross-validation has historically been challenging to apply for Bayesian models, because fitting a model once for each left out data-point is often infeasible because of computational constrains.
+  Recently, Pareto-smoothed importance sampling has gained popularity to perform approximate leave-one-out cross-validation for Bayesian models. This method  approximates the leave-one-out posterior by re-weighting existing draws from the posterior distribution and has the advantage of requiring to fit the model only once. Additionally, the method provides good diagnostics to identify cases where the approximation is unreliable~\cite{Vehtari2016}.
+
+  Several utility (or cost) functions are used in practice to compare the predictive performance of models. For frequentist approaches, classification accuracy or receiver operator characteristic curves (ROC curves) are most common.
+  For Bayesian models, expected log-predictive density (elpd) is used most frequently. 
+
+  elpd is defined as \(\sum_{i=1}^{n}\text{log}(\int p(y_i|\theta)p(\theta|y_{i-1})d\theta))\), i.e. the average log predictive density of the observed data points based on the leave-one-out posterior distributions.
+  This has the advantage over other performance measures like classification accuracy, that it not only takes the location of the predictive distribution into account (i.e. the number of correct predictions), but also the width (i.e. how confident the model is in its predictions).
+  elpd cannot be computed for frequentist models because the parameters of the model are viewed as fixed values.
 
   % \textit{Partial pooling of 4-digit HLA alleles}
   
@@ -338,7 +368,7 @@ The model is also parameterized in a way that assumes an equal degree of sparsit
 To show that our model works well in different real-world scenarios, we run versions of our model on several datasets:
 
 \begin{itemize}
-  \item A large HIV dataset consisting of 1383 sequences, that were kindly provided by X and were also used in the Phylogenetic Dependency Network study~\cite{Carlson2008}. \hl{DaHa: Wer ist für diese Sequenzen der Ansprechpartner?}
+  \item A large HIV dataset consisting of 1383 sequences, that were kindly provided by the Zabrina Brumme and were also used in the Phylogenetic Dependency Network study~\cite{Carlson2008}.
   \item A set of 351 HIV sequences mostly spanning the Pol gene from the Arevir database~\cite{Roomp2006}.
   \item A set of 544 Hepatitis-B-Virus sequences that were kindly provided by Jörg Timm.
   \item A set of 104 Hepatitis-D-Virus sequences that were kindly provided by Michael Roggendorf.
@@ -359,17 +389,13 @@ As a comparison to existing methods, we also applied Fisher's exact test and the
 
 \subsection*{Convergence diagnostics}
 
-\hl{DaHo: $\hat{R}$ und $n_{\mathrm{eff}}$ sollten in den Methods eingeführt werden}
-For all the Bayesian models, Markov Chain Monte Carlo sampling was done using Stan~\cite{Stan2021}. All model fits showed no signs of inference issues. In total, 4 different chains with 1000 samples each were drawn from the posterior. The effective sample size for all model parameters exceeded 500, R-hat convergence diagnostic values were below 1.01 in all cases.
+ All model fits showed no signs of inference issues. In total, samples were drawn from 4 different chains with 1000 iterations each. The effective sample size exceeded 500 for all model parameters, \(\hat{R}\) convergence diagnostic values were below 1.01 in all cases.
 
 \subsection*{Posterior predictive checks}
-\hl{DaHo: Sollte in den Methods eingeführt werden}
-Bayesian modelling allows a simple yet effective strategy to test models: By simulating data under the model's assumptions and then comparing simulated and observed data, model misspecifications can be identified and highlight possible model improvements.
 
-Here, we compare the calibration of the posterior predictive probability of observing the replacement to the actual observed data using calibration plots.
-The plots are similar to the one showed in figure~\ref{fig:phylogeny-calibration} but this time do not evaluate the probabilities based on the phylogenetic model alone, but show the calibration of the posterior predictive probabilities based on the full model.
+Figure~\ref{fig:calibration} compares the calibration of the posterior predictive probability of observing the replacement to the actual observed data for the Core protein of the HBV dataset. Plots for the other models and datasets are shown in the supplementary.
 
-An example calibration plot of the HAMdetector model on the Core protein sequence data of the HBV dataset is shown in figure~\ref{fig:calibration}. Plots for the other models and datasets are shown in the supplementary.
+The plots are similar to the one showed in figure~\ref{fig:phylogeny-calibration}, however, they do not evaluate the probabilities based on the phylogenetic model alone, but instead show the calibration of the posterior predictive probabilities based on the full model.
 
 \begin{figure}[!ht]
   \includegraphics[width=1\linewidth]{plots/phylogeny_calibration.pdf}
@@ -399,7 +425,7 @@ Then, a list of known epitopes is used to create a plot of the cumulative number
 
 Figure~\ref{fig:comparison} shows a comparison of different models on the HBe protein of the HBV dataset. Plots for all other datasets are shown in the supplementary, but show identical patterns.
 
-All models show a strong enrichment of HLA-associated mutations compared to a randomly permutated list of HLA allele - replacement pairs (gray lines). Fisher's exact test performs about as well as the simple logistic regression model, as from a statistical perspective, they are both similar.
+All models show a strong enrichment of HLA-associated mutations compared to a randomly permuted list of HLA allele - replacement pairs (gray lines). Fisher's exact test performs about as well as the simple logistic regression model, as from a statistical perspective, they are both similar.
 The horseshoe prior alone is a drastic improvement over Fisher's exact test and the logistic regression model with non-sparsifying priors, even though it does not include any external information. The benefit comes from including the assumption that most regression coefficients are expected to be very close to 0.
 The logistic regression model with horseshoe prior works roughly as well as the Phylogenetic Dependency Network, which includes much more information.
 Note that the line for the Phylogenetic Dependency Network is shorter because it only outputs associations with a q-value lower than 0.2 by default.
@@ -409,20 +435,6 @@ The remaining models are ranked in order of the number of additional features th
 Note that this model only uses epitope \textit{prediction} software and does not use any information of experimentally confirmed epitopes. These are here only used for model evaluation.
 
 \subsection{Leave-one-out cross-validation}
-\hl{DaHo: LOO auch in Methods einführen}
-In addition to testing the model against experimentally validated epitopes, we also performed leave-one-out cross-validation. While the comparison against known epitopes compares inferences of the regression coefficients, leave-one-out cross-validation compares different models in regard to their predictive performance, i.e. how well they can predict the presence or absence of a replacement in a sequence based on the available data.
-
-As the compared models are all special cases of the complete model, we can use cross-validation to gain insight on the relative importance of each aspect of the model.
-
-Leave-one-out cross-validation has historically been challenging to apply for Bayesian models, because fitting a model once for each left out data-point is often infeasible because of computational constrains.
-Recently, Pareto-smoothed importance sampling has gained popularity to perform approximate leave-one-out cross-validation for Bayesian models. This method  approximates the leave-one-out posterior by re-weighting existing draws from the posterior distribution and has the advantage of requiring to fit the model only once. Additionally, the method provides good diagnostics to identify cases where the approximation is unreliable~\cite{Vehtari2016}.
-
-Several utility (or cost) functions are used in practice to compare the predictive performance of models. For frequentist approaches, classification accuracy or receiver operator characteristic curves (ROC curves) are most common.
-For Bayesian models, expected log-predictive density (elpd) is used most frequently. 
-
-elpd is defined as \(\sum_{i=1}^{n}\text{log}(\int p(y_i|\theta)p(\theta|y_{i-1})d\theta))\), i.e. the average log predictive density of the observed data points based on the leave-one-out posterior distributions.
-This has the advantage over other performance measures like classification accuracy, that it not only takes the location of the predictive distribution into account (i.e. the number of correct predictions), but also the width (i.e. how confident the model is in its predictions).
-elpd cannot be computed for frequentist models because the parameters of the model are viewed as fixed values.
 
 Table \ref{loo} shows a comparison of models with increasing complexity run on the HBe protein in the HDV dataset.
 
@@ -443,8 +455,6 @@ Table \ref{loo} shows a comparison of models with increasing complexity run on t
 \end{table}
 
 Predictive accuracy increases as the models include more and more information.
-Note that this is not due to overfitting, because leave-one-out cross-validation approximates the model performance on unseen data. Additional tables are shown in the supplementary, the results are consistent across all datasets.
-
 Note that the model with horseshoe prior alone already has a much higher elpd than the standard logistic regression model, even though it does not use any additional external data. This is because including the sparsity assumption allows the model to better separate signal from noise and the uncertainty of the close-to-zero coefficients does not propagate into uncertainty of the estimated y.
 
 Including phylogeny further improves model performance, as the assumption of independent and identically distributed data does not hold for sequence data that share a common phylogenetic history.
@@ -452,8 +462,9 @@ Including phylogeny further improves model performance, as the assumption of ind
 Inclusion of epitope prediction does not improve elpd as much as inclusion of phylogeny and the sparsity assumption. This is because while addition of sparsity and phylogeny has an effect on all replacements and samples, epitope prediction only influences those replacements which are restricted by a given HLA allele and only those samples which are annotated with the allele. However, inclusion of epitope prediction is highly useful for determining which HLA alleles are associated with the occurrence of a replacement, as shown in the previous section.
 
 \subsection{Generalization}
-no overfitting but improvements show for different data sets and different viruses
-supplementary figures
+
+The models were applied on sequence data from a variety of different viruses and show a considerable improvement over currently applied methods that are consistent across datasets.
+These results are not due to overfitting, because leave-one-out cross-validation approximates the model performance on unseen data.
 
 \subsection{A real-world application}
 
@@ -463,7 +474,7 @@ A comparison with a preliminary version of HAMdetector was published recently. H
 Fisher's exact test and HAMdetector were applied to the same data (table~\ref{tab:false-positives}).
 The posterior probabilities given by HAMdetector denote the probability that the corresponding regression coefficient is positive. Associations with strong support in our model have a posterior probability close to 1, associations with no support a probability close to 0.5 (corresponding to a regression coefficient centered around 0).
 
-The results show low posterior probabilities for most of the false-positives and high posterior probabilities for most replacements that could be experimentally validated in IFN gamma production assays.
+The results show low posterior probabilities for most of the false-positives and high posterior probabilities for most replacements that could be experimentally validated in IFN-\(\gamma\) production assays.
 One important exception is P89T~-~HLA-B*37, which was experimentally validated but does not have strong support in our model.
 
 \begin{table}[h!]
@@ -493,15 +504,18 @@ One important exception is P89T~-~HLA-B*37, which was experimentally validated b
 
 \section{Discussion}
 
-if quality is the same for all viruses: differences between immune/virus interactions become visible
-
-recombinant forms
-
-4-digit partial pooling
-
 We present HAMdetector, a Bayesian model to identify HLA-associated mutations in a multiple sequence alignment. We propose to use models that include as much information as possible and have shown that including sparsity and epitope prediction software can achieve better performance than existing methods. The logistic regression backbone can be easily extended, which allows the model to also be used in other contexts, for example in identifying associations between sequence data and other features.
 
-\hl{DaHo: wir haben zwar mehrere Datensätze, gehen aber praktisch nicht auf die Resultate mit diesen Datensätzen ein. Wie besprochen sollte dieses Manuskript eher methodisch sein, d.h.~es ist ok, dass wir nicht *viel* auf die virologische/immunologische Seite eingehen. Aber, dass wir überhaupt nichts zu den Resultaten sagen, ist etwas zu wenig. Z.B. könnte man die Vielfalt der Datensätze nutzen um den Punkt zu machen, dass die Verbesserungen nicht von den Details des Virus abhängen. Vielleicht fällt Dir ja noch was dazu ein.}
+If the quality of the prediction is the same for all viruses, as it appears to be in our results, this method can be used to probe the frequency of HLA immune escape across different viruses.
+
+In further research we plan to use HAMdetector to study circulating recombinant forms in HIV. One possible explanation for the occurrence of these recombinant forms is improved fitness by evading several immune epitopes at once.
+
+While our model is an improvement over existing methods, a further addition that we plan to implement is partial pooling across 4-digit HLA alleles. It has recently been appreciated that binding specificities can vary drastically across  HLA alleles from the same allele group. For predicting HLA associated mutations, there has consequently been a shift to use 4-digit resolution data whenever available. 
+
+This is not without downsides however, because overall, binding specificities are more similar for alleles in the same group, and, therefore, treating them as completely separate might unnecessarily fragment the available data.
+
+In Bayesian statistics, it is not required to chose one extreme or the other, With partial pooling, estimates from the same allele group do share some information across each other, but they are also allowed to vary if necessary.
+Therefore, implementing partial pooling might be another possibility to further increase the reliability of computational methods to study HLA escape.
 
 \thispagestyle{empty} % Removes page numbering from the first page
 %----------------------------------------------------------------------------------------
