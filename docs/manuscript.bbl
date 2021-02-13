@@ -162,6 +162,16 @@ John P.~A. Ioannidis.
 \newblock Why most published research findings are false.
 \newblock {\em {PLoS} Medicine}, 2(8):e124, aug 2005.
 
+\bibitem{Begley:2012}
+C~G Begley and L~M Ellis.
+\newblock Drug development: Raise standards for preclinical cancer research.
+\newblock {\em Nature}, 483(7391):531--3, Mar 2012.
+
+\bibitem{Baker2016Nature-reproducibility-crisis}
+M.~Baker.
+\newblock 1500 scientists lift the lid on reproducibility.
+\newblock {\em Nature}, 533:452--454, 2016.
+
 \bibitem{Benjamini1995}
 Yoav Benjamini and Yosef Hochberg.
 \newblock Controlling the false discovery rate: A practical and powerful
@@ -200,7 +210,7 @@ Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, and Andrew
 
 \bibitem{Stan2021}
 {\em Stan Development Team. 2021. Stan Modeling Language Users Guide and
-  Reference Manual, 2.25. https://mc-stan.org}.
+  Reference Manual, 2.23. https://mc-stan.org}.
 
 \bibitem{Betancourt2017}
 Michael Betancourt, Simon Byrne, Sam Livingstone, and Mark Girolami.

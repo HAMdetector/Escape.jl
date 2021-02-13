@@ -54,7 +54,7 @@
 % \affiliation{*\textbf{Corresponding author}: john@smith.com} % Corresponding author
 
 \Keywords{human leukocyte antigen system, HLA, multiple sequence alignment, escape mutations, 
-  viral escape, Bayesian inference, sparsity, horseshoe, epitope prediction} % Keywords - if you don't want any simply remove all the text between the curly brackets
+  viral escape, Bayesian inference, sparsity, horseshoe prior, epitope prediction} % Keywords - if you don't want any simply remove all the text between the curly brackets
 \newcommand{\keywordname}{Keywords} % Defines the keywords heading name
 
 %----------------------------------------------------------------------------------------
@@ -64,12 +64,12 @@
 \Abstract{
   \\
   \textbf{Motivation} \\
-  The human leukocyte antigen system (HLA) presents viral peptide fragments in MHC I protein-peptide complexes on cell surfaces and in this way alerts CD8\textsuperscript{+} cytotoxic T-Lymphocytes (CTLs), a key component of adaptive immunity. This pathway exerts a strong selection pressure on viruses, favoring viral mutants that escape recognition by the HLA/CTL system, e.g.\ by point mutations that decrease binding of viral peptides to MHC I. Naturally, such immune escape mutations often emerge in highly variable viruses, e.g.\ HIV or HBV, as HLA-associated mutations (HAMs), specific to the host HLA alleles and its MHC I proteins. The reliable identification of HAMs is not only important to understand viral genomes and their evolution, but it also impacts the development of broadly effective anti-viral treatments and vaccines against variable viruses.\\
+  A key process in anti-viral adaptive immunity is that the human leukocyte antigen system (HLA) presents viral peptide fragments in MHC I protein-peptide complexes on cell surfaces and in this way alerts CD8\textsuperscript{+} cytotoxic T-Lymphocytes (CTLs). This pathway exerts a strong selection pressure on viruses, favoring viral mutants that escape recognition by the HLA/CTL system, e.g.\ by point mutations that decrease binding of viral peptides to MHC I. Naturally, such immune escape mutations often emerge in highly variable viruses, e.g.\ HIV or HBV, as HLA-associated mutations (HAMs), specific to the host HLA alleles and its MHC I proteins. The reliable identification of HAMs is not only important to understand viral genomes and their evolution, but it also impacts the development of broadly effective anti-viral treatments and vaccines against variable viruses.\\
 
-  By their very nature HAMs are amenable to detection by statistical methods in paired sequence / HLA data. However, HLA alleles are very polymorphic in the human host population which makes the available data relatively sparse and noisy. Under these circumstances, one way to optimize HAM detection is to integrate all relevant information in a coherent model. Bayesian inference offers a principled approaches to achieve this.\\
+  By their very nature HAMs are amenable to detection by statistical methods in paired sequence / HLA data. However, HLA alleles are very polymorphic in the human host population which makes the available data relatively sparse and noisy. Under these circumstances, one way to optimize HAM detection is to integrate all relevant information in a coherent model. Bayesian inference offers a principled approach to achieve this.\\
 
   \textbf{Results} \\
-  Here, we present a Bayesian regression model that is easily extensible to include information from different sources, and that makes use of recent advances in Bayesian inference, e.g.\ by using a sparsifying prior. We show that this integrative approach improves performance in HAM detection considerably over state-of-the-art methods. \\
+Here, we present a new regression model for the detection of HAMs. As we choose a Bayesian approach we can include the novel sparsity-inducing priors, and we obtain easily interpretable quantitative information on HAM candidates. The basic model can be extended to include prior information relevant to HAM detection, which we demonstrate by integrating predictions of epitope affinities to MHC I, predictions of epitope peptide processing, and computation of phylogenetic background. This integrative method improves performance in HAM detection considerably over state-of-the-art methods. \\
 
   \textbf{Availability and Implementation} \\
   The source code of this software is available at \url{http://github.com} under a permissive MIT license. \\
@@ -94,72 +94,70 @@
 
 \subsection{The HLA system}
 
-One way of how the human immune system recognizes intracellular viral infections is through the human leukocyte antigen system~\cite{Germain1994}: In cells with active protein biosynthesis, proteins are continuously synthesized and also degraded by proteasomal degradation, which cleaves proteins into peptides~\cite{Goldberg2002}.
+One way of how the human immune system recognizes viral infections is through the human leukocyte antigen system~\cite{Germain1994}: Proteins, including viral proteins, in cells are often degraded in proteasomes to peptide fragments~\cite{Goldberg2002}. A small subset of these peptides is presented on the cell surface by MHC I receptors, encoded by HLA genes (in humans HLA-A, -B, -C). HLA genes are very polymorphic with more than 20,000 known alleles in the human population~\cite{Robinson2014}. The resulting gene products differ in their binding properties, which means that cells from different individuals in general present different peptides on the cell surface.
 
-A small subset of these peptides is presented on the cell surface by receptors called MHC class I encoded by HLA genes, e.g.\ in humanc HLA-A, -B, and -C. HLA genes are very polymorphic between human individuals, with more than 20,000 different described HLA alleles~\cite{Robinson2014}. The resulting gene products differ in their binding properties, which means that cells from different individuals present a highly diverse set of peptides on the cell surface.
-
-Cytotoxic T-Lymphocytes (CTLs) are selected during maturation to only weakly bind to MHC I protein-peptide complexes if the peptide originates from proteins of the self-proteome, but might be able to strongly bind to MHC I protein-peptide complexes with peptides generated from viral proteins~\cite{Murata2007}. Upon activation, T cells induce cytolytic activity and recruit other immune cells~\cite{Harty2000}.
+Cytotoxic T-Lymphocytes (CTLs) are selected during maturation to only weakly bind to complexes of MHC I with self-peptides, but CTLs can bind strongly to complexes of MHC I with peptides from viral proteins~\cite{Murata2007}. Upon activation, CTLs become cytotoxic and recruit other immune cells so that infected cells can be eliminated~\cite{Harty2000}.
 
 \subsection{HLA escape}
-In this way, the HLA system exerts strong selection pressure towards virus variants that escape T cell recognition~\cite{Borrow1997}. Such variants could, for example, carry mutations that result in reduced binding of immunogenic peptides to MHC I or to T cell receptors, or that alter the processing and binding so that peptides are no longer presented at all~\cite{Yewdell2002}.
+In this way, the HLA system exerts strong selection pressure towards virus variants that escape T cell recognition~\cite{Borrow1997}. Such variants could, for example, carry mutations that result in reduced binding of viral peptides to MHC I or T cell receptors, or that alter peptide processing so that peptides are no longer presented~\cite{Yewdell2002}.
 
-The evolutionary events are complex and occur not only on the level of individuals, where a virus adapts to specific features of the host, but also on the population level, for example because HLA alleles differ in their frequency across geographic regions~\cite{Kawashima2009}. Upon transmission to a new host with different HLA alleles, HLA escape mutations can revert to their wild type, as they are often associated with a reduction in viral replication capacity~\cite{Matthews2008}. If the latter is not the case, such mutations may not revert but be retained in the viral genome~\cite{Kawashima2009}.
+HLA diversity drives viral evolution in individuals where a virus adapts to specific host features, and in populations and regions that in general differ in HLA frequencies~\cite{Kawashima2009}. Upon transmission to a new host with different HLA alleles, HLA escape mutations may revert, as they are often associated with a reduction in viral replication capacity~\cite{Matthews2008}, but they also may be irreversible~\cite{Kawashima2009}.
 
-Whether and how quickly a given escape mutation is selected in a host depends on several factors, such as the viral genomic background and diversity, the magnitude of the reduction in viral replicative capacity, the availability of compensatory mutations that recover fitness, and the strength of selection pressure~\cite{Kloverpris2016}.
+Whether and how quickly a given escape mutation is selected in a host depends, e.g., on the viral genomic background, the magnitude of the reduction in viral replication, the availability of compensatory mutations that recover fitness, or the strength of selection pressure~\cite{Kloverpris2016}.
 
-Immune escape is a driver of viral evolution in populations and patients, and therefore of eminent importance for the understanding of many aspects of highly variable viruses such as HIV or HBV~\cite{Alizon2011}\cite{Allen2005}\cite{Rousseau2008}\cite{Lumley2018}. This includes the development of treatments and vaccines that rely on effective immune responses. This makes detection of immune escape mutations critical.
+Immune escape is a driver of viral evolution in populations and patients, and therefore of eminent importance for the understanding of many aspects of highly variable viruses such as HIV or HBV~\cite{Alizon2011, Allen2005, Rousseau2008, Lumley2018}. This includes the development of treatments and vaccines that rely on effective immune responses. This makes detection of immune escape mutations critical.
 
 \subsection{Identifying HLA escape mutations}
 
-There are several experimental methods available to study HLA escape~\cite{Timm2004}. However, these methods are relatively slow and costly, especially for screening purposes. Therefore, a promising approach is to combine viral genome sequencing, host HLA determination, computational identification by statistical association analysis, and targeted experimental validation~\cite{Carlson2012}.
+There are several experimental methods available to study HLA escape~\cite{Timm2004}.  \hl{DaHo: use key references, e.g. those that have introduced a technique; alternatively: cite review like articles that give an overview of several experimental methods} However, these methods are relatively slow and costly, especially for screening purposes. A promising approach that makes efficient use of frequently available data is to combine viral genome sequencing, host HLA determination, computational identification by statistical association analysis, and targeted experimental validation~\cite{Carlson2012}.
 
-As the selection pressure exerted by cytotoxic T cells depends on successful recognition of viral peptides on the cell surface, escape mutations are often HLA-allele specific and can therefore be detected as HLA-allele dependent footprints in sequence alignments of viral proteins~\cite{Moore2002}: At certain alignment positions, a replacement might be more frequently observed in sequences from hosts with a specific HLA allele than in  sequences from hosts without that HLA allele. By quantifying this difference for all replacement and HLA allele pairs, it is possible to identify replacements that are enriched in sequences coming from hosts with certain HLA alleles, and thus are likely to be HLA escape mutations.
+As the selection pressure exerted by cytotoxic T cells depends on successful recognition of viral peptides on the cell surface, escape mutations are often HLA-allele specific and can therefore be detected as HLA-allele dependent footprints in sequence alignments of viral proteins~\cite{Moore2002}: At certain alignment positions, a replacement corresponding to an escape mutation is often enriched in sequences from hosts with a specific HLA allele.
 
-One way of quantifying this enrichment is Fisher's exact test~\cite{Fisher1922}: For a given replacement \(R_{i}\) at alignment position \(i\) and HLA allele \(H\), a 2-by-2 contingency table is constructed containing the absolute counts of the number of sequences in the four possible categories  (\(R_{i}\), \(H\)), (\(R_{i}\), \(\neg H\)), (\(\neg R_{i}\), \(H\)) and (\(\neg R_{i}\), \(H\)), where \(\neg R_{i}\) denotes any replacement except \(R_{i}\), and \(\neg H\) denotes any HLA allele except \(H\).
+One way of quantifying this enrichment is Fisher's exact test~\cite{Fisher1922}: For a given replacement \(R_{i}\) at alignment position \(i\) and HLA allele \(H\), a 2-by-2 contingency table is constructed containing the absolute counts of the number of sequences in the four possible categories  (\(R_{i}\), \(H\)), (\(R_{i}\), \(\neg H\)), (\(\neg R_{i}\), \(H\)) and (\(\neg R_{i}\), \(\neg H\)), where \(\neg R_{i}\) denotes any replacement except \(R_{i}\), and \(\neg H\) denotes any HLA allele except \(H\).
 
 Fisher's exact test is a conventional null hypothesis significance test (NHST) that generates p-values. In this case, the null hypothesis is that HLA allele \(H\) and  replacement \(R_{i}\) are independent, and the p-value is the probability of observing a deviation from independence that is at least as extreme as in the data at hand under the assumption that the null hypothesis is true.
 
-Fisher's exact test has the advantage of being easy to apply~\cite{Budeus2016},  but also has several disadvantages~\cite{Carlson2008}. The most striking one is that viral sequences share a common phylogenetic history, and,  therefore, treating sequences as independent and identically distributed samples may under- or overestimate effect sizes. In the context of hypothesis testing, this leads to increased false positive and false negative rates. 
+Fisher's exact test has the advantage of being fast and easy to apply~\cite{Budeus2016}, but it also has several disadvantages~\cite{Carlson2008}. The most striking one is that viral sequences share a common phylogenetic history, and,  therefore, treating sequences as independent and identically distributed samples may under- or overestimate effect sizes. In the context of hypothesis testing, this leads to increased false positive and false negative rates. 
 
-Another issue of applying Fisher's exact test is that HLA class I loci are located in proximity on chromosome 6 and are therefore in linkage disequilibrium, which means that HLA alleles are not inherited completely independent of each other, i.e. inheritance of one HLA allele correlates with inheritance of another HLA allele. When using a statistical method that tests each HLA allele individually without considering the whole set of alleles present, spurious associations might occur: If HLA allele \(H_{1}\) is associated with an amino acid replacement \(R\), but \(H_{1}\) is in linkage disequilibrium with another allele \(H_{2}\), this also means that we observe an association between replacement \(R\) and \(H_{2}\), even in absence of any underlying escape mechanism.
+Another issue with Fisher's exact test is the genomic proximity of human HLA class I loci (on chromosome 6) leading to linkage disequilibrium -- inheritance of HLA alleles can be correlated. Therefore spurious associations can occur if associations of replacements with individual HLA alleles is tested: if HLA allele \(H_1\) is associated with an amino acid replacement \(R\) because of immune escape, but \(H_1\) is in linkage disequilibrium with allele \(H_2\), this leads to an association of \(R\) and \(H_2\), even without being an escape mutation from $H_2$.
 
-Correlations can not only occur between HLA alleles, but also between replacements. This kind of codon covariation occurs for example in compensatory mutations that attenuate the negative impact of immune escape mutations. For instance, a compensatory mutation might lead to a conformational change in such a way that the mutated protein resembles the original wild type more closely.
-
-Carlson et al. \nolinebreak\cite{Carlson2008} developed a method called  Phylogenetic Dependency Network that accounts for phylogenetic bias,  HLA linkage disequilibrium, and codon covariation and is based on null hypothesis significance testing.
+Carlson et al.~\cite{Carlson2008} developed the Phylogenetic Dependency Network, a method that accounts for several of the aforementioned problems, in particular phylogenetic bias and  HLA linkage disequilibrium. However, it is based on null hypothesis significance testing.
 
 \subsection{Issues with using p-values as a screening tool}
 
-In addition to the aforementioned biological reasons why Fisher's exact test is  not suited for the analysis of sequence data, there are also more fundamental statistical issues that universally occur when using p-values as a screening tool~\cite{Amrhein2017}:
+There are fundamental statistical issues with p-values as screening tool~\cite{Amrhein2017}:
+with small effect sizes and high variance between measurements, as is often the case with biological data, statistically significant results can be misleading, have the wrong direction (type S error), or greatly overestimate an effect (type M error)~\cite{Gelman2014}. Such problems are more and more appreciated in the context of the current ``replication crisis'', which describes that scientific claims with seemingly strong statistical evidence fail to replicate~\cite{Ioannidis2005, Begley:2012, Baker2016Nature-reproducibility-crisis}.
 
-In the presence of small effect sizes and high variance between measurements, as  it is typically the case when working with biological data, statistically significant results can often be misleading and are likely to be in the wrong direction (a so-called type S error) or greatly overestimate an effect (a so-called type M error)~\cite{Gelman2014}. This problem has recently been widely appreciated in the literature in the context of the current “replication crisis“, which describes the circumstance that scientific claims with seemingly strong statistical evidence fail to replicate~\cite{Ioannidis2005}.
+These problems are exacerbated if the p-values are used for screening purposes (multiple testing problem). The probability  of  obtaining a statistically significant result increases with each additional test, even in absence of any real effect. When using p-values as a filter, it is therefore likely to obtain significant effects that are in fact not real. To circumvent this problem, a common strategy is to control the false discovery rate~\cite{Benjamini1995}. These adjustment procedures have the problem that, when performing many of such comparisons, none but the very largest effects remain.
 
-These problems are exacerbated if the p-values are used for screening purposes (multiple testing problem). The probability  of  obtaining a statistically significant result increases with each additional test, even in absence of any real effect. When using p-values as a filter, it is therefore likely to obtain significant effects that are in fact not real. To circumvent this problem, a common strategy is to control the false discovery rate, which is the expected proportion of false positives~\cite{Benjamini1995}. These adjustment procedures have the problem that, when performing many of such comparisons, none but the very largest effects remain.
-
-Instead of performing many hypothesis tests and trying to adjust for them, we instead prefer to fit a single, multilevel model that contains all comparisons of interest. When using multilevel models, the problem of multiple comparisons can disappear entirely and  also yield more valid estimates~\cite{Gelman2012}.
+Instead of performing many hypothesis tests and trying to adjust for them, we prefer to fit a single, multilevel model that contains all comparisons of interest. When using multilevel models, the problem of multiple comparisons can disappear entirely and yield more valid estimates~\cite{Gelman2012}.
 
 \section{Material and methods}
 
-When possible, we choose to fit Bayesian models. By using prior information, adding problem-specific structure and partial pooling, the accuracy of estimates can often be noticeably improved~\cite{Gelman2010}. Prior information does not necessarily mean to use external data, even a rough idea about the expected magnitude of estimates is often surprisingly effective.
+\hl{DaHo: Da es ein Methoden-Paper ist, sollte dies der Hauptteil sein}
 
-In the context of identifying HLA-associated mutations we propose to improve existing methods by the following additions, which can be broadly divided into  additional information and model structure:
-\subsection*{Additional information}
+Our general approach is to fit a Bayesian model that captures relationships between host HLA alleles and replacements in viral proteomes. This approach is advantageous because it improves estimates by including prior information (even if only knowledge of effect magnitudes), adding problem-specific structure and partial pooling~\cite{Gelman2010}.
+
+Among the novel features of our method that markedly improve detection of HLA-associated mutations (HAMs) are the inclusion of additional relevant information and the use of sparsity-inducing priors, as described in the following. 
+
+\subsection*{Inclusion of additional information}
 
   \textit{Binding affinity prediction}
 
-    HLA-associated mutations are expected to lie more frequently in regions of known epitopes. There are vast experimental binding affinity data available of different peptides and MHC I molecule pairs, and there are well-established computational methods that use these data to extrapolate HLA binding for untested peptides. We show that, by including the outcome of these computational tools as input for a probabilistic model, the prediction of HLA-associated mutations can be improved.
+\hl{DaHo: Mein Verständnis von Materials and Methods ist, dass hier die Methoden aufgeführt werden, z.B. die Methoden für die Berechnung von Affinitäten, siehe z.B. https://academic.oup.com/bioinformatics/article/36/21/5159/5874440}
+  
+    HAMs are expected to lie more frequently in T-cell epitopes, i.e.\ the peptide fragments presented by MHC to T-cell receptors. There are vast experimental binding affinity data available of different peptides and MHC I molecule pairs, and there are well-established computational methods that use these data to extrapolate HLA binding for untested peptides. We show that, by including the outcome of these computational tools as input for a probabilistic model, the prediction of HLA-associated mutations can be improved.
 
   \textit{Antigen processing prediction}
   
     Similarly, there are also HLA-allele independent effects like antigen processing that influence presentation on MHC I. Second generational tools like MHCFlurry 2.0~\cite{ODonnell2020} use both binding affinity and antigen processing data to improve epitope prediction. For our tool HAMdetector, we use the output of MHCFlurry to benefit from this data in order to predict HLA-associated mutations.
 
 
-\subsection*{Model structure}
-
-  \textit{Sparsity-inducing priors}
+\subsection*{Sparsity-inducing priors}
   
   Recent advantages in Bayesian inference include so-called sparsity-promoting priors~\cite{Piironen2017}. Sparsity-promoting priors convey the a priori expectation that most coefficients in a regression model are close to 0. This assumption also applies to HLA-associated mutations, because the number of epitopes that are restricted by a given HLA allele is typically small compared to the number of all possible epitopes. If no epitope spanning a given alignment position is presented on the MHC I molecule, any association between a replacement and the respective HLA allele  is likely to be due to random variation alone (or HLA linkage disequilibrium).
   
-  It has been shown that using a sparsity-promoting prior when non-zero coefficients are sparse can drastically improve predictive performance, because the model is better able to differentiate between signal and noise.
+  It has been shown \hl{DaHo: where?} that using a sparsity-promoting prior when non-zero coefficients are sparse can drastically improve predictive performance, because the model is better able to differentiate between signal and noise.
 
   We show that a simple logistic regression model with a sparsity-promoting prior on the regression coefficients for the HLA alleles alone already performs roughly on-par  with the much more elaborate Phylogenetic Dependency Network approach from Carlson et al. when using the fraction of identified escapes that lie in known HLA epitopes as a benchmark.
 
@@ -194,6 +192,9 @@ In the context of identifying HLA-associated mutations we propose to improve exi
   This has the advantage over other performance measures like classification accuracy, that it not only takes the location of the predictive distribution into account (i.e. the number of correct predictions), but also the width (i.e. how confident the model is in its predictions).
   elpd cannot be computed for frequentist models because the parameters of the model are viewed as fixed values.
 
+  \subsection*{Data}
+ \hl{DaHo: das Material in Materials and Methods sind die Daten; die sollten hier kurz beschrieben werden, möglichst mit Referenzen}
+  
   % \textit{Partial pooling of 4-digit HLA alleles}
   
   % It has recently been appreciated that binding specificities can vary drastically across  HLA alleles from the same allele group, e.g. between HLA-B*51:01 and HLA-B*51:03. For predicting HLA associated mutations, there has consequently been a shift to use 4-digit resolution data whenever available. This is not without downsides however, because overall, binding specificities are more similar for alleles in the same group, and, therefore, treating them as completely separate might unnecessarily fragment the available data.
@@ -211,8 +212,8 @@ We also choose to fit the model in a Bayesian fashion using Stan, mostly because
 Consider the following notation:
 
 \begin{align}
-  y_{ik} & \sim \text{bernoulli}(\theta_{ik}) \\
-  \theta_{ik} & = \text{inv\_logit}(\beta_{0_{k}} + \sum_{j=1}^{D} X_{ij}\beta_{\text{HLA}_{jk}}),
+  y_{ik} & \sim \text{Bernoulli}(\theta_{ik}) \\
+  \theta_{ik} & = \text{logit}^{-1}(\beta_{0_{k}} + \sum_{j=1}^{D} X_{ij}\beta_{\text{HLA}_{jk}}),
 \end{align}
 
 where \(y_{ik}\) is the binary encoded observation at sequence \(i\) for replacement \(k\), \(\theta_{ik}\) is the estimated probability that we observe replacement \(k\) in sequence \(i\), \(X_{ij}\) is 1 if sequence \(i\) is annotated with HLA allele \(j\) and 0 otherwise, \(\beta_{\text{HLA}_{jk}}\) is the HLA regression coefficients for HLA allele \(j\) at replacement \(k\), \(D\) is the number of HLA alleles in the dataset, and \(\text{inv\_logit}\) is the logistic link function. Note that, if we observe N different amino acid states at a certain alignment position, each of those are considered in turn to be the “replacement”.
@@ -246,7 +247,7 @@ The estimated probabilities are then included in the model as additional interce
 
 \begin{equation}
 \begin{aligned}
-  y_{ik} & \sim \text{bernoulli}(\theta_{ik}) \\
+  y_{ik} & \sim \text{Bernoulli}(\theta_{ik}) \\
   \theta_{ik} & = \text{inv\_logit}(\beta_{0_{k}} + \gamma~\text{logit}(P(y_{ik}=1|\Psi)) \\ \hspace{-6cm} &~~~~ + \sum_{k=1}^{D}X_{ik}\beta_{\text{HLA}_{jk}})
 \end{aligned}
 \end{equation}
@@ -330,9 +331,9 @@ The full specification of the model is given by:
 \begin{equation}
   \label{eq:full}
   \begin{aligned}
-   y_{ik} &\sim \text{bernoulli}(\theta_{ik}) &\\
+   y_{ik} &\sim \text{Bernoulli}(\theta_{ik}) &\\
    \theta_{ik} &=
-        \text{inv\_logit}(\beta_{0_{k}} + \gamma_{k}\text{logit}(P(y_{ik}=1|\Psi)) & \\
+        \text{logit}^{-1}(\beta_{0_{k}} + \gamma_{k}\text{logit}(P(y_{ik}=1|\Psi)) & \\
         \hspace{-6cm} &~~~~ +\sum_{k=1}^{D}X_{ij}\beta_{\text{HLA}_{jk}}) & \\
     \beta_{0_{k}} &\sim \text{Normal}(0, 100^2) & \text{(*)}\\
    \gamma_{k} &\sim \text{Normal}(\mu_{\text{phy}}, \sigma_{\text{phy}}^2) & \\
@@ -368,7 +369,7 @@ The model is also parameterized in a way that assumes an equal degree of sparsit
 To show that our model works well in different real-world scenarios, we run versions of our model on several datasets:
 
 \begin{itemize}
-  \item A large HIV dataset consisting of 1383 sequences, that were kindly provided by the Zabrina Brumme and were also used in the Phylogenetic Dependency Network study~\cite{Carlson2008}.
+  \item A large HIV dataset consisting of 1383 sequences, that were kindly provided by Zabrina Brumme and collaborators and were also used in the Phylogenetic Dependency Network study~\cite{Carlson2008}.
   \item A set of 351 HIV sequences mostly spanning the Pol gene from the Arevir database~\cite{Roomp2006}.
   \item A set of 544 Hepatitis-B-Virus sequences that were kindly provided by Jörg Timm.
   \item A set of 104 Hepatitis-D-Virus sequences that were kindly provided by Michael Roggendorf.
@@ -389,7 +390,7 @@ As a comparison to existing methods, we also applied Fisher's exact test and the
 
 \subsection*{Convergence diagnostics}
 
- All model fits showed no signs of inference issues. In total, samples were drawn from 4 different chains with 1000 iterations each. The effective sample size exceeded 500 for all model parameters, \(\hat{R}\) convergence diagnostic values were below 1.01 in all cases.
+ All model fits showed no signs of inference issues. In total, samples were drawn from 4 different chains with 1000 iterations each. The effective sample size exceeded 500 for all model parameters, \(\hat{R}\) convergence diagnostic values were below 1.01 in all cases. \hl{DaHo: citation Gelman + Rubin original paper or later versions if improved $\hat{R}$ have been used}
 
 \subsection*{Posterior predictive checks}
 
@@ -504,7 +505,7 @@ One important exception is P89T~-~HLA-B*37, which was experimentally validated b
 
 \section{Discussion}
 
-We present HAMdetector, a Bayesian model to identify HLA-associated mutations in a multiple sequence alignment. We propose to use models that include as much information as possible and have shown that including sparsity and epitope prediction software can achieve better performance than existing methods. The logistic regression backbone can be easily extended, which allows the model to also be used in other contexts, for example in identifying associations between sequence data and other features.
+We have presented HAMdetector, a Bayesian model to identify HLA-associated mutations in a multiple sequence alignment. We propose to use models that include as much information as possible and have shown that including sparsity and epitope prediction software can achieve better performance than existing methods. The logistic regression backbone can be easily extended, which allows the model to also be used in other contexts, for example in identifying associations between sequence data and other features.
 
 If the quality of the prediction is the same for all viruses, as it appears to be in our results, this method can be used to probe the frequency of HLA immune escape across different viruses.
 
