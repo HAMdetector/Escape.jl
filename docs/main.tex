@@ -78,11 +78,11 @@ Instead of performing many hypothesis tests and trying to adjust for them, we pr
 \begin{methods}
   \section{Material and methods}
 
-  Our general approach is to fit Bayesian regression models that captures relationships between host HLA alleles and replacements in viral proteomes. This Bayesian approach is advantageous because it allows use of: (1) prior information (e.g.\ knowledge of effect magnitudes), (2) relevant additional information (phylogeny, epitope information), (3) a problem-specific structure, (4) partial pooling~\citep{Gelman2010}.
+  Our general approach for HAMdetector is to fit Bayesian regression models that captures relationships between host HLA alleles and replacements in viral proteomes. This Bayesian approach is advantageous because it allows use of: (1) prior information (e.g.\ knowledge of effect magnitudes), (2) relevant additional information (phylogeny, epitope information), (3) a problem-specific structure, (4) partial pooling~\citep{Gelman2010}.
   
 \subsection{Model backbone}
 
-We chose a logistic regression model as a backbone because it is easily extensible, and because coefficients can be interpreted in the familiar way as factors on the log-odds scale.
+We chose a logistic regression model as a backbone because it is easily extensible, and because coefficients can be interpreted in the familiar way as summands on the log-odds scale.
 
 \begin{align}
 \label{eq:backbone}
@@ -90,11 +90,11 @@ We chose a logistic regression model as a backbone because it is easily extensib
   \theta_{ik} & = \text{logistic}\left(\beta_{0_{k}} + \sum_{j=1}^{D} X_{ij}\beta_{\text{HLA}_{jk}}\right),
 \end{align}
 
-where \(y_{ik}\) is the binary encoded observation of replacement $k$ in viral sequence $i$; \(\theta_{ik}\) is the estimated probability that we observe replacement \(k\) in sequence \(i\); \(X_{ij}\) is 1 if sequence \(i\) comes from host individual HLA allele \(j\) and 0 otherwise; $\beta_{\text{HLA}_{jk}}$ is the HLA regression coefficient of HLA allele \(j\) for replacement \(k\); \(D\) is the number of HLA alleles in the dataset; the logistic inverse link function transforms the linear model in parentheses to the probability scale of $\theta_{ik}$. Note that, if we observe N different amino acid states at a certain alignment position, each of those are considered in turn to be the “replacement”.
+where \(y_{ik}\) is the binary encoded observation of replacement $k$ in viral sequence $i$ (each observed amino acid state $k$ contributes a separate column to $y_{ik}$); \(\theta_{ik}\) is the estimated probability that we observe replacement \(k\) in sequence \(i\); \(X_{ij}\) is 1 if sequence \(i\) comes from host individual HLA allele \(j\) and 0 otherwise; $\beta_{\text{HLA}_{jk}}$ is the HLA regression coefficient of HLA allele \(j\) for replacement \(k\); \(D\) is the number of HLA alleles in the dataset; the logistic inverse link function transforms the linear model in parentheses to the probability scale of $\theta_{ik}$.
 
-The regression coefficients \(\beta_{\text{HLA}_{jk}}\) are the main focus of interest, as they quantify the association between the occurrence of replacement \(k\) and each of the observed HLA alleles. They are in units of log-odds, so a regression coefficient of somewhere around 2 means that when comparing sequences with and without that particular HLA allele, the log-odds of observing replacement \(k\) in presence of that HLA allele is increased by 2.
+The main parameters of interests for HAMdetector are the regression coefficients $\beta_{\text{HLA}_{jk}}$, as they quantify the strength of association between the occurrence of replacement \(k\) and each of the observed HLA alleles. The $\beta_{\text{HLA}_{jk}}$ are on the log-odds scale, i.e.\ if we go from viral sequences from hosts without HLA allele $j$ to those from hosts with $j$, the log-odds $\log (p_k/(1-p_k))$ of observing replacement \(k\) increase by addition of $\beta_{\text{HLA}_{jk}}$.
 
-Reasoning about coefficients on the log-odds scale can sometimes be unintuitive. A useful approximation to interpret logistic regression coefficients on the probability scale is the so-called divide-by-4 rule, which means that a regression coefficient of 2 corresponds to an expected increase on the probability scale of about 2/4 = 50\%. 
+% Reasoning about coefficients on the log-odds scale can sometimes be unintuitive. A useful approximation to interpret logistic regression coefficients on the probability scale is the so-called divide-by-4 rule, which means that a regression coefficient of 2 corresponds to an expected increase on the probability scale of about 2/4 = 50\%. 
 
 \subsection{Inclusion of additional information}
 
@@ -193,7 +193,7 @@ where \(\beta_{jk}\) are the regression coefficients, \(\tau\) is the so-called 
 
 Intuitively speaking, the global shrinkage parameter \(\tau\) is typically very small and shrinks most of the regression coefficients to 0, whereas the local shrinkage parameters can occasionally be very large to allow some coefficients to escape that shrinkage.
 
-A useful addition to the horseshoe prior is given in Piironen et al.~\citep{Piironen2017}, which describes a way to choose the parameter governing the overall degree of sparsity \(\tau_{0}\) based on the expected number of non-zero coefficients. 
+A useful addition to the horseshoe prior is given in \citet{Piironen2017}, which describes a way to choose the parameter governing the overall degree of sparsity \(\tau_{0}\) based on the expected number of non-zero coefficients. 
 
 For our HLA model, we utilize an extension to the horseshoe prior called the regularized horseshoe prior~\citep{Piironen2017}, which also provides some regularization for the non-zero coefficients. This is particularly useful for logistic regression models, as some shrinkage helps to deal with issues of separability and collinearity that commonly occur when fitting logistic regression models.
 
@@ -229,9 +229,9 @@ Prior distributions are labeled with an asterisk in equation~\ref{eq:full}. They
 
 The hierarchical mean and standard deviation of the phylogeny coefficients \(\gamma_{k}\) are chosen to place most probability mass at values of \(\gamma_{k}\) of around 1. In the absence of any HLA effects, a parameter value of 1 would mean that the estimate for the probability of observing replacement \(k\) is identical to the probability based on the phylogenetic model. Intuitively speaking, We therefore treat the phylogeny as a baseline and any observations that cannot be attributed to phylogeny are attributed to the HLA alleles or noise.
 
-The prior on \(c_{k}^{2}\) implies a Student-t prior with 7 degrees of freedom and a scale of 1 on the non-zero HLA regression coefficients \(\beta_{\text{HLA}_{jk}}\). A Student-t prior with these parameters is a reasonable default choice for logistic regression models. The theoretical justification behind this regularized variant of the horseshoe prior is explained in detail in~\citet{Piironen2017}.
+The prior on \(c_{k}^{2}\) implies a Student-t prior with 7 degrees of freedom and a scale of 1 on the non-zero HLA regression coefficients \(\beta_{\text{HLA}_{jk}}\). A Student-t prior with these parameters is a reasonable default choice for logistic regression models. The theoretical justification behind this regularized variant of the horseshoe prior is explained in detail in \citet{Piironen2017}.
 
-The value of \(\tau_{0k}\) is chosen to imply 10 effective non-zero HLA regression coefficients per replacement. The rationale behind this parameterization is again outlined in~\citet{Piironen2017}. The value of 10 is approximately based on available HIV epitope maps. Please note that this is only an approximate statement about the general magnitude, i.e. we would expect maybe a couple of HLA alleles to be associated with a single replacement, not much more.
+The value of \(\tau_{0k}\) is chosen to imply 10 effective non-zero HLA regression coefficients per replacement. The rationale behind this parameterization is again outlined in \citet{Piironen2017}. The value of 10 is approximately based on available HIV epitope maps. Please note that this is only an approximate statement about the general magnitude, i.e. we would expect maybe a couple of HLA alleles to be associated with a single replacement, not much more.
 The model is also parameterized in a way that assumes an equal degree of sparsity across all alignment positions a priori. We also tried to model \(\tau_k\) hierarchically, but observed sampling issues due to the resulting unfavorable geometry of the posterior.
 
 
