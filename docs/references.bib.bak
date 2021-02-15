@@ -619,4 +619,12 @@
   publisher = {Institute of Mathematical Statistics},
 }
 
+@Article{Osborne2002,
+  author    = {Osborne, Jason W. and Waters, Elaine},
+  title     = {Four assumptions of multiple regression that researchers should always test},
+  year      = {2002},
+  doi       = {10.7275/R222-HV23},
+  publisher = {University of Massachusetts Amherst},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
