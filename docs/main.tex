@@ -76,7 +76,7 @@ Instead of performing many hypothesis tests and trying to adjust for them, we pr
 
 
 \begin{methods}
-  \section{Material and methods}
+  \section{Materials and methods}
 
   Our general approach for HAMdetector is to fit Bayesian regression models that captures relationships between host HLA alleles and replacements in viral proteomes. This Bayesian approach is advantageous because it allows use of: (1) prior information (e.g.\ knowledge of effect magnitudes), (2) relevant additional information (phylogeny, epitope information), (3) a problem-specific structure, (4) partial pooling~\citep{Gelman2010}.
   
@@ -94,46 +94,35 @@ where \(y_{ik}\) is the binary encoded observation of replacement $k$ in viral s
 
 The main parameters of interests for HAMdetector are the regression coefficients $\beta_{\text{HLA}_{jk}}$, as they quantify the strength of association between the occurrence of replacement \(k\) and each of the observed HLA alleles. The $\beta_{\text{HLA}_{jk}}$ are on the log-odds scale, i.e.\ if we go from viral sequences from hosts without HLA allele $j$ to those from hosts with $j$, the log-odds $\log (p_k/(1-p_k))$ of observing replacement \(k\) increase by addition of $\beta_{\text{HLA}_{jk}}$.
 
-% Reasoning about coefficients on the log-odds scale can sometimes be unintuitive. A useful approximation to interpret logistic regression coefficients on the probability scale is the so-called divide-by-4 rule, which means that a regression coefficient of 2 corresponds to an expected increase on the probability scale of about 2/4 = 50\%. 
+% Reasoning about coefficients on the log-odds scale can sometimes be unintuitive. A useful approximation to interpret logistic regression coefficients on the probability scale is the so-called divide-by-4 rule, which means that a regression coefficient of 2 corresponds to an expected increase on the probability scale of about 2/4 = 50\%. DaHo: das gilt nur näherungsweise in der Nähe von p=0.5 (Wendepunkt) 
 
 \subsection{Inclusion of additional information}
 
-On top of the paired data of sequences and HLA alleles modeled by the backbone (Eq~\ref{eq:backbone}), we extend the model to include further information of relevance to improve HAM detection, namely phylogenetic information, and predictions of epitope peptide processing and MHC I affinity, as described in the following.
+On top of the paired data of viral sequences and host HLA alleles modeled by the backbone (Eq~\ref{eq:backbone}), we extend the model to include further information of relevance to improve HAM detection, namely phylogenetic information, and predictions of epitope peptide processing and MHC I affinity, as described in the following.
 
 \subsubsection{Phylogeny}
-One problem that occurs when analyzing sequence data is that species share a common phylogenetic history. Standard statistical methods usually assume samples to be independent and identically distributed, which may lead to wrong conclusions when this assumption is strongly violated.
-In the context of identifying HLA associations, \citet{Bhattacharya2007} demonstrated the importance of correcting for the phylogenetic structure.
-There are many approaches described in the literature for phylogenetic regression for binary dependent variables~\citep{Ives2014}, where the most popular approach is to estimate an additional multivariate normally distributed intercept, where the covariance matrix is based on the branch lengths of a given phylogenetic tree~\citep{Ives2009}.
+One problem that occurs when analyzing sequence data is that species (here: viral strains) share a common phylogenetic history. Thus replacements are not independently and identically distributed, and therefore violate a common assumption of standard statistical methods. In fact, \citet{Bhattacharya2007} demonstrated the importance of correcting for the phylogenetic structure in identifying HLA associations.
 
-This approach showed to be too computationally expensive to include in our model, so we chose a strategy that is similar to the one in \citet{Carlson2008} for the Phylogenetic Dependency Network:
+The most popular approach in phylogeny-aware regression of binary variables is to estimate an additional multivariate normally distributed intercept, where the covariance matrix is based on the branch lengths of a given phylogenetic tree~\citep{Ives2009, Ives2014}.
+This approach turned out to be too computationally expensive in our model, hence we chose a strategy similar to the one in \citet{Carlson2008}:
 
-Consider a phylogenetic tree \(\Psi\) obtained from standard maximum likelihood methods for a given multiple sequence alignment. We are interested in estimating \(P(y_{ik}=1|\Psi)\), that is, the probability of observing the replacement \(k\) in sequence \(i\) based on the underlying phylogenetic model.
-A quantity that can be readily computed using phylogenetic software like RAxML-NG~\cite{Kozlov2019} is \(P(\Psi|y_{ik}=1)\). For this, we keep the tree topology fixed, annotate the tree with the binary observations \(y\) at its leaves and optimize the branch lengths. \(P(\Psi|y_{ik}=1)\) is then the likelihood of the annotated phylogenetic tree. We can then use Bayes' rule to invert that conditional probability by additionally computing \(P(\Psi|y_{ik}=0)\), which is done by altering the annotation for sequence \(i\) and keeping all other observations constant.
+Consider a phylogenetic tree \(\Psi\) obtained from standard maximum likelihood methods for a given multiple sequence alignment. We are interested in estimating \(P(y_{ik}=1|\Psi)\), that is, the probability of observing the replacement \(k\) in sequence \(i\) based on the underlying phylogenetic model. A quantity that can be readily computed using phylogenetic software like RAxML-NG~\cite{Kozlov2019} is \(P(\Psi|y_{ik}=1)\). For this, we keep the tree topology fixed, annotate the tree with the binary observations \(y_{ik}\) at its leaves and optimize the branch lengths. \(P(\Psi|y_{ik}=1)\) is then the likelihood of the annotated phylogenetic tree. Similarly, we can also compute \(P(\Psi|y_{ik}=0)\) by flipping the annotation of sequence $i$ from 1 to 0 (keeping all other observations). With  $P(\Psi|y_{ik}=1)$ and $P(\Psi|y_{ik}=0)$ known and the relative frequencies of 0 an 1 as priors, we can estimate $P(y_{ik}=1|\Psi)$ by applying Bayes' theorem.
 
-In order to check if the inferred probabilities \(P(y_{ik}=1|\Psi)\) faithfully reflect the observed data we use calibration plots (see fig.~\ref{fig:phylogeny-calibration}). All observations are binned according to their inferred probability \(P(y_{ik}=1|\Psi)\). If these probabilities are calibrated correctly, we expect that in a group of observations with an inferred probability \(P(y_{ik}=1|\Psi)\) of around x\% we really do observe \(y_{ik}=1\) around x\% percent of the time.
+In order to check whether the inferred probabilities \(P(y_{ik}=1|\Psi)\) faithfully reflect the observed data we use calibration plots (see Fig.~\ref{fig:phylogeny-calibration}). All observations are binned according to their inferred probability \(P(y_{ik}=1|\Psi)\). If these probabilities are calibrated correctly, we expect that in a group of observations with an inferred probability \(P(y_{ik}=1|\Psi)\) of around x\% we really do observe \(y_{ik}=1\) around x\% percent of the time.
 
-\begin{figure}[!ht]
-  \includegraphics[width=1\linewidth]{plots/phylogeny_calibration.pdf}
-  \caption{Calibration plot for the HBV dataset. For a description of all datasets used in this study see section~\ref{sec:results}. Calibration plots for the other datasets are shown in the supplementary.
-  All observations are first sorted by increasing estimated probability \(P(y_{ik}=1|\Psi)\) and then grouped into \(n\) bins.
-  For each bin, the fraction of observations with \(y_{ik}=1\) (observed event percentage) is compared to the midpoint of each bin (the value in the center between the lowest and highest probability). The error bars show the cutpoints for each bin. If the probabilities are calibrated correctly, each dot is supposed to scatter closely around the diagonal line.}
-  \label{fig:phylogeny-calibration}
-\end{figure}
-
-The estimated probabilities are then included in the model as additional intercepts:
+The estimated probabilities based on phylogeny are then included in the model as additional intercepts (second term of logistic argument):
 
 \begin{equation}
 \begin{aligned}
   y_{ik}  & \sim \text{Bernoulli}(\theta_{ik}) \\
-  \theta_{ik}  & =  \text{logistic}\Bigl(\beta_{0_{k}} + \gamma~\text{logit}\left(P(y_{ik}=1|\Psi)\right) \\
+  \theta_{ik}  & =  \text{logistic}\Bigl(\beta_{0_{k}} + \gamma_k~\text{logit}\left(P(y_{ik}=1|\Psi)\right) \\
   &\;\;\;\;\; + \sum_{k=1}^{D}X_{ik}\beta_{\text{HLA}_{jk}}\Bigr)
   \label{eq:phylogeny}
 \end{aligned}
 \end{equation}
 
-The logit transform is used because is cancels out with the logistic inverse link function. This means that the phylogeny information acts as a baseline in absence of any HLA effects. Note that we also include an additional parameter \(\gamma\), that is constrained to be positive. This helps because the inferred probabilities \(P(y_{ik}=1|\Psi)\) might not necessarily reflect the true underlying phylogenetic signal, for example because the phylogenetic tree does not match the observed data well enough.
-
-A straight-forward extension of our model would be to also account for these sources of uncertainty, for example by using a Bayesian method to estimate a posterior distribution over possible tree topologies. The uncertainty over the tree topology and the underlying parameters of the phylogenetic model would then propagate into uncertainty of the estimated probabilities \(P(y_{ik}=1|\Psi)\). However, in order to not increase the runtime of the model further we  use standard maximum likelihood estimates and then include these in a way that additionally allows for measurement error.
+The logit transform is used because it cancels out with the logistic inverse link function. This means that the phylogeny information acts as a baseline in absence of any HLA effects. As this baseline itself is not certain but subject to errors of the phylogenetic probabilities $P(y_{ik}=1|\Psi)$, we introduce an additional parameter $\gamma_k$, constrained to be positive.
+\hl{DaHo: Please check prior for $\gamma_k$. Constraint ok?}
 
 \textit{Binding affinity prediction}
 
@@ -301,9 +290,18 @@ In order to evaluate each building block of HAMdetector, we applied 4 different 
 A standard logistic regression model, a logistic regression model with horseshoe prior, a model additionally including phylogeny and the full model with horseshoe prior, phylogeny and epitope prediction.
 As a comparison to existing methods, we also applied Fisher's exact test and the Phylogenetic Dependency Network.
 
-\subsection*{Convergence diagnostics}
-
+\subsection{Model diagnostics}
+\subsubsection{Convergence}
  All model fits showed no signs of inference issues. In total, samples were drawn from 4 different chains with 1000 iterations each. The effective sample size exceeded 500 for all model parameters, \(\hat{R}\) convergence diagnostic values were below 1.01 in all cases. \hl{DaHo: citation Gelman + Rubin original paper or later versions if improved $\hat{R}$ have been used}
+
+\subsubsection{Calibration}
+ \begin{figure}[!ht]
+  \includegraphics[width=1\linewidth]{plots/phylogeny_calibration.pdf}
+  \caption{Calibration plot for the HBV dataset. For a description of all datasets used in this study see section~\ref{sec:results}. Calibration plots for the other datasets are shown in the supplementary.
+  All observations are first sorted by increasing estimated probability \(P(y_{ik}=1|\Psi)\) and then grouped into \(n\) bins.
+  For each bin, the fraction of observations with \(y_{ik}=1\) (observed event percentage) is compared to the midpoint of each bin (the value in the center between the lowest and highest probability). The error bars show the cutpoints for each bin. If the probabilities are calibrated correctly, each dot is supposed to scatter closely around the diagonal line.}
+  \label{fig:phylogeny-calibration}
+\end{figure}
 
 \subsection*{Posterior predictive checks}
 
@@ -452,7 +450,9 @@ This is not without downsides however, because overall, binding specificities ar
 In Bayesian statistics, it is not required to chose one extreme or the other, With partial pooling, estimates from the same allele group do share some information across each other, but they are also allowed to vary if necessary.
 Therefore, implementing partial pooling might be another possibility to further increase the reliability of computational methods to study HLA escape.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+A straight-forward extension of our model would be to also account for these sources of uncertainty, for example by using a Bayesian method to estimate a posterior distribution over possible tree topologies. The uncertainty over the tree topology and the underlying parameters of the phylogenetic model would then propagate into uncertainty of the estimated probabilities \(P(y_{ik}=1|\Psi)\). However, in order to not increase the runtime of the model further we use standard maximum likelihood estimates and then include these in a way that additionally allows for measurement error.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %
 %     please remove the " % " symbol from \centerline{\includegraphics{fig01.eps}}
 %     as it may ignore the figures.
