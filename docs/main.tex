@@ -147,7 +147,7 @@ The estimated probabilities are then included in the model as additional interce
 \end{aligned}
 \end{equation}
 
-The logit transform is used because is cancels out with the logistic inverse link function. This means that the phylogeny information acts as a baseline in absence of any HLA effects. Note that we also include an additional parameter \(\gamma\), that is constrained to be positive. This helps because the inferred probabilities \(P(y_{ik}=1|\Psi)\) might not necessarily reflect the true underlying phylogenetic signal, for example because the phylogenetic tree does not match the observed data well enough.
+The logit transform is used because is cancels out with the logistic inverse link function. This means that the phylogeny information acts as a baseline in absence of any HLA effects. Note that we also include an additional parameter \(\gamma\). This helps because the inferred probabilities \(P(y_{ik}=1|\Psi)\) might not necessarily reflect the true underlying phylogenetic signal, for example because the phylogenetic tree does not match the observed data well enough.
 
 A straight-forward extension of our model would be to also account for these sources of uncertainty, for example by using a Bayesian method to estimate a posterior distribution over possible tree topologies. The uncertainty over the tree topology and the underlying parameters of the phylogenetic model would then propagate into uncertainty of the estimated probabilities \(P(y_{ik}=1|\Psi)\). However, in order to not increase the runtime of the model further we  use standard maximum likelihood estimates and then include these in a way that additionally allows for measurement error.
 
