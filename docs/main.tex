@@ -82,7 +82,7 @@ Instead of performing many hypothesis tests and trying to adjust for them, we pr
   
 \subsection{Model backbone}
 
-We chose a logistic regression model as a backbone because it is easily extensible, and because coefficients can be interpreted in the familiar way as summands on the log-odds scale.
+We chose a logistic regression model as backbone because it is easily extensible, and because coefficients can be interpreted in the familiar way as summands on the log-odds scale.
 
 \begin{align}
 \label{eq:backbone}
@@ -124,10 +124,13 @@ The estimated probabilities based on phylogeny are then included in the model as
 The logit transform is used because it cancels out with the logistic inverse link function. This means that the phylogeny information acts as a baseline in absence of any HLA effects. As this baseline itself is not certain but subject to errors of the phylogenetic probabilities $P(y_{ik}=1|\Psi)$, we introduce an additional parameter $\gamma_k$, constrained to be positive.
 \hl{DaHo: Please check prior for $\gamma_k$. Constraint ok?}
 
-\textit{Binding affinity prediction}
+\subsubsection{Inclusion of CTL epitope predictions}
 
-\hl{DaHo: Mein Verständnis von Materials and Methods ist, dass hier die Methoden aufgeführt werden, z.B. die Methoden für die Berechnung von Affinitäten, siehe z.B. https://academic.oup.com/bioinformatics/article/36/21/5159/5874440}
-  
+%A major CTL escape mechanism is the generation of mutations in viral peptides that prevent peptide presentation by MHC I to T cell receptors. 
+Mutations in CTL epitopes (the viral peptides that are presented by MHC I molecules to T cell receptors) can prevent or worsen epitope presentation to CTLs and thus cause viral CTL escape. Therefore, mutations in epitopes are prime candidates for CTL escape. This means that the fact of a replacement 
+
+A major mechanism for viral CTL escape is the generation of 
+
     HAMs are expected to lie more frequently in T-cell epitopes, i.e.\ the peptide fragments presented by MHC to T-cell receptors. There are vast experimental binding affinity data available of different peptides and MHC I molecule pairs, and there are well-established computational methods that use these data to extrapolate HLA binding for untested peptides. We show that, by including the outcome of these computational tools as input for a probabilistic model, the prediction of HLA-associated mutations can be improved.
 
   \textit{Antigen processing prediction}
