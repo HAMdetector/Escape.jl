@@ -16,7 +16,9 @@ data/netMHC-4.0/*
 *.aux
 *.fdb_latexmk
 *.fls
-manuscript.log
-manuscript.out
+*.log
+*.out
 *.synctex.gz
 *.toc
+*.blg
+*.bib.sav
