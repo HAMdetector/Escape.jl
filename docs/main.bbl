@@ -273,6 +273,11 @@ O'Donnell, T.~J., Rubinsteyn, A., and Laserson, U. (2020).
   i-presented peptides by incorporating antigen processing.
 \newblock {\em Cell Systems\/}, {\bf 11}(1), 42--48.e7.
 
+\bibitem[Osborne and Waters(2002)Osborne and Waters]{Osborne2002}
+Osborne, J.~W. and Waters, E. (2002).
+\newblock Four assumptions of multiple regression that researchers should
+  always test.
+
 \bibitem[Piironen and Vehtari(2017)Piironen and Vehtari]{Piironen2017}
 Piironen, J. and Vehtari, A. (2017).
 \newblock Sparsity information and regularization in the horseshoe and other
@@ -308,6 +313,12 @@ Rousseau, C.~M., Daniels, M.~G., Carlson, J.~M., Kadie, C., Crawford, H.,
 \newblock {HLA} class i-driven evolution of human immunodeficiency virus type 1
   subtype c proteome: Immune escape and viral load.
 \newblock {\em Journal of Virology\/}, {\bf 82}(13), 6434--6446.
+
+\bibitem[Scariano and Davenport(1987)Scariano and Davenport]{Scariano1987}
+Scariano, S.~M. and Davenport, J.~M. (1987).
+\newblock The effects of violations of independence assumptions in the one-way
+  {ANOVA}.
+\newblock {\em The American Statistician\/}, {\bf 41}(2), 123--129.
 
 \bibitem[Timm {\em et~al.}(2004)Timm, Lauer, Kavanagh, Sheridan, Kim, Lucas,
   Pillay, Ouchi, Reyor, zur Wiesch, Gandhi, Chung, Bhardwaj, Klenerman, Walker,

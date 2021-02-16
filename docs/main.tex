@@ -51,7 +51,23 @@ Immune escape is a driver of viral evolution in populations and patients, and th
 
 \subsection{Identifying HLA escape mutations}
 
-There are several experimental methods available to study HLA escape~\citep{Timm2004}.  \hl{DaHo: use key references, e.g. those that have introduced a technique; alternatively: cite review like articles that give an overview of several experimental methods} However, these methods are relatively slow and costly, especially for screening purposes. A promising approach that makes efficient use of frequently available data is to combine viral genome sequencing, host HLA determination, computational identification by statistical association analysis, and targeted experimental validation~\citep{Carlson2012}.
+There are several experimental methods available to study HLA escape~\citep{Timm2004}.  \hl{DaHo: use key references, e.g. those that have introduced a technique; alternatively: cite review like articles that give an overview of several experimental methods} \hl{DaHa: see .tex comments for possible citations} However, these methods are relatively slow and costly, especially for screening purposes. A promising approach that makes efficient use of frequently available data is to combine viral genome sequencing, host HLA determination, computational identification by statistical association analysis, and targeted experimental validation~\citep{Carlson2012}.
+
+% IFN-gamma ELISPOT:
+% A  Solid-Phase Enzyme-Linked Immunospot (ELISPOT) Assay for Enumeration of Specific Antibody-Secreting Cells \citep{Czerkinsky1983}
+% Quantification of antigen specific CD8+ T cells using an ELISPOT assay \citep{Miyahira1995}
+
+% Chromium release
+% Quantitative assay of the lytic action of immune lymphoid cells on 51-Cr-labelled allogeneic target cells in vitro; inhibition by isoantibody and by drugs \citep{Brunner1968}
+
+% Intracellular cytokine staining
+% Intracellular cytokine optimization and standard operating procedure \citep{Lamoreaux2006}
+% The assessment of antigen-specific CD8+ T cells through the combination of MHC class I tetramer and intracellular staining \citep{Appay2002}
+
+% HLA tetramer staining
+% Phenotypic analysis of antigen-specific T lymphocytes \citep{Altman1996}
+
+
 
 As the selection pressure exerted by cytotoxic T cells depends on successful recognition of viral peptides on the cell surface and thus on binding to the HLA encoded MHC I protein, escape mutations are usually HLA allele specific and can therefore be detected as HLA allele dependent ``footprints'' in sequence alignments of viral proteins  \citep{Moore2002}, i.e.\ as HLA associated mutations (HAM) or replacements enriched in sequences from hosts with a specific HLA allele.
 
@@ -59,7 +75,7 @@ One way of quantifying this enrichment is Fisher's exact test~\citep{Fisher1922}
 
 Fisher's exact test is a conventional null hypothesis significance test (NHST) that generates p-values. In this case, the null hypothesis is that HLA allele \(H\) and  replacement \(R_{i}\) are independent, and the p-value is the probability of observing a deviation from independence that is at least as extreme as in the data at hand under the assumption that the null hypothesis is true.
 
-Fisher's exact test has the advantage of being fast and easy to apply~\citep{Budeus2016}, but it also has several disadvantages~\citep{Carlson2008}. The most striking one is that viral sequences share a common phylogenetic history, and,  therefore, treating sequences as independent and identically distributed samples may under- or overestimate effect sizes. In the context of hypothesis testing, this leads to increased false positive and false negative rates. 
+Fisher's exact test has the advantage of being fast and easy to apply~\citep{Budeus2016}, but it also has several disadvantages~\citep{Carlson2008}. The most striking one is that viral sequences share a common phylogenetic history, and,  therefore, treating sequences as independent and identically distributed samples may under- or overestimate effect sizes. In the context of hypothesis testing, this leads to increased false positive and false negative rates. \hl{There are at least two references we could cite here: Osborne2002 is the reference usually cited in this context and contains the phrase "When these assumptions are not met the results may not be trustworthy, resulting in a Type I or Type II error, \dots" It is more of a summary for psychologists though and contains some questionable advice like removing outliers for increased power. There is also Scariano1987 who looks at type I/type II errors in one-way ANOVA when independence is violated, this may be a better reference. I have not found any article on the violation of independence in fisher's exact test specifically.} \citep{Osborne2002} \citep{Scariano1987}
 
 Another issue with Fisher's exact test is the genomic proximity of human HLA class I loci (on chromosome 6) leading to linkage disequilibrium -- inheritance of HLA alleles can be correlated. Therefore spurious associations can occur if associations of replacements with individual HLA alleles is tested: if HLA allele \(H_1\) is associated with an amino acid replacement \(R\) because of immune escape, but \(H_1\) is in linkage disequilibrium with allele \(H_2\), this leads to an association of \(R\) and \(H_2\), even without being an escape mutation from $H_2$.
 
@@ -121,8 +137,8 @@ The estimated probabilities based on phylogeny are then included in the model as
 \end{aligned}
 \end{equation}
 
-The logit transform is used because it cancels out with the logistic inverse link function. This means that the phylogeny information acts as a baseline in absence of any HLA effects. As this baseline itself is not certain but subject to errors of the phylogenetic probabilities $P(y_{ik}=1|\Psi)$, we introduce an additional parameter $\gamma_k$, constrained to be positive.
-\hl{DaHo: Please check prior for $\gamma_k$. Constraint ok?}
+
+The logit transform is used because it cancels out with the logistic inverse link function. The phylogeny term acts as a baseline in absence of any HLA effects. As this baseline itself is not certain but subject to errors of the phylogenetic probabilities $P(y_{ik}=1|\Psi)$, we introduce an additional parameter $\gamma_k$.
 
 \subsubsection{Inclusion of CTL epitope predictions}
 
@@ -204,6 +220,7 @@ The full specification of the model is given by:
    \gamma_{k} &\sim \text{Normal}(\mu_{\text{phy}}, \sigma_{\text{phy}}^2) & \\
     \mu_{\text{phy}} &\sim \text{Normal}(1, 1) & \text{(*)} \\
    \sigma_{\text{phy}} &\sim \text{Normal}^{+}(0, 0.5) & \text{(*)} \\
+   \beta_{\text{epi}} &\sim \text{Normal}^{+}(1, 2) & \text{(*)} \\
    \beta_{\text{HLA}_{jk}} &\sim \text{Normal}(0, \tau_{k}^{2}\tilde{\lambda}^{2}_{jk}) & \\
    \tilde{\lambda}^{2}_{jk} &= \frac{c_{k}^{2}\lambda_{jk}^{2}}{c_{k}^{2} + \tau_{k}^{2}\lambda_{jk}^{2}} & \\
     c_{k}^2 &\sim \text{Inv-Gamma}(3.5, 3.5) & \text{(*)} \\
@@ -268,14 +285,12 @@ A Julia~\citep{Bezanson2017} package is available \hl{DaHo: at ...} to run the m
 The model was fit with several data sets:
 
 \begin{itemize}
-  \item A large HIV dataset consisting of 1383 sequences, that were kindly provided by Zabrina Brumme and collaborators and were also used in the Phylogenetic Dependency Network study~\citep{Carlson2008}.
-  \item A set of 351 HIV sequences mostly spanning the Pol gene from the Arevir database~\citep{Roomp2006}.
-  \item A set of 544 Hepatitis-B-Virus sequences that were kindly provided by Jörg Timm.
-  \item A set of 104 Hepatitis-D-Virus sequences that were kindly provided by Michael Roggendorf. \hl{DaHo: bitte von Hadi geeignetes Zitat erfragen}
-  \item A set of 41 HIV sequences that were kindly provided by Rongge Yang. 
+  \item A large HIV dataset consisting of 1383 sequences, that were kindly provided by Zabrina Brumme and collaborators and were also used in the Phylogenetic Dependency Network study~\citep{Carlson2008}. The dataset contains sequences spanning the \textit{gag}, \textit{pol}, \textit{env}, \textit{nef}, \textit{vif}, \textit{vpr}, \textit{vpu}, \textit{tat} and \textit{rev} genes.
+  \item A set of 351 HIV sequences mostly spanning the \textit{pol} gene from the Arevir database~\citep{Roomp2006}.
+  \item A set of 544 Hepatitis-B-Virus sequences that were kindly provided by Jörg Timm. The dataset contains sequences of the HBe, LHBs, Pol and HBx proteins.
+  \item A set of 104 Hepatitis-D-Virus sequences containing the HDV-antigen that were kindly provided by Michael Roggendorf. \hl{DaHo: bitte von Hadi geeignetes Zitat erfragen}
+  \item A set of 41 HIV sequences spanning the \textit{gag} and \textit{pol} genes that were kindly provided by Rongge Yang. 
 \end{itemize}
-
-\hl{DaHo: zu jedem Datensatz die Proteine nennen}
 
 For all sequences, we applied the following data preparation steps:
 
