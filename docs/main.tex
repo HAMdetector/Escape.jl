@@ -67,9 +67,7 @@ There are several experimental methods available to study HLA escape~\citep{Timm
 % HLA tetramer staining
 % Phenotypic analysis of antigen-specific T lymphocytes \citep{Altman1996}
 
-
-
-As the selection pressure exerted by cytotoxic T cells depends on successful recognition of viral peptides on the cell surface and thus on binding to the HLA encoded MHC I protein, escape mutations are usually HLA allele specific and can therefore be detected as HLA allele dependent ``footprints'' in sequence alignments of viral proteins  \citep{Moore2002}, i.e.\ as HLA associated mutations (HAM) or replacements enriched in sequences from hosts with a specific HLA allele.
+As the selection pressure exerted by cytotoxic T cells depends on successful recognition of viral peptides on the cell surface and thus on binding to the HLA encoded MHC I protein, escape mutations are usually HLA allele specific and can therefore be detected as HLA allele dependent ``footprints'' in sequence alignments of viral proteins  \citep{Moore2002}, i.e.\ as HLA associated mutations (HAM) or replacements enriched in viral sequences from hosts with a specific HLA allele.
 
 One way of quantifying this enrichment is Fisher's exact test~\citep{Fisher1922}: For a given replacement \(R_{i}\) at alignment position \(i\) and HLA allele \(H\), a 2-by-2 contingency table is constructed containing the absolute counts of the number of sequences in the four possible categories  (\(R_{i}\), \(H\)), (\(R_{i}\), \(\neg H\)), (\(\neg R_{i}\), \(H\)) and (\(\neg R_{i}\), \(\neg H\)), where \(\neg R_{i}\) denotes any replacement except \(R_{i}\), and \(\neg H\) denotes any HLA allele except \(H\).
 
@@ -142,29 +140,15 @@ The logit transform is used because it cancels out with the logistic inverse lin
 
 \subsubsection{Inclusion of CTL epitope predictions}
 
-%A major CTL escape mechanism is the generation of mutations in viral peptides that prevent peptide presentation by MHC I to T cell receptors. 
-Mutations in CTL epitopes (the viral peptides that are presented by MHC I molecules to T cell receptors) can prevent or worsen epitope presentation to CTLs and thus cause viral CTL escape. Therefore, mutations in epitopes are prime candidates for CTL escape. This means that the fact of a replacement 
+% A major CTL escape mechanism is the generation of mutations in viral peptides that prevent peptide presentation by MHC I to T cell receptors.
 
-A major mechanism for viral CTL escape is the generation of 
+As outlined earlier, escape mutations often appear as HAMs. Given the underlying mechanism, it is not surprising that escape mutations are enriched in CTL epitopes, i.e.\ in those viral peptides presented by MHC I to T cell receptors \citep{Bronke2013}. This suggests that knowledge of epitope regions can be used to boost HAM detection. Fortunately, availability of large experimental data sets \citep{Vita2019} has enabled the development of computational tools that predict with good accuracy the binding of peptides to MHC I molecules encoded by various HLA alleles \citep{Mei2020}. 
 
-    HAMs are expected to lie more frequently in T-cell epitopes, i.e.\ the peptide fragments presented by MHC to T-cell receptors. There are vast experimental binding affinity data available of different peptides and MHC I molecule pairs, and there are well-established computational methods that use these data to extrapolate HLA binding for untested peptides. We show that, by including the outcome of these computational tools as input for a probabilistic model, the prediction of HLA-associated mutations can be improved.
+Not only mutations in CTL epitopes can lead to failure of MHC I to present epitopes, but also mutations at epitope-flanking positions that interfere with pre-processing of peptides, notably proteasomal cleavage of viral proteins \hl{DaHo: citation}.
 
-  \textit{Antigen processing prediction}
-  
-    Similarly, there are also HLA-allele independent effects like antigen processing that influence presentation on MHC I. Second generational tools like MHCFlurry 2.0~\citep{ODonnell2020} use both binding affinity and antigen processing data to improve epitope prediction. For our tool HAMdetector, we use the output of MHCFlurry to benefit from this data in order to predict HLA-associated mutations.
+In HAMdetector we use MHCFlurry 2.0~\citep{ODonnell2020} to predict peptide-MHC I affinity and peptide pre-processing. For this, we create an input matrix of dimensions $R\times D$, where R is the number of evaluated replacements and D is the number of observed HLA alleles in the dataset. The elements of this matrix are binary encoded and contain a 1 if that position is either expected to be inside a predicted epitope or related to antigen processing, and 0 otherwise. Given an amino acid sequence, MHCFlurry provides a list of possible epitopes (9-13 mers) and HLA allele pairs and calculates a rank based on comparisons with random epitope and HLA pairs. For the binarization we use the rank threshold of 0.2\% suggested by MHCFlurry.
 
-    \subsubsection{Epitope predictions}
-
-There is vast experimental data on epitope binding motifs available, e.g. through the use of mass spectrometry~\citep{Hunt1992}. Epitope prediction software like MHCFlurry~\citep{ODonnell2020} use these data to extrapolate MHC I binding for new, untested peptides.
-As HLA-associated mutations are much more likely to lie in epitopes (e.g. because of selection pressure to escape MHC I binding), using epitope prediction software can provide valuable external data for identifying HLA-associated mutations.
-
-For our model, we use MHCFlurry 2.0 for binding prediction, as it does not only predict HLA binding but also antigen processing. For this, we create an input matrix of dimensions \(R\times D\), where R is the number of evaluated replacements and D is the number of observed HLA alleles in the dataset. The elements of this matrix are binary encoded and contain a 1 if that position is either expected to be inside a predicted epitope or related to antigen processing, and 0 otherwise. Given an amino acid sequence, MHCFlurry 2.0 provides a list of possible epitopes (9-13 mers) and HLA allele pairs and calculates a rank based on comparisons with random epitope and HLA pairs. For the binarization we use a rank threshold of 0.2\% (as suggested by MHCFlurry).
-
-We typically try to avoid thresholds whenever possible, but in this case we deemed it to be preferable to including the predicted binding affinities, as we expected the binary values to be more reliable than the predicted numeric values.
-Note that the output of these epitope prediction tools may be imprecise or even wrong, but by including it as an input for a probabilistic model, the model is able to learn how much to trust this data if parameterized in a way to allow for measurement error.
-
-We use epitope prediction as information about the expected degree of sparsity, i.e. when knowing a certain position is restricted by a certain HLA allele, we expect that this HLA allele is more likely to be associated with the replacement than the other HLA alleles.
-This can be reflected by increasing the scale of the local shrinkage parameters \(\lambda_{jk}\):
+We use epitope prediction as information about the expected degree of sparsity, i.e.\ if we know that a certain position is restricted by a certain HLA allele, we expect that this HLA allele is more likely to be associated with replacements at that position than the other HLA alleles. This idea is implemented by increasing the scale of the local shrinkage parameters \(\lambda_{jk}\) depending on epitope information:
 
 \begin{equation}
   \begin{aligned}
@@ -173,8 +157,10 @@ This can be reflected by increasing the scale of the local shrinkage parameters 
   \end{aligned}
 \end{equation}
  
-where \(Z_{jk}\) is 1 if HLA allele \(j\) is predicted to restrict the alignment position corresponding to replacement \(k\) or is associated antigen processing and 0 otherwise.
+where \(Z_{jk}\) is 1 if HLA allele \(j\) is predicted to restrict the alignment position corresponding to replacement \(k\), or is associated antigen processing, and 0 otherwise.
 The parameter \(\beta_{\text{epi}}\) governs the increase in scale of the  corresponding local shrinkage parameters. The larger the estimated values of \(\beta_{\text{epi}}\) are, the more likely it is to see non-zero regression coefficients for these HLA alleles.
+
+\hl{DaHo: komplexer Zusammenhang von pre-processing escape und HLA; bitte besprechen}
 
 \subsection{Sparsity-inducing priors}
   
