@@ -129,14 +129,14 @@ The estimated probabilities based on phylogeny are then included in the model as
 \begin{equation}
 \begin{aligned}
   y_{ik}  & \sim \text{Bernoulli}(\theta_{ik}) \\
-  \theta_{ik}  & =  \text{logistic}\Bigl(\beta_{0_{k}} + \gamma_k~\text{logit}\left(P(y_{ik}=1|\Psi)\right) \\
+  \theta_{ik}  & =  \text{logistic}\Bigl(\beta_{0_{k}} + \gamma \text{logit}\left(P(y_{ik}=1|\Psi)\right) \\
   &\;\;\;\;\; + \sum_{k=1}^{D}X_{ik}\beta_{\text{HLA}_{jk}}\Bigr)
   \label{eq:phylogeny}
 \end{aligned}
 \end{equation}
 
 
-The logit transform is used because it cancels out with the logistic inverse link function. The phylogeny term acts as a baseline in absence of any HLA effects. As this baseline itself is not certain but subject to errors of the phylogenetic probabilities $P(y_{ik}=1|\Psi)$, we introduce an additional parameter $\gamma_k$.
+The logit transform is used because it cancels out with the logistic inverse link function. The phylogeny term acts as a baseline in absence of any HLA effects. As this baseline itself is not certain but subject to errors of the phylogenetic probabilities $P(y_{ik}=1|\Psi)$, we introduce an additional parameter $\gamma$.
 
 \subsubsection{Inclusion of CTL epitope predictions}
 
@@ -162,45 +162,38 @@ The parameter \(\beta_{\text{epi}}\) governs the increase in scale of the  corre
 
 \hl{DaHo: komplexer Zusammenhang von pre-processing escape und HLA; bitte besprechen}
 
-\subsection{Sparsity-inducing priors}
+\subsubsection{Sparsity-inducing priors}
   
-  Recent advantages in Bayesian inference include so-called sparsity-promoting priors~\citep{Piironen2017}. Sparsity-promoting priors convey the a priori expectation that most coefficients in a regression model are close to 0. This assumption also applies to HLA-associated mutations, because the number of epitopes that are restricted by a given HLA allele is typically small compared to the number of all possible epitopes. If no epitope spanning a given alignment position is presented on the MHC I molecule, any association between a replacement and the respective HLA allele  is likely to be due to random variation alone (or HLA linkage disequilibrium).
+Sparsity-promoting priors \citep{Piironen2017} can drastically improve predictive performance, because the model is better able to differentiate between signal and noise. These priors convey the a priori expectation that most coefficients in a regression model are close to 0, i.e.\ that non-zero coefficients are sparse. This assumption is likely correct for HLA-associated mutations, because the number of epitopes that are restricted by a given HLA allele is typically small compared to the number of all possible epitopes. If no epitope spanning a given alignment position is presented on the MHC I molecule, any apparent association between a replacement and the respective HLA allele is likely to be due to random viral sequence variation or HLA linkage disequilibrium. \hl{DaHo: Wie ist das mit compensatory mutations *außerhalb* von Epitopen? Z.B. https://jvi.asm.org/content/86/2/991}
   
-  It has been shown \hl{DaHo: where?} that using a sparsity-promoting prior when non-zero coefficients are sparse can drastically improve predictive performance, because the model is better able to differentiate between signal and noise.
-
-  We show that a simple logistic regression model with a sparsity-promoting prior on the regression coefficients for the HLA alleles alone already performs roughly on-par  with the much more elaborate Phylogenetic Dependency Network approach from Carlson et al. when using the fraction of identified escapes that lie in known HLA epitopes as a benchmark.
-
-In the context of identifying HLA associations we expect most of the HLA coefficients to be very close to 0, as a given alignment position is typically only restricted by none or few HLA alleles.
-This is important prior knowledge that should be incorporated in the model.
-
-For Bayesian models, there are a variety of different sparsity-promoting priors with slightly different properties. They share the common structure of placing most probability mass very close to 0, with large to tails to accommodate the non-zero coefficients.
-For our model, we use a so-called horse prior~\citep{Carvalho2010}, which is defined as a scale-mixture of gaussians:
+There is a range of sparsity-promoting priors with slightly different properties. They share the common structure of placing most probability mass very close to 0, with heavy tails to accommodate the non-zero coefficients.
+For our model, we use a so-called horseshoe prior \citep{Carvalho2010}, a scale-mixture of Gaussians:
 
 \begin{equation}
+  \label{eq:sparsity-prior}
   \begin{aligned}
     \beta_{jk} &\sim \text{Normal}(0, \tau^{2}\lambda^{2}_{jk}) \\
     \lambda_{jk} &\sim \text{Cauchy}^{+}(0, 1) \\
     \tau &\sim \text{Cauchy}^{+}(0, \tau_{0})
   \end{aligned}
 \end{equation},
-where \(\beta_{jk}\) are the regression coefficients, \(\tau\) is the so-called global shrinkage parameter, \(\lambda_{jk}\) are the so-called local shrinkage parameters and \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution.
+where \(\beta_{jk}\) are the regression coefficients; \(\tau\) and \(\lambda_{jk}\) are the so-called global and local shrinkage parameters, respectively;, \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution; $\tau_0$ is the overall degree of sparsity.
 
-Intuitively speaking, the global shrinkage parameter \(\tau\) is typically very small and shrinks most of the regression coefficients to 0, whereas the local shrinkage parameters can occasionally be very large to allow some coefficients to escape that shrinkage.
+With Eq~\ref{eq:sparsity-prior} the global shrinkage parameter \(\tau\) is typically very small and shrinks most of the regression coefficients close to 0, whereas the local shrinkage parameters $\lambda_{jk}$ can occasionally be very large to allow some coefficients to escape that shrinkage.
 
-A useful addition to the horseshoe prior is given in \citet{Piironen2017}, which describes a way to choose the parameter governing the overall degree of sparsity \(\tau_{0}\) based on the expected number of non-zero coefficients. 
+The overall degree of sparsity $\tau_0$ can be chosen based on the expected number of non-zero coefficients \citep{Piironen2017}. \hl{DaHo: do we do this? How?}
 
-For our HLA model, we utilize an extension to the horseshoe prior called the regularized horseshoe prior~\citep{Piironen2017}, which also provides some regularization for the non-zero coefficients. This is particularly useful for logistic regression models, as some shrinkage helps to deal with issues of separability and collinearity that commonly occur when fitting logistic regression models.
 
 \subsection{Full model specification}
 
-The full specification of the model is given by:
+The full specification of the model is:
 
 \begin{equation}
   \label{eq:full}
   \begin{aligned}
    y_{ik} &\sim \text{Bernoulli}(\theta_{ik}) &\\
    \theta_{ik} &=
-        \text{logit}^{-1}(\beta_{0_{k}} + \gamma_{k}\text{logit}(P(y_{ik}=1|\Psi)) & \\
+        \text{logistic}(\beta_{0_{k}} + \gamma_{k}\text{logit}(P(y_{ik}=1|\Psi)) & \\
         \hspace{-6cm} &~~~~ +\sum_{k=1}^{D}X_{ij}\beta_{\text{HLA}_{jk}}) & \\
     \beta_{0_{k}} &\sim \text{Normal}(0, 100^2) & \text{(*)}\\
    \gamma_{k} &\sim \text{Normal}(\mu_{\text{phy}}, \sigma_{\text{phy}}^2) & \\
@@ -216,17 +209,17 @@ The full specification of the model is given by:
   \end{aligned}
 \end{equation}
 
-The full model specification includes some aspects that were not covered in the previous sections. In particular, the parameters \(\gamma_{k}\) are modelled hierarchically, which allows information to be partially pooled across replacements. However, the model would also work reasonably well with just a single global parameter \(\gamma\). All other additions (\(\tilde{\lambda}_{jk}^{2}\) and \(\tau_{0k}\)) are explained in detail in \citep{Piironen2017}. Briefly, the addition of  \(\tilde{\lambda}_{jk}^{2}\) allows some regularization for the non-zero coefficients and the parameterization of \(\tau_{0k}\) allows to place a prior on the expected number of non-zero coefficients.
+The full model specification includes some aspects that were not covered in the previous sections. In particular, the overall phylogeny-weight $\gamma$ in Eq~\ref{eq:backbone} is replaced in the full model by  hierarchically modelled  \(\gamma_{k}\), which allows partial pooling across replacements (even with a global parameter \(\gamma\) the model works reasonably well). All other additions (\(\tilde{\lambda}_{jk}^{2}\) and \(\tau_{0k}\)) are taken from \citet{Piironen2017}. Briefly, the addition of  \(\tilde{\lambda}_{jk}^{2}\) allows some regularization for the non-zero coefficients and the parameterization of \(\tau_{0k}\) allows to place a prior on the expected number of non-zero coefficients.  This is particularly useful for logistic regression models, as some shrinkage helps to deal with issues of separability and collinearity that commonly occur with logistic regression models. \hl{DaHo: Bedeutung von $N$ in $\tau_{0k}$?}
 
 \subsubsection{Prior justification}
 
-Prior distributions are labeled with an asterisk in equation~\ref{eq:full}. They are meant to be weakly informative, which means that the goal is to provide some modest amount of shrinkage while still allowing for large absolute values given enough support by the observed data. One exception to this are the intercepts \(\beta_{0_k}\), which are essentially flat because they are well identified by the data alone.
+Prior distributions are labeled with an asterisk in Eq~\ref{eq:full}. They are weakly informative, which means that they effectively limit posteriors to realistic magnitudes of parameters. One exception to this are the intercepts \(\beta_{0_k}\), which are essentially flat because they are well identified by the data alone. 
 
-The hierarchical mean and standard deviation of the phylogeny coefficients \(\gamma_{k}\) are chosen to place most probability mass at values of \(\gamma_{k}\) of around 1. In the absence of any HLA effects, a parameter value of 1 would mean that the estimate for the probability of observing replacement \(k\) is identical to the probability based on the phylogenetic model. Intuitively speaking, We therefore treat the phylogeny as a baseline and any observations that cannot be attributed to phylogeny are attributed to the HLA alleles or noise.
+The hierarchical mean and standard deviation of the phylogeny coefficients \(\gamma_k\) place most probability mass on \(\gamma_k\) values around 1. In absence of any HLA effects, a $\gamma_k=1$ would mean that the estimate for the probability of observing replacement $k$ is identical to the probability based on the phylogenetic model. This treats phylogeny as a baseline, and any observations not attributed to phylogeny must be explained by HLA alleles or noise.
 
-The prior on \(c_{k}^{2}\) implies a Student-t prior with 7 degrees of freedom and a scale of 1 on the non-zero HLA regression coefficients \(\beta_{\text{HLA}_{jk}}\). A Student-t prior with these parameters is a reasonable default choice for logistic regression models. The theoretical justification behind this regularized variant of the horseshoe prior is explained in detail in \citet{Piironen2017}.
+The prior on $c_k^2$ implies a Student-t prior with 7 degrees of freedom and a scale of 1 on the non-zero HLA regression coefficients \(\beta_{\text{HLA}_{jk}}\). A Student-t prior with these parameters is a reasonable default choice for logistic regression models \citep{Piironen2017}.
 
-The value of \(\tau_{0k}\) is chosen to imply 10 effective non-zero HLA regression coefficients per replacement. The rationale behind this parameterization is again outlined in \citet{Piironen2017}. The value of 10 is approximately based on available HIV epitope maps. Please note that this is only an approximate statement about the general magnitude, i.e. we would expect maybe a couple of HLA alleles to be associated with a single replacement, not much more.
+The value of \(\tau_{0k}\) implies 10 effective non-zero HLA regression coefficients per replacement. The rationale behind this parameterization is again outlined in \citet{Piironen2017}. The value of 10 corresponds to a generously estimated magnitude based on available HIV epitope maps \hl{DaHo: citation?}.
 The model is also parameterized in a way that assumes an equal degree of sparsity across all alignment positions a priori. We also tried to model \(\tau_k\) hierarchically, but observed sampling issues due to the resulting unfavorable geometry of the posterior.
 
 
@@ -388,6 +381,8 @@ Note that the model with horseshoe prior alone already has a much higher elpd th
 Including phylogeny further improves model performance, as the assumption of independent and identically distributed data does not hold for sequence data that share a common phylogenetic history.
 
 Inclusion of epitope prediction does not improve elpd as much as inclusion of phylogeny and the sparsity assumption. This is because while addition of sparsity and phylogeny has an effect on all replacements and samples, epitope prediction only influences those replacements which are restricted by a given HLA allele and only those samples which are annotated with the allele. However, inclusion of epitope prediction is highly useful for determining which HLA alleles are associated with the occurrence of a replacement, as shown in the previous section.
+
+\hl{DaHo: Textblock aus alten Methods:}  We show that a simple logistic regression model with a sparsity-promoting prior on the regression coefficients for the HLA alleles alone already performs roughly on-par  with the much more elaborate Phylogenetic Dependency Network approach from Carlson et al. when using the fraction of identified escapes that lie in known HLA epitopes as a benchmark.
 
 \subsection{Generalization}
 
