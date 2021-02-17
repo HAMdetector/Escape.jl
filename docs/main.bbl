@@ -80,6 +80,14 @@ Borrow, P., Lewicki, H., Wei, X., Horwitz, M.~S., Peffer, N., Meyers, H.,
   of {CTL} escape virus.
 \newblock {\em Nature Medicine\/}, {\bf 3}(2), 205--211.
 
+\bibitem[Bronke {\em et~al.}(2013)Bronke, Almeida, McKinnon, Roberts, Keane,
+  Chopra, Carlson, Heckerman, Mallal, and John]{Bronke2013}
+Bronke, C., Almeida, C.~M., McKinnon, E., Roberts, S.~G., Keane, N.~M., Chopra,
+  A., Carlson, J.~M., Heckerman, D., Mallal, S., and John, M. (2013).
+\newblock {HIV escape mutations occur preferentially at HLA-binding sites of
+  CD8 T-cell epitopes.}
+\newblock {\em {AIDS}\/}, {\bf 27}, 899--905.
+
 \bibitem[Budeus {\em et~al.}(2016)Budeus, Timm, and Hoffmann]{Budeus2016}
 Budeus, B., Timm, J., and Hoffmann, D. (2016).
 \newblock {SeqFeatR} for the discovery of feature-sequence associations.
@@ -160,14 +168,6 @@ Goldberg, A.~L., Cascio, P., Saric, T., and Rock, K.~L. (2002).
 Harty, J.~T., Tvinnereim, A.~R., and White, D.~W. (2000).
 \newblock {CD}8+ t cell effector mechanisms in resistance to infection.
 \newblock {\em Annual Review of Immunology\/}, {\bf 18}(1), 275--308.
-
-\bibitem[Hunt {\em et~al.}(1992)Hunt, Henderson, Shabanowitz, Sakaguchi,
-  Michel, Sevilir, Cox, Appella, and Engelhard]{Hunt1992}
-Hunt, D., Henderson, R., Shabanowitz, J., Sakaguchi, K., Michel, H., Sevilir,
-  N., Cox, A., Appella, E., and Engelhard, V. (1992).
-\newblock Characterization of peptides bound to the class i {MHC} molecule
-  {HLA}-a2.1 by mass spectrometry.
-\newblock {\em Science\/}, {\bf 255}(5049), 1261--1263.
 
 \bibitem[Ioannidis(2005)Ioannidis]{Ioannidis2005}
 Ioannidis, J. P.~A. (2005).
@@ -253,6 +253,15 @@ Matthews, P.~C., Prendergast, A., Leslie, A., Crawford, H., Payne, R.,
   immunodeficiency virus set point.
 \newblock {\em Journal of Virology\/}, {\bf 82}(17), 8548--8559.
 
+\bibitem[Mei {\em et~al.}(2020)Mei, Li, Leier, Marquez-Lago, Giam, Croft,
+  Akutsu, Smith, Li, Rossjohn, Purcell, and Song]{Mei2020}
+Mei, S., Li, F., Leier, A., Marquez-Lago, T.~T., Giam, K., Croft, N.~P.,
+  Akutsu, T., Smith, A.~I., Li, J., Rossjohn, J., Purcell, A.~W., and Song, J.
+  (2020).
+\newblock {A comprehensive review and performance evaluation of bioinformatics
+  tools for HLA class I peptide-binding prediction.}
+\newblock {\em {Brief. Bioinformatics}\/}, {\bf 21}, 1119--1135.
+
 \bibitem[Moore(2002)Moore]{Moore2002}
 Moore, C.~B. (2002).
 \newblock Evidence of {HIV}-1 adaptation to {HLA}-restricted immune responses
@@ -334,6 +343,13 @@ Vehtari, A., Gelman, A., and Gabry, J. (2016).
 \newblock Practical bayesian model evaluation using leave-one-out
   cross-validation and {WAIC}.
 \newblock {\em Statistics and Computing\/}, {\bf 27}(5), 1413--1432.
+
+\bibitem[Vita {\em et~al.}(2019)Vita, Mahajan, Overton, Dhanda, Martini,
+  Cantrell, Wheeler, Sette, and Peters]{Vita2019}
+Vita, R., Mahajan, S., Overton, J.~A., Dhanda, S.~K., Martini, S., Cantrell,
+  J.~R., Wheeler, D.~K., Sette, A., and Peters, B. (2019).
+\newblock {The Immune Epitope Database (IEDB): 2018 update.}
+\newblock {\em {Nucleic Acids Res.}}, {\bf 47}, D339--D343.
 
 \bibitem[Yewdell and Hill(2002)Yewdell and Hill]{Yewdell2002}
 Yewdell, J.~W. and Hill, A.~B. (2002).
