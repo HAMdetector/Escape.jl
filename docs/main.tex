@@ -146,7 +146,7 @@ As outlined earlier, escape mutations often appear as HAMs. Given the underlying
 
 Not only mutations in CTL epitopes can lead to failure of MHC I to present epitopes, but also mutations at epitope-flanking positions that interfere with pre-processing of peptides, notably proteasomal cleavage of viral proteins \hl{DaHo: citation}.
 
-In HAMdetector we use MHCFlurry 2.0~\citep{ODonnell2020} to predict peptide-MHC I affinity and peptide pre-processing. For this, we create an input matrix of dimensions $R\times D$, where R is the number of evaluated replacements and D is the number of observed HLA alleles in the dataset. The elements of this matrix are binary encoded and contain a 1 if that position is either expected to be inside a predicted epitope or related to antigen processing, and 0 otherwise. Given an amino acid sequence, MHCFlurry provides a list of possible epitopes (9-13 mers) and HLA allele pairs and calculates a rank based on comparisons with random epitope and HLA pairs. For the binarization we use the rank threshold of 0.2\% suggested by MHCFlurry.
+In HAMdetector we use MHCFlurry 2.0~\citep{ODonnell2020} to predict epitopes that are properly processed and presented by MHC I. For this, we create an input matrix of dimensions $R\times D$, where $R$ is the number of evaluated replacements and $D$ is the number of observed HLA alleles in the dataset. The elements of this matrix are binary encoded and contain a 1 if that position is predicted to be in an epitope, and 0 otherwise. Given an amino acid sequence, MHCFlurry provides a list of possible epitopes (9-13 mers) and HLA allele pairs and calculates a rank based on comparisons with random epitope and HLA pairs. For the binarization we use the rank threshold of 0.2\% suggested by MHCFlurry.
 
 We use epitope prediction as information about the expected degree of sparsity, i.e.\ if we know that a certain position is restricted by a certain HLA allele, we expect that this HLA allele is more likely to be associated with replacements at that position than the other HLA alleles. This idea is implemented by increasing the scale of the local shrinkage parameters \(\lambda_{jk}\) depending on epitope information:
 
@@ -157,8 +157,7 @@ We use epitope prediction as information about the expected degree of sparsity, 
   \end{aligned}
 \end{equation}
  
-where \(Z_{jk}\) is 1 if HLA allele \(j\) is predicted to restrict the alignment position corresponding to replacement \(k\), or is associated antigen processing, and 0 otherwise.
-The parameter \(\beta_{\text{epi}}\) governs the increase in scale of the  corresponding local shrinkage parameters. The larger the estimated values of \(\beta_{\text{epi}}\) are, the more likely it is to see non-zero regression coefficients for these HLA alleles.
+where \(Z_{jk}\) is 1 if HLA allele \(j\) is predicted to restrict the alignment position corresponding to replacement \(k\), and 0 otherwise. The parameter \(\beta_{\text{epi}}\) governs the increase in scale of the  corresponding local shrinkage parameters. The larger the estimated values of \(\beta_{\text{epi}}\) are, the more likely it is to see non-zero regression coefficients for these HLA alleles.
 
 \hl{DaHo: komplexer Zusammenhang von pre-processing escape und HLA; bitte besprechen}
 
