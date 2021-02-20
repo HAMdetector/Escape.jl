@@ -163,15 +163,14 @@ Sparsity-promoting priors \citep{Piironen2017} can drastically improve predictiv
   
 There is a range of sparsity-promoting priors with slightly different properties. They share the common structure of placing most probability mass very close to 0, with heavy tails to accommodate the non-zero coefficients.
 For our model, we use a so-called horseshoe prior \citep{Carvalho2010}, a scale-mixture of Gaussians:
-
-\begin{equation}
+\begin{align}
   \label{eq:sparsity-prior}
   \begin{aligned}
     \beta_{jk} &\sim \text{Normal}(0, \tau^{2}\lambda^{2}_{jk}) \\
     \lambda_{jk} &\sim \text{Cauchy}^{+}(0, 1) \\
-    \tau &\sim \text{Cauchy}^{+}(0, \tau_{0})
+    \tau &\sim \text{Cauchy}^{+}(0, \tau_{0}),
   \end{aligned}
-\end{equation},
+\end{equation}
 where \(\beta_{jk}\) are the regression coefficients; \(\tau\) and \(\lambda_{jk}\) are the so-called global and local shrinkage parameters, respectively;, \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution; $\tau_0$ is the overall degree of sparsity.
 
 With Eq~\ref{eq:sparsity-prior} the global shrinkage parameter \(\tau\) is typically very small and shrinks most of the regression coefficients close to 0, whereas the local shrinkage parameters $\lambda_{jk}$ can occasionally be very large to allow some coefficients to escape that shrinkage.
@@ -237,27 +236,18 @@ Second, we assessed the abilities of different models and methods to discover HA
 
 \subsubsection{Leave-one-out cross-validation}
 
-  In addition to testing our model on real-world data, we also performed leave-one-out cross-validation to examine the relative importance of the additions of epitope prediction, sparsity and phylogeny with respect to predictive performance.
-  For this, we create several variations of the model that are all special cases of the full HAMdetector model.
-  By comparing the model performance of these variations, we can gain insight on the relative importance of each aspect of the model.
-  
-  Leave-one-out cross-validation has historically been challenging to apply for Bayesian models, because fitting a model once for each left out data-point is often infeasible because of computational constrains.
-  Recently, Pareto-smoothed importance sampling has gained popularity to perform approximate leave-one-out cross-validation for Bayesian models. This method  approximates the leave-one-out posterior by re-weighting existing draws from the posterior distribution and has the advantage of requiring to fit the model only once. Additionally, the method provides good diagnostics to identify cases where the approximation is unreliable~\cite{Vehtari2016}.
+Another performance measure is the ability to generalize to unseen data. To examine this ability for the different model variants we performed leave-one-out cross-validation (LOOCV), using the efficient Pareto-smoothed LOOCV \cite{Vehtari2016}.
 
-  Several utility (or cost) functions are used in practice to compare the predictive performance of models. For frequentist approaches, classification accuracy or receiver operator characteristic curves (ROC curves) are most common.
-  For Bayesian models, expected log-predictive density (elpd) is used most frequently. 
+% Several utility (or cost) functions are used in practice to compare the predictive performance of models. For frequentist approaches, classification accuracy or receiver operator characteristic curves (ROC curves) are most common.
+From the LOOCV we obtain the Expected Log-Predictive Density (ELPD) $\sum_{i=1}^{n}\log(\int p(y_i|\theta)p(\theta|y_{i-1})d\theta))$ for samples $i=1,\ldots,n$, $i$th observation $y_i$, data $y_{i-1}$ with $i$ left out, and model parameters $\theta$. Thus, the ELPD is the average log predictive density of the observed data points based on the leave-one-out posterior distributions. This measure has the advantage over other performance measures like classification accuracy, that it not only takes the location of the predictive distribution (the number of correct predictions) into account, but also the width, i.e.\ how confident the model is in its predictions.
 
-  elpd is defined as \(\sum_{i=1}^{n}\text{log}(\int p(y_i|\theta)p(\theta|y_{i-1})d\theta))\), i.e. the average log predictive density of the observed data points based on the leave-one-out posterior distributions.
-  This has the advantage over other performance measures like classification accuracy, that it not only takes the location of the predictive distribution into account (i.e. the number of correct predictions), but also the width (i.e. how confident the model is in its predictions).
-  elpd cannot be computed for frequentist models because the parameters of the model are viewed as fixed values.
-
-  \subsection{Data and data preparation}
+  \subsection{Data}
  \hl{DaHo: das Material in Materials and Methods sind die Daten; die sollten hier kurz beschrieben werden, möglichst mit Referenzen}
 
 The model was fit with several data sets:
 
 \begin{itemize}
-  \item A large HIV dataset consisting of 1383 sequences, that were kindly provided by Zabrina Brumme and collaborators and were also used in the Phylogenetic Dependency Network study~\citep{Carlson2008}. The dataset contains sequences spanning the \textit{gag}, \textit{pol}, \textit{env}, \textit{nef}, \textit{vif}, \textit{vpr}, \textit{vpu}, \textit{tat} and \textit{rev} genes.
+  \item A large HIV dataset \hl{DaHo: paper?} consisting of 1383 sequences, that were kindly provided by Zabrina Brumme and collaborators and were also used in the Phylogenetic Dependency Network study~\citep{Carlson2008}. The dataset contains sequences spanning the \textit{gag}, \textit{pol}, \textit{env}, \textit{nef}, \textit{vif}, \textit{vpr}, \textit{vpu}, \textit{tat} and \textit{rev} genes.
   \item A set of 351 HIV sequences mostly spanning the \textit{pol} gene from the Arevir database~\citep{Roomp2006}.
   \item A set of 544 Hepatitis-B-Virus sequences that were kindly provided by Jörg Timm. The dataset contains sequences of the HBe, LHBs, Pol and HBx proteins.
   \item A set of 104 Hepatitis-D-Virus sequences containing the HDV-antigen that were kindly provided by Michael Roggendorf. \hl{DaHo: bitte von Hadi geeignetes Zitat erfragen}
@@ -266,7 +256,8 @@ The model was fit with several data sets:
 
 \hl{DaHo: sources of known epitopes?}
 
-For all sequences, we applied the following data preparation steps:
+\subsection{Data preparation}
+For all sequences, we applied the following preparation steps:
 
 \begin{enumerate}
   \item For each dataset, the sequences were split into subsequences, either by protein or gene.
