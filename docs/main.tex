@@ -170,7 +170,7 @@ For our model, we use a so-called horseshoe prior \citep{Carvalho2010}, a scale-
     \lambda_{jk} &\sim \text{Cauchy}^{+}(0, 1) \\
     \tau &\sim \text{Cauchy}^{+}(0, \tau_{0}),
   \end{aligned}
-\end{equation}
+\end{align}
 where \(\beta_{jk}\) are the regression coefficients; \(\tau\) and \(\lambda_{jk}\) are the so-called global and local shrinkage parameters, respectively;, \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution; $\tau_0$ is the overall degree of sparsity.
 
 With Eq~\ref{eq:sparsity-prior} the global shrinkage parameter \(\tau\) is typically very small and shrinks most of the regression coefficients close to 0, whereas the local shrinkage parameters $\lambda_{jk}$ can occasionally be very large to allow some coefficients to escape that shrinkage.
