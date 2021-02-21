@@ -101,12 +101,12 @@ We chose a logistic regression model as backbone because it is easily extensible
 \begin{align}
 \label{eq:backbone}
   y_{ik} & \sim \text{Bernoulli}(\theta_{ik}) \\
-  \theta_{ik} & = \text{logistic}\left(\beta_{0_{k}} + \sum_{j=1}^{D} X_{ij}\beta_{\text{HLA}_{jk}}\right),
+  \theta_{ik} & = \text{logistic}\left(\beta_{0_{k}} + \sum_{j=1}^{D} X_{ij}\beta_{jk}\right),
 \end{align}
 
-where \(y_{ik}\) is the binary encoded observation of replacement $k$ in viral sequence $i$ (each observed amino acid state $k$ contributes a separate column to $y_{ik}$); \(\theta_{ik}\) is the estimated probability that we observe replacement \(k\) in sequence \(i\); \(X_{ij}\) is 1 if sequence \(i\) comes from host individual HLA allele \(j\) and 0 otherwise; $\beta_{\text{HLA}_{jk}}$ is the HLA regression coefficient of HLA allele \(j\) for replacement \(k\); \(D\) is the number of HLA alleles in the dataset; the logistic inverse link function transforms the linear model in parentheses to the probability scale of $\theta_{ik}$.
+where \(y_{ik}\) is the binary encoded observation of replacement $k$ in viral sequence $i$ (each observed amino acid state $k$ contributes a separate column to $y_{ik}$); \(\theta_{ik}\) is the estimated probability that we observe replacement \(k\) in sequence \(i\); \(X_{ij}\) is 1 if sequence \(i\) comes from host individual HLA allele \(j\) and 0 otherwise; $\beta_{jk}$ is the HLA regression coefficient of HLA allele \(j\) for replacement \(k\); \(D\) is the number of HLA alleles in the dataset; the logistic inverse link function transforms the linear model in parentheses to the probability scale of $\theta_{ik}$.
 
-The main parameters of interests for HAMdetector are the regression coefficients $\beta_{\text{HLA}_{jk}}$, as they quantify the strength of association between the occurrence of replacement \(k\) and each of the observed HLA alleles. The $\beta_{\text{HLA}_{jk}}$ are on the log-odds scale, i.e.\ if we go from viral sequences from hosts without HLA allele $j$ to those from hosts with $j$, the log-odds $\log (p_k/(1-p_k))$ of observing replacement \(k\) increase by addition of $\beta_{\text{HLA}_{jk}}$.
+The main parameters of interests for HAMdetector are the regression coefficients $\beta_{jk}$, as they quantify the strength of association between the occurrence of replacement \(k\) and each of the observed HLA alleles. The $\beta_{jk}$ are on the log-odds scale, i.e.\ if we go from viral sequences from hosts without HLA allele $j$ to those from hosts with $j$, the log-odds $\log (p_k/(1-p_k))$ of observing replacement \(k\) increase by addition of $\beta_{jk}$.
 
 % Reasoning about coefficients on the log-odds scale can sometimes be unintuitive. A useful approximation to interpret logistic regression coefficients on the probability scale is the so-called divide-by-4 rule, which means that a regression coefficient of 2 corresponds to an expected increase on the probability scale of about 2/4 = 50\%. DaHo: das gilt nur näherungsweise in der Nähe von p=0.5 (Wendepunkt) 
 
@@ -126,7 +126,7 @@ Consider a phylogenetic tree \(\Psi\) obtained from standard maximum likelihood 
 \begin{aligned}
   y_{ik}  & \sim \text{Bernoulli}(\theta_{ik}) \\
   \theta_{ik}  & =  \text{logistic}\Bigl(\beta_{0_{k}} + \gamma \text{logit}\left(P(y_{ik}=1|\Psi)\right) \\
-  &\;\;\;\;\; + \sum_{k=1}^{D}X_{ik}\beta_{\text{HLA}_{jk}}\Bigr)
+  &\;\;\;\;\; + \sum_{k=1}^{D}X_{ik}\beta_{jk}\Bigr)
   \label{eq:phylogeny}
 \end{aligned}
 \end{equation}
@@ -170,7 +170,7 @@ For our model, we use a so-called horseshoe prior \citep{Carvalho2010}, a scale-
     \lambda_{jk} &\sim \text{Cauchy}^{+}(0, 1) \\
     \tau &\sim \text{Cauchy}^{+}(0, \tau_{0}),
   \end{aligned}
-\end{align}
+\end{equation}
 where \(\beta_{jk}\) are the regression coefficients; \(\tau\) and \(\lambda_{jk}\) are the so-called global and local shrinkage parameters, respectively;, \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution; $\tau_0$ is the overall degree of sparsity.
 
 With Eq~\ref{eq:sparsity-prior} the global shrinkage parameter \(\tau\) is typically very small and shrinks most of the regression coefficients close to 0, whereas the local shrinkage parameters $\lambda_{jk}$ can occasionally be very large to allow some coefficients to escape that shrinkage.
@@ -188,13 +188,13 @@ The full specification of the HAMdetector model is:
    y_{ik} &\sim \text{Bernoulli}(\theta_{ik}) &\\
    \theta_{ik} &=
         \text{logistic}(\beta_{0_{k}} + \gamma_{k}\text{logit}(P(y_{ik}=1|\Psi)) & \\
-        \hspace{-6cm} &~~~~ +\sum_{k=1}^{D}X_{ij}\beta_{\text{HLA}_{jk}}) & \\
+        \hspace{-6cm} &~~~~ +\sum_{k=1}^{D}X_{ij}\beta_{jk}) & \\
     \beta_{0_{k}} &\sim \text{Normal}(0, 100^2) & \text{(*)}\\
    \gamma_{k} &\sim \text{Normal}(\mu_{\text{phy}}, \sigma_{\text{phy}}^2) & \\
     \mu_{\text{phy}} &\sim \text{Normal}(1, 1) & \text{(*)} \\
    \sigma_{\text{phy}} &\sim \text{Normal}^{+}(0, 0.5) & \text{(*)} \\
    \beta_{\text{epi}} &\sim \text{Normal}^{+}(1, 2) & \text{(*)} \\
-   \beta_{\text{HLA}_{jk}} &\sim \text{Normal}(0, \tau_{k}^{2}\tilde{\lambda}^{2}_{jk}) & \\
+   \beta_{jk} &\sim \text{Normal}(0, \tau_{k}^{2}\tilde{\lambda}^{2}_{jk}) & \\
    \tilde{\lambda}^{2}_{jk} &= \frac{c_{k}^{2}\lambda_{jk}^{2}}{c_{k}^{2} + \tau_{k}^{2}\lambda_{jk}^{2}} & \\
     c_{k}^2 &\sim \text{Inv-Gamma}(3.5, 3.5) & \text{(*)} \\
    \lambda_{jk} &\sim \text{Cauchy}^{+}(0, \sigma_{j}^2\text{exp}(Z_{jk}\beta_{\text{epi}})) & \\
@@ -211,7 +211,7 @@ Prior distributions are labeled with an asterisk in Eq~\ref{eq:full}. They are w
 
 The hierarchical mean and standard deviation of the phylogeny coefficients \(\gamma_k\) place most probability mass on \(\gamma_k\) values around 1. In absence of any HLA effects, a $\gamma_k=1$ would mean that the estimate for the probability of observing replacement $k$ is identical to the probability based on the phylogenetic model. This treats phylogeny as a baseline, and any observations not attributed to phylogeny must be explained by HLA alleles or noise.
 
-The prior on $c_k^2$ implies a Student-t prior with 7 degrees of freedom and a scale of 1 on the non-zero HLA regression coefficients \(\beta_{\text{HLA}_{jk}}\). A Student-t prior with these parameters is a reasonable default choice for logistic regression models \citep{Piironen2017}.
+The prior on $c_k^2$ implies a Student-t prior with 7 degrees of freedom and a scale of 1 on the non-zero HLA regression coefficients \(\beta_{jk}\). A Student-t prior with these parameters is a reasonable default choice for logistic regression models \citep{Piironen2017}.
 
 The value of \(\tau_{0k}\) implies 10 effective non-zero HLA regression coefficients per replacement. The rationale behind this parameterization is again outlined in \citet{Piironen2017}. The value of 10 corresponds to a generously estimated magnitude based on available HIV epitope maps \hl{DaHo: citation?}.
 The model is also parameterized in a way that assumes an equal degree of sparsity across all alignment positions a priori. We also tried to model \(\tau_k\) hierarchically, but observed sampling issues due to the resulting unfavorable geometry of the posterior.
@@ -233,7 +233,7 @@ In posterior predictive checks, we simulate new data from the inferred posterior
 For a first posterior predictive check we used \emph{calibration plots}: two binned quantities were plotted against each other, the observed relative frequencies of replacements $f(y_{ik}=1)$, and the predicted probabilities $P(y_{ik}=1|\text{model})$. In such a plot, a well-calibrated model should yield points following the diagonal. Technically, all observations were first sorted by increasing estimated probability $P(y_{ik}=1|\text{model})$ and grouped into $n$ bins. For each bin, the fraction of observations with $y_{ik}=1$ (observed event percentage) was then plotted against the midpoint of each bin. The cutpoints of the bins are indicated by error bars.
 % We applied calibration plots twice, first with the phylogenetic component of model, and then with the full model. 
 
-Second, we assessed the abilities of different models and methods to discover HAMs with \emph{HAM enrichment plots}. These plots are based on the observation that CTL escape mutations are enriched in epitopes \citep{Bronke2013}. Hence, the degree by which methods for HAM prediction recover this trend is a measure of model performance. To implement this measure, we first ranked all evaluated replacements according to their respective credibility of being a HAM, computed as integral of the marginal posterior $P(\beta_{HLA}>0)$. For comparison with established methods, namely Fisher's exact test and Phylogenetic Dependency Network \citep{Carlson2008}, ranked lists based on p- and q-values, respectively, were computed. Then we calculated for each rank $r$ the accumulated number $N_e(r)$ of predictions of this rank or better ranks were located inside known epitopes. The higher the curve $N_e(r)$, the higher the enrichment of predicted HAMs in epitopes, see e.g.\ Fig.\ \ref{fig:comparison}.
+Second, we assessed the abilities of different models and methods to discover HAMs with \emph{HAM enrichment plots}. These plots are based on the observation that CTL escape mutations are enriched in epitopes \citep{Bronke2013}. Hence, the degree by which methods for HAM prediction recover this trend is a measure of model performance. To implement this measure, we first ranked all evaluated replacements according to their respective credibility of being a HAM, computed as integral of the marginal posterior $P(\beta_{jk}>0)$. For comparison with established methods, namely Fisher's exact test and Phylogenetic Dependency Network \citep{Carlson2008}, ranked lists based on p- and q-values, respectively, were computed. Then we calculated for each rank $r$ the accumulated number $N_e(r)$ of predictions of this rank or better ranks were located inside known epitopes. The higher the curve $N_e(r)$, the higher the enrichment of predicted HAMs in epitopes, see e.g.\ Fig.\ \ref{fig:comparison}.
 
 \subsubsection{Leave-one-out cross-validation}
 
@@ -332,7 +332,7 @@ To quantify the ability of the four different model stages of HAMdetector to gen
 \end{table}
 
 
-The model with horseshoe prior alone already has a much higher elpd than the standard logistic regression model, even though it does not use any specific external data. This is because including the sparsity assumption allows the model to better separate signal from noise and the uncertainty of the close-to-zero coefficients does not propagate into uncertainty of predictions.
+The model with horseshoe prior alone already has a much higher ELPD than the standard logistic regression model, even though it does not use any specific external data. This is because including the sparsity assumption allows the model to better separate signal from noise and the uncertainty of the close-to-zero coefficients does not propagate into uncertainty of predictions.
 
 Including phylogeny further improves model performance a lot, as the assumption of independent and identically distributed data is replaced with specific information from the shared phylogenetic history.
 
@@ -343,7 +343,7 @@ The Hepatitis D Virus (HDV) dataset \citep{Karimzadeh2019} is an excellent test 
 
 We have 15 HAMs predicted in HDV by Fisher's exact test at significance level $5\times 10^{-3}$ (Table~\ref{tab:false-positives}) as published \citep{Karimzadeh2019}. The corresponding p-values  have no clear relation to experimental confirmation, i.e.\ p-values for confirmed HAMs are not generally lower than those of non-confirmed ones.
 
-For HAMdetector, we use in Table~\ref{tab:false-positives} the posterior probability of a positive regression coefficient ($P(\beta_{\text{HLA}_{jk}}>0)$ as measure for the confidence in having detected a HAM. HAMs with strong support have a posterior probability close to 1, associations with no support a probability close to 0.5 (corresponding to a regression coefficient centered around 0). The five predicted HAMs with top posterior probabilities (all $\ge 0.89$) have all been experimentally confirmed. There is only one outlier with posterior probability 0.75 (P89T and B*37).
+For HAMdetector, we use in Table~\ref{tab:false-positives} the posterior probability of a positive regression coefficient ($P(\beta_{jk}>0)$ as measure for the confidence in having detected a HAM. HAMs with strong support have a posterior probability close to 1, associations with no support a probability close to 0.5 (corresponding to a regression coefficient centered around 0). The five predicted HAMs with top posterior probabilities (all $\ge 0.89$) have all been experimentally confirmed. There is only one outlier with posterior probability 0.75 (P89T and B*37).
 
 \begin{table}[h!]
   \caption{List of HAMs predicted Fisher's exact test (FET). In the last column a ``+'' marks experimental confirmation and a ``-'' a failed confirmation. Column ``post.prob.'' shows the corresponding posterior probabilities for positive associations computed with HAMdetector.}
@@ -376,20 +376,15 @@ For HAMdetector, we use in Table~\ref{tab:false-positives} the posterior probabi
 
 \section{Discussion}
 
-We have presented HAMdetector, a Bayesian model to identify HLA-associated mutations in a multiple sequence alignment. We propose to use models that include as much information as possible and have shown that including sparsity and epitope prediction software can achieve better performance than existing methods. The logistic regression backbone can be easily extended, which allows the model to also be used in other contexts, for example in identifying associations between sequence data and other features.
+HAMdetector follows a general paradigm of Bayesian modelling, namely to map all information that is available about a system of interest onto a probabilistic model, and then to apply Bayesian inference to learn about probable parameter values of that model, e.g.\ about $\beta_{jk}$, the association of HLA $j$ with replacement $k$. The more relevant information we infuse into the model, the sharper the inference. As HAMdetector includes an unprecedented amount of relevant information, it is only natural that it outperforms other methods.
 
-If the quality of the prediction is the same for all viruses, as it appears to be in our results, this method can be used to probe the frequency of HLA immune escape across different viruses.
+We have demonstrated that the logistic regression backbone is a platform that can be extended by model components that contribute new information. We have selected such modules guided by widely accepted knowledge, such as phylogeny or epitope location. However, even knowledge that is rarely stated explicitly may be helpful in inference, as in the case of sparsity of HLA associations. Since the included knowledge is generic for interactions of variable viruses with CTL immunity, HAMdetector performance does not depend on the virus.
 
-In further research we plan to use HAMdetector to study circulating recombinant forms in HIV. One possible explanation for the occurrence of these recombinant forms is improved fitness by evading several immune epitopes at once.
+Yet, HAMdetector is far from perfect. For instance the outlier in Table \ref{tab:false-positives} could point to missing information in HAMdetector. Another deficiency is that it currently works only with two-digit HLA alleles. We are currently exploring models for 4-digit HLA alleles that exploit partial pooling so that we can attenuate effects of the increased data fragmentation.
 
-While our model is an improvement over existing methods, a further addition that we plan to implement is partial pooling across 4-digit HLA alleles. It has recently been appreciated that binding specificities can vary drastically across  HLA alleles from the same allele group. For predicting HLA associated mutations, there has consequently been a shift to use 4-digit resolution data whenever available. 
+Another extension of our model would be to better account for phylogenetic uncertainty by using a Bayesian method to estimate a posterior distribution over possible tree topologies. The uncertainty over the tree topologies and the underlying parameters of the phylogenetic model would then propagate into uncertainty of the estimated probabilities \(P(y_{ik}=1|\Psi)\).
 
-This is not without downsides however, because overall, binding specificities are more similar for alleles in the same group, and, therefore, treating them as completely separate might unnecessarily fragment the available data.
-
-In Bayesian statistics, it is not required to chose one extreme or the other, With partial pooling, estimates from the same allele group do share some information across each other, but they are also allowed to vary if necessary.
-Therefore, implementing partial pooling might be another possibility to further increase the reliability of computational methods to study HLA escape.
-
-A straightforward extension of our model would be to also account for these sources of uncertainty, for example by using a Bayesian method to estimate a posterior distribution over possible tree topologies. The uncertainty over the tree topology and the underlying parameters of the phylogenetic model would then propagate into uncertainty of the estimated probabilities \(P(y_{ik}=1|\Psi)\). However, in order to not increase the runtime of the model further we use standard maximum likelihood estimates and then include these in a way that additionally allows for measurement error.
+However, the good performance of the current version of HAMdetector makes it already a valuable tool for the study of interactions between viruses and T cell immunity.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %
