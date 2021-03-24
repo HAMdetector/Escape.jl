@@ -22,7 +22,7 @@
 \DeclareOption{noinfo}{\PassOptionsToPackage{noinfo}{crop}}
 \DeclareOption{final}{\global\@finaltrue}
 
-\ExecuteOptions{b4paper,crop,centre,info}
+\ExecuteOptions{b4paper,centre,info} %manually removed crop package
 
 \ProcessOptions
 
