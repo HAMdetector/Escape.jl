@@ -262,7 +262,7 @@
 @Article{Fisher1922,
   author    = {R. A. Fisher},
   journal   = {Journal of the Royal Statistical Society},
-  title     = {On the Interpretation of \Chi\textsuperscript{2} from Contingency Tables, and the Calculation of P},
+  title     = {On the Interpretation of Chi2 from Contingency Tables, and the Calculation of P},
   year      = {1922},
   month     = {jan},
   number    = {1},
@@ -375,7 +375,8 @@
 }
 
 @Book{immunology2018editors,
-  publisher = {Los Alamos National Laboratory},
+  editor    = {Karina Yusim and Elizabeth-Sharon David-Fung and Bette T. M. Korber and Christian Brander and Dan Barouch and Rob de Boer and Barton F. Haynes and Richard Koup and John P. Moore and Bruce D. Walker and David I. Watkins},
+  publisher = {Los Alamos National Laboratory, Theoretical Biology and Biophysics, Los Alamos, New Mexico},
   title     = {HIV Molecular Immunology},
   year      = {2018},
 }
@@ -418,7 +419,10 @@
 }
 
 @Manual{Stan2021,
-  title = {Stan Development Team. 2021. Stan Modeling Language Users Guide and Reference Manual, 2.23. https://mc-stan.org},
+  title  = {Stan Modeling Language Users Guide and Reference Manual, 2.23. https://mc-stan.org},
+  author = {{Stan Development Team}},
+  year   = {2021},
+  url    = {https://mc-stan.org},
 }
 
 @Article{Kloverpris2016,
@@ -656,7 +660,7 @@
 @Article{Miyahira1995,
   author    = {Yasushi Miyahira and Kenichiro Murata and Dolores Rodriguez and Juan R. Rodriguez and Mariano Esteban and Mauricio M. Rodrigues and Fidel Zavala},
   journal   = {Journal of Immunological Methods},
-  title     = {Quantification of antigen specific {CD}8$\mathplus$ T cells using an {ELISPOT} assay},
+  title     = {Quantification of antigen specific {CD}8+ T cells using an {ELISPOT} assay},
   year      = {1995},
   month     = {apr},
   number    = {1},
@@ -694,7 +698,7 @@
 @Article{Appay2002,
   author    = {Victor Appay and Sarah L Rowland-Jones},
   journal   = {Journal of Immunological Methods},
-  title     = {The assessment of antigen-specific {CD}8$\mathplus$ T cells through the combination of {MHC} class I tetramer and intracellular staining},
+  title     = {The assessment of antigen-specific {CD}8+ T cells through the combination of {MHC} class I tetramer and intracellular staining},
   year      = {2002},
   month     = {oct},
   number    = {1},
@@ -728,6 +732,204 @@
   volume    = {274},
   doi       = {10.1126/science.274.5284.94},
   publisher = {American Association for the Advancement of Science ({AAAS})},
+}
+
+@article{Bronke2013,
+author = {Bronke, C. and Almeida, C. M. and McKinnon, E. and Roberts, S. G. and Keane, N. M. and Chopra, A. and Carlson, J. M. and Heckerman, D. and Mallal, S. and John, M.},
+title = {{HIV escape mutations occur preferentially at HLA-binding sites of CD8 T-cell epitopes.}},
+journal = {{AIDS}},
+year = {2013},
+volume = {27},
+pages = {899-905},
+doi = {10.1097/QAD.0b013e32835e1616}
+}
+
+@article{Mei2020,
+author = {Mei, S. and Li, F. and Leier, A. and Marquez-Lago, T. T. and Giam, K. and Croft, N. P. and Akutsu, T. and Smith, A. I. and Li, J. and Rossjohn, J. and Purcell, A. W. and Song, J.},
+title = {{A comprehensive review and performance evaluation of bioinformatics tools for HLA class I peptide-binding prediction.}},
+journal = {{Brief. Bioinformatics}},
+year = {2020},
+volume = {21},
+pages = {1119-1135},
+doi = {10.1093/bib/bbz051}
+}
+
+@article{Vita2019,
+author = {Vita, R. and Mahajan, S. and Overton, J. A. and Dhanda, S. K. and Martini, S. and Cantrell, J. R. and Wheeler, D. K. and Sette, A. and Peters, B.},
+title = {{The Immune Epitope Database (IEDB): 2018 update.}},
+journal = {{Nucleic Acids Res.}},
+year = {2019},
+volume = {47},
+pages = {D339-D343},
+doi = {10.1093/nar/gky1006}
+}
+
+@Article{Francke1977,
+  author    = {U. Francke and M. A. Pellegrino},
+  journal   = {Proceedings of the National Academy of Sciences},
+  title     = {Assignment of the major histocompatibility complex to a region of the short arm of human chromosome 6.},
+  year      = {1977},
+  month     = {mar},
+  number    = {3},
+  pages     = {1147--1151},
+  volume    = {74},
+  doi       = {10.1073/pnas.74.3.1147},
+  publisher = {Proceedings of the National Academy of Sciences},
+}
+
+@Article{Milicic2005,
+  author    = {Anita Milicic and David A. Price and Peter Zimbwa and Bruce L. Booth and Helen L. Brown and Philippa J. Easterbrook and Kara Olsen and Nicola Robinson and Uzi Gileadi and Andrew K. Sewell and Vincenzo Cerundolo and Rodney E. Phillips},
+  journal   = {The Journal of Immunology},
+  title     = {{CD}8+ T Cell Epitope-Flanking Mutations Disrupt Proteasomal Processing of {HIV}-1 Nef},
+  year      = {2005},
+  month     = {sep},
+  number    = {7},
+  pages     = {4618--4626},
+  volume    = {175},
+  doi       = {10.4049/jimmunol.175.7.4618},
+  publisher = {The American Association of Immunologists},
+}
+
+@Article{Gall2007,
+  author    = {Sylvie Le Gall and Pamela Stamegna and Bruce D. Walker},
+  journal   = {Journal of Clinical Investigation},
+  title     = {Portable flanking sequences modulate {CTL} epitope processing},
+  year      = {2007},
+  month     = {nov},
+  number    = {11},
+  pages     = {3563--3575},
+  volume    = {117},
+  doi       = {10.1172/jci32047},
+  publisher = {American Society for Clinical Investigation},
+}
+
+@Article{Ruhl2011,
+  author    = {M. Ruhl and P. Chhatwal and H. Strathmann and T. Kuntzen and D. Bankwitz and K. Skibbe and A. Walker and F. M. Heinemann and P. A. Horn and T. M. Allen and D. Hoffmann and T. Pietschmann and J. Timm},
+  journal   = {Journal of Virology},
+  title     = {Escape from a Dominant {HLA}-B{\ast}15-Restricted {CD}8 T Cell Response against Hepatitis C Virus Requires Compensatory Mutations outside the Epitope},
+  year      = {2011},
+  month     = {nov},
+  number    = {2},
+  pages     = {991--1000},
+  volume    = {86},
+  doi       = {10.1128/jvi.05603-11},
+  publisher = {American Society for Microbiology},
+}
+
+@Article{Piironen2016,
+  author       = {Juho Piironen and Aki Vehtari},
+  title        = {On the Hyperprior Choice for the Global Shrinkage Parameter in the Horseshoe Prior},
+  year         = {2017},
+  abstract     = {The horseshoe prior has proven to be a noteworthy alternative for sparse Bayesian estimation, but as shown in this paper, the results can be sensitive to the prior choice for the global shrinkage hyperparameter. We argue that the previous default choices are dubious due to their tendency to favor solutions with more unshrunk coefficients than we typically expect a priori. This can lead to bad results if this parameter is not strongly identified by data. We derive the relationship between the global parameter and the effective number of nonzeros in the coefficient vector, and show an easy and intuitive way of setting up the prior for the global parameter based on our prior beliefs about the number of nonzero coefficients in the model. The results on real world data show that one can benefit greatly -- in terms of improved parameter estimates, prediction accuracy, and reduced computation time -- from transforming even a crude guess for the number of nonzero coefficients into the prior for the global parameter using our framework.},
+  date         = {2016-10-18},
+  eprint       = {1610.05559},
+  eprintclass  = {stat.ME},
+  eprinttype   = {arXiv},
+  file         = {:http\://arxiv.org/pdf/1610.05559v2:PDF},
+  journaltitle = {Proceedings of the 20th International Conference on Artificial Intelligence and Statistics, PMLR 54:905-913, 2017},
+  keywords     = {stat.ME},
+}
+
+@Book{gelman2013bayesian,
+  author    = {Gelman, Andrew and Carlin, John B and Stern, Hal S and Dunson, David B and Vehtari, Aki and Rubin, Donald B},
+  publisher = {CRC press},
+  title     = {Bayesian data analysis},
+  year      = {2013},
+}
+
+@Article{Betancourt2017a,
+  author      = {Michael Betancourt},
+  title       = {A Conceptual Introduction to Hamiltonian Monte Carlo},
+  year        = {2017},
+  abstract    = {Hamiltonian Monte Carlo has proven a remarkable empirical success, but only recently have we begun to develop a rigorous understanding of why it performs so well on difficult problems and how it is best applied in practice. Unfortunately, that understanding is confined within the mathematics of differential geometry which has limited its dissemination, especially to the applied communities for which it is particularly important. In this review I provide a comprehensive conceptual account of these theoretical foundations, focusing on developing a principled intuition behind the method and its optimal implementations rather of any exhaustive rigor. Whether a practitioner or a statistician, the dedicated reader will acquire a solid grasp of how Hamiltonian Monte Carlo works, when it succeeds, and, perhaps most importantly, when it fails.},
+  date        = {2017-01-10},
+  eprint      = {1701.02434},
+  eprintclass = {stat.ME},
+  eprinttype  = {arXiv},
+  file        = {:http\://arxiv.org/pdf/1701.02434v2:PDF},
+  keywords    = {stat.ME},
+}
+
+@Article{brumme2009hla,
+  author    = {Brumme, Zabrina L and John, Mina and Carlson, Jonathan M and Brumme, Chanson J and Chan, Dennison and Brockman, Mark A and Swenson, Luke C and Tao, Iris and Szeto, Sharon and Rosato, Pamela and others},
+  journal   = {PloS one},
+  title     = {HLA-associated immune escape pathways in HIV-1 subtype B Gag, Pol and Nef proteins},
+  year      = {2009},
+  number    = {8},
+  pages     = {e6687},
+  volume    = {4},
+  publisher = {Public Library of Science},
+}
+
+@Article{Brumme2007,
+  author    = {Zabrina L Brumme and Chanson J Brumme and David Heckerman and Bette T Korber and Marcus Daniels and Jonathan Carlson and Carl Kadie and Tanmoy Bhattacharya and Celia Chui and James Szinger and Theresa Mo and Robert S Hogg and Julio S. G Montaner and Nicole Frahm and Christian Brander and Bruce D Walker and P. Richard Harrigan},
+  journal   = {{PLoS} Pathogens},
+  title     = {Evidence of Differential {HLA} Class I-Mediated Viral Evolution in Functional and Accessory/Regulatory Genes of {HIV}-1},
+  year      = {2007},
+  month     = {jul},
+  number    = {7},
+  pages     = {e94},
+  volume    = {3},
+  doi       = {10.1371/journal.ppat.0030094},
+  editor    = {Richard A Koup},
+  publisher = {Public Library of Science ({PLoS})},
+}
+
+@Article{Brumme2008,
+  author    = {Zabrina L Brumme and Iris Tao and Sharon Szeto and Chanson J Brumme and Jonathan M Carlson and Dennison Chan and Carl Kadie and Nicole Frahm and Christian Brander and Bruce Walker and David Heckerman and P Richard Harrigan},
+  journal   = {{AIDS}},
+  title     = {Human leukocyte antigen-specific polymorphisms in {HIV}-1 Gag and their association with viral load in chronic untreated infection},
+  year      = {2008},
+  month     = {jul},
+  number    = {11},
+  pages     = {1277--1286},
+  volume    = {22},
+  doi       = {10.1097/qad.0b013e3283021a8c},
+  publisher = {Ovid Technologies (Wolters Kluwer Health)},
+}
+
+@Misc{John2008,
+  author  = {John, M and Heckerman, D and Park, L and Gaudieri, S and Chopra, A},
+  title   = {Genome-wide HLA-associated Selection in HIV-1 and Protein-specific Correlations with Viral Load: An ACTG5142. 15th Conference on Retroviruses and Opportunistic Infections (CROI)(Abstract 312)},
+  year    = {2008},
+  address = {Boston, MA},
+}
+
+@Article{haas2003multi,
+  author    = {Haas, David W and Wilkinson, Grant R and Kuritzkes, Daniel R and Richman, Douglas D and Nicotera, Janet and Mahon, Laura F and Sutcliffe, Cara and Siminski, Sue and Andersen, Janet and Coughlin, Kristine and others},
+  journal   = {HIV clinical trials},
+  title     = {A multi-investigator/institutional DNA bank for AIDS-related human genetic studies: AACTG Protocol A5128},
+  year      = {2003},
+  number    = {5},
+  pages     = {287--300},
+  volume    = {4},
+  publisher = {Taylor \& Francis},
+}
+
+@Article{Karimzadeh2018,
+  author    = {Hadi Karimzadeh and Muthamia M. Kiraithe and Anna D. Kosinska and Manuel Glaser and Melanie Fiedler and Valerie Oberhardt and Elahe Salimi Alizei and Maike Hofmann and Juk Yee Mok and Melanie Nguyen and Wim J. E. van Esch and Bettina Budeus and Jan Grabowski and Maria Homs and Antonella Olivero and Hossein Keyvani and Francisco Rodr{\'{\i}}guez-Fr{\'{\i}}as and David Tabernero and Maria Buti and Andreas Heinold and Seyed Moayed Alavian and Tanja Bauer and Julian Schulze zur Wiesch and Bijan Raziorrouh and Daniel Hoffmann and Antonina Smedile and Mario Rizzetto and Heiner Wedemeyer and Jörg Timm and Iris Antes and Christoph Neumann-Haefelin and Ulrike Protzer and Michael Roggendorf},
+  journal   = {Journal of Virology},
+  title     = {Amino Acid Substitutions within {HLA}-B*27-Restricted T Cell Epitopes Prevent Recognition by Hepatitis Delta Virus-Specific {CD}8+ T Cells},
+  year      = {2018},
+  month     = {apr},
+  number    = {13},
+  pages     = {e01891--17},
+  volume    = {92},
+  doi       = {10.1128/jvi.01891-17},
+  editor    = {J.-H. James Ou},
+  publisher = {American Society for Microbiology},
+}
+
+@Article{Lumley2016,
+  author    = {Sheila Lumley and Howard Noble and Martin J. Hadley and Liz Callow and Amna Malik and Yi Yi Chua and Owen J. Duffey and Natalia Grolmusova and Arvind Kumar and Samuel Ravenscroft and Jonathan I. Spencer and Christoph Neumann-Haefelin and Robert Thimme and Monique Andersson and Paul Klenerman and Eleanor Barnes and Philippa C. Matthews},
+  journal   = {Wellcome Open Research},
+  title     = {Hepitopes: A live interactive database of {HLA} class I epitopes in hepatitis B virus},
+  year      = {2016},
+  month     = {nov},
+  pages     = {9},
+  volume    = {1},
+  doi       = {10.12688/wellcomeopenres.9952.1},
+  publisher = {F1000 Research Ltd},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}
