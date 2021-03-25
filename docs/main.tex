@@ -5,6 +5,8 @@
 \appnotes{Manuscript Category}
 \usepackage{soul}
 \usepackage[paper=b4paper, layout=b4paper]{geometry}
+\usepackage{float}
+% \usepackage[section]{placeins}
 
 \begin{document}
 \firstpage{1}
@@ -33,7 +35,7 @@ online.}
 
 
 \maketitle
-
+\sloppy
 \section{Introduction}
 \subsection{The HLA system}
 
@@ -263,7 +265,7 @@ For a standard officie computer, run times of HAMdetector on the smaller HDV dat
 \subsection{Posterior predictive checks}
 The model yields well-calibrated posterior predictive probabilities of replacements. This is exemplified in Figure~\ref{fig:calibration} for HBV core protein, but also holds true for the other datasets (Supplementary Figures ...-...).
 
-\begin{figure}[!ht]
+\begin{figure}
  \includegraphics[width=1.0\linewidth]{plots/phylogeny_calibration.pdf}  
   \caption{Calibration plot for the HBV core protein.}
   \label{fig:calibration}
@@ -277,20 +279,22 @@ The model yields well-calibrated posterior predictive probabilities of replaceme
 %For each model, all evaluated replacements are ranked by decreasing confidence of being an HLA associated mutation. That is, for Bayesian models we calculate the probability of the corresponding regression coefficient exceeding zero \(P(\beta_{HLA} > 0)\), for Fisher's exact test we sort HLA allele - replacement pairs by increasing p-values and for the Phylogenetic Dependency Network, we rank the associations by increasing q-values.
 %Then, a list of known epitopes is used to create a plot of the cumulative number of replacements inside the boundary of a known epitope vs. the corresponding rank. The underlying assumption for this kind of model check is that we expect to see an enrichment of replacements that lie inside the region of known epitopes and that this enrichment is stronger for better performing models.
 
-The predictions of all tested models are strongly enriched in epitopes over baselines, irrespective of dataset (Fig.~\ref{fig:comparison} for HBe protein and Supplementary Figures \hl{XXX-YYY} for other datasets). For the best ranked HAMs, Fisher's exact test performs about as well as the HAMdetector backbone logistic regression model (model 1 in Fig.~\ref{fig:comparison}). Each of the following three model stages of HAMdetector increases HAM enrichment further, independently of the dataset.
-The horseshoe prior alone (model 2) is a drastic improvement over model 1, even though it does not include any external information. The logistic regression model with horseshoe prior works roughly as well as the Phylogenetic Dependency Network \cite{Carlson2008}, which includes much more information. Note that the line for the Phylogenetic Dependency Network is shorter because it only outputs associations with a q-value lower than 0.2 by default. Model 3 with its additional inclusion of phylogeny has higher enrichment than model 2, and finally, the full model 4 with the inclusion of epitope prediction leads to a further improvement. Note that model 4 only uses epitope \textit{prediction} software and does not use any information of experimentally confirmed epitopes. These are here only used for model evaluation.
+The predictions of all tested models are strongly enriched in epitopes over baselines, irrespective of dataset (Fig.~\ref{fig:comparison} for HBe protein and Supplementary Figures ...-... for other datasets). For the best ranked HAMs, Fisher's exact test performs about as well as the HAMdetector backbone logistic regression model (model~1 in Fig.~\ref{fig:comparison}). Each of the following three model stages of HAMdetector increases HAM enrichment further, independently of the dataset.
+The horseshoe prior alone (model~2) is a drastic improvement over model~1, even though it does not include any external information. The logistic regression model with horseshoe prior works roughly as well as the Phylogenetic Dependency Network \cite{Carlson2008}, which includes much more information. Note that the line for the Phylogenetic Dependency Network is shorter because it only outputs associations with a q-value lower than 0.2 by default. Model~3 with its additional inclusion of phylogeny has higher enrichment than model~2, and finally, the full model~4 with the inclusion of epitope prediction leads to a further improvement. Note that model~4 only uses epitope \textit{prediction} software and does not use any information of experimentally confirmed epitopes. These are here only used for model evaluation.
 
-\begin{figure}[ht!]
-  \includegraphics[width=1\linewidth]{plots/comparison.pdf}
-  \caption{HAM enrichment plot for HBe protein: number $N_e$ of associations inside the boundary of known epitopes vs.\ rank $r$. PhyloD: Phylogenetic Dependency Network; model 1: simple logistic regression model with broad Student-t priors; model 2: logistic regression model with horseshoe prior; model 3: logistic regression model with horseshoe prior and phylogeny; model 4: full model with epitope prediction. Gray lines are HAM enrichment curves for random permutations of the list of HLA allele - replacement pairs and act as baselines.}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\linewidth]{plots/HBe.pdf}
+  \caption{HAM enrichment plot for HBe protein: number $N_e$ of associations inside the boundary of known epitopes vs.\ rank $r$. D: Phylogenetic Dependency Network; F: Fisher's exact test; 1: simple logistic regression model with broad Student-t priors; 2: logistic regression model with horseshoe prior; 3: logistic regression model with horseshoe prior and phylogeny; 4: full model with epitope prediction. Unannotated gray lines at the bottom of the graph are HAM enrichment curves for random permutations of the list of HLA allele - replacement pairs and act as baselines.}
   \label{fig:comparison}
 \end{figure}
 
 The Bayesian approach lends itself to addition of prior knowledge, and it is not too surprising that exploiting this feature to incorporate information from phylogeny or epitope prediction improves HAM detection. It may be more surprising that the sparsifying horseshoe prior has such an impact. However, this is in principle the same mechanism as for the other information components: it is known that HAMs are sparse per HLA allele, and therefore supplying this information to the inference improves predictions. Figure~\ref{fig:horseshoe-comparison} illustrates the effect of the sparsifying prior with a concrete example, the replacement 11D in HIV integrase (Arevir dataset). There is no evidence for an association of HLA-A*01 with this replacement, whereas for HLA-B*44 the data is consistent with a strong association.  The horseshoe prior has the effect of shrinking towards 0 specifically those regression coefficients with weak evidence of an association (A*01 in Fig.~\ref{fig:horseshoe-comparison}). This reduces the standard error for the remaining coefficients, leading in our example to narrowed histogram for the association with B*44 in the model with horseshoe prior.
 
 \begin{figure}
-  \includegraphics[width=1\linewidth]{plots/without_horseshoe.pdf}
-  \includegraphics[width=1\linewidth]{plots/with_horseshoe.pdf}
+  \centering
+  \includegraphics[width=0.8\linewidth]{plots/without_horseshoe.pdf}
+  \includegraphics[width=0.8\linewidth]{plots/with_horseshoe.pdf}
   \caption{Marginal posterior distributions of regression coefficients for the association of replacement 11D of the HIV integrase with HLA alleles A*01 and B*44. Top half: inferred with logistic regression model, bottom half: inferred with logistic regression with sparsifying horseshoe prior.}
   \label{fig:horseshoe-comparison}
 \end{figure}
@@ -300,7 +304,7 @@ The Bayesian approach lends itself to addition of prior knowledge, and it is not
 
 To quantify the ability of the four different model stages of HAMdetector to generalize to unseen cases, we computed the ELPD with Pareto-smoothed leave-one-out cross-validation. Table \ref{loo} shows results for the HBe protein of the HBV dataset in terms of ELPD changes with each new model stage. Each new model stage adds ELPD, i.e.\ is better at generalizing than the simpler model stages.
 
-\begin{table}[h!]
+\begin{table}
   \renewcommand{\arraystretch}{1.3}
   \centering
   \caption{ELPD changes as HAMdetector components are added. Data computed for HBe protein of the HBV dataset. All differences in ELPD are larger than several times the estimated standard error (column \(\text{se}_\text{diff}\)), indicating that models that include more information have better predictive performance.}
@@ -323,16 +327,17 @@ Including phylogeny further improves model performance a lot, as the assumption 
 While addition of sparsity and phylogeny has an effect on all replacements and samples, epitope prediction only influences those replacements that are restricted by a given HLA allele and only those samples that are annotated with the allele. Therefore, inclusion of epitope prediction does not improve ELPD as much as inclusion of phylogeny and the sparsity assumption. However, inclusion of epitope prediction is highly useful for determining which HLA alleles are associated with a replacement, as shown in the previous section.
 
 \subsection{HAMs in HDV as test case}
-The Hepatitis D Virus (HDV) dataset \citep{Karimzadeh2019} is an excellent test case: we have (1) a set of paired HDV sequences and patient HLA alleles, (2) HAM predictions by Fisher's exact test as implemented in SeqFeatR \citep{Budeus2016}, and (3) experimental tests of the predicted HAMs for immune escape activity (IFN-\(\gamma\) production assays, \citet{Karimzadeh2019}). This allows us to see whether HAMdetector decreases the false positive rate in comparison to the simpler Fisher's exact test, and we can make \emph{bona fide} predictions on previously undetected HAMs. \hl{DaHo: zu \emph{bona fide}: können wir dazu etwas sagen? Ich erinnere mich, dass Du noch eine Reihe guter HAMs vorhergesagt hattest.}
-
+The Hepatitis D Virus (HDV) dataset \citep{Karimzadeh2019} is an excellent test case: we have (1) a set of paired HDV sequences and patient HLA alleles, (2) HAM predictions by Fisher's exact test as implemented in SeqFeatR \citep{Budeus2016}, and (3) experimental tests of the predicted HAMs for immune escape activity (IFN-\(\gamma\) production assays, \citet{Karimzadeh2019}). This allows us to see whether HAMdetector decreases the false positive rate in comparison to the simpler Fisher's exact test, and we can make \emph{bona fide} predictions on previously undetected HAMs.
 We have 15 HAMs predicted in HDV by Fisher's exact test at significance level $5\times 10^{-3}$ (Table~\ref{tab:false-positives}) as published \citep{Karimzadeh2019}. The corresponding p-values  have no clear relation to experimental confirmation, i.e.\ p-values for confirmed HAMs are not generally lower than those of non-confirmed ones.
 
-For HAMdetector, we use in Table~\ref{tab:false-positives} the posterior probability of a positive regression coefficient ($P(\beta_{jk}>0)$ as measure for the confidence in having detected a HAM. HAMs with strong support have a posterior probability close to 1, associations with no support a probability close to 0.5 (corresponding to a regression coefficient centered around 0). The five predicted HAMs with top posterior probabilities (all $\ge 0.89$) have all been experimentally confirmed. There is only one outlier with posterior probability 0.75 (P89T and B*37).
+For HAMdetector, we use in Table~\ref{tab:false-positives} the posterior probability of a positive regression coefficient ($P(\beta_{jk}>0)$ as measure for the confidence in having detected a HAM. HAMs with strong support have a posterior probability close to 1, associations with no support a probability close to 0.5 (corresponding to a regression coefficient centered around 0). The five predicted HAMs with top posterior probabilities (all $\ge 0.90$) have all been experimentally confirmed. There is only one outlier with posterior probability 0.75 (P89T and B*37).
 
+HAMdetector shows strong support for 15 replacement - allele pairs that have previously not been identified. All of them exceed the significance level of 
+$5\times 10^{-3}$ used in~\citet{Karimzadeh2019}. This shows that HAMdetector is able to identify possible HAMs that would not be detected otherwise. The most striking example for this is K43R - A*02, which using Fisher's exact test has a p-value of 0.22. While this replacement has not been experimentally verified in a IFN-\(\gamma\) production assay yet, it lies within a known A*02 epitope and thus it is highly likely that K43R conveys some form of immune escape. 
 
-\begin{table}[h!]
-  \caption{List of HAMs predicted Fisher's exact test (FET). In the last column a ``+'' marks experimental confirmation and a ``-'' a failed confirmation. Column ``post.prob.'' shows the corresponding posterior probabilities for positive associations computed with HAMdetector.}
-  \vspace{0.5cm}
+\begin{table}
+  \caption{List of HAMs predicted Fisher's exact test (FET). In the last column a ``+'' marks experimental confirmation and a ``-'' a failed confirmation. Column ``post.prob.'' shows the corresponding posterior probabilities for positive associations computed with HAMdetector. \emph{Bona fide} predictions are separated by a horizontal line. These are replacement - allele pairs we expect to to be verified in future experimental tests. The replacement annotated with a (+) lies within a known A*02 epitope.}
+  % \vspace{0.5cm}
   \begin{tabular}{c|c|c|c|c}
   replacement & allele  & p-value (FET) & post.~prob. & confirmed \\
   \hline
@@ -364,16 +369,26 @@ For HAMdetector, we use in Table~\ref{tab:false-positives} the posterior probabi
   D46E & B*57 & 0.0190 & 0.91 & ? \\
   R88K & A*68 & 0.0123 & 0.91 & ? \\
   T149P & B*52 & 0.0281 & 0.91 & ? \\
-  K43R & A*02 & 0.2158 & 0.90 & ? \\
+  K43R & A*02 & 0.2158 & 0.90 & (+) \\
   N22S & B*08 & 0.0405 & 0.90 & ? \\
   \end{tabular}
   \label{tab:false-positives}
  \end{table}
 
  \subsection{Linkage disequilibrium}
- 
- \hl{DaHo: bitte Beispiel mit Linkage Disequilibrium zeigen}
 
+ Table~\ref{tab:false-positives} shows that for 3 of the false positives identified with Fisher's exact test, HAMdetector identifies associations with the same replacement but a different allele (P49L - B*13 instead of P49L - A*30; K43R - A*02 instead of K43R - B*13; and D33E - B*13 instead of D33E - A*03).
+ One possible explanation for this observation is HLA-Linkage disequilibrium and accordingly correlation between HLA alleles in the dataset due to random sampling variation.
+Indeed, out of the 12 times P49L is observed in sequences annotated with A*30, B*13 is also present in 5 of those cases (Spearman's rank correlation coefficient \(\rho = 0.5\)). A similar observation can be done for K43R and D33E, albeit the correlation between the respective alleles is much weaker.
+
+\begin{figure}
+  \includegraphics[width=1.1\linewidth]{plots/P49L_combined.pdf}
+  \caption{Marginal posteriors for the regression coefficients of A*30 and B*13 for replacement P49L. The association between P49L and A*30 identified by Fisher's exact test turned out to be a false positive.}
+  \label{fig:linkage}
+\end{figure}
+
+Figure~\ref{fig:linkage} shows regression coefficients of the HLA alleles A*30 and B*13 for replacement P49L. When using a simple logistic regression model without any additions (model~1), both A*30 and B*13 show medium evidence of being associated with replacement P49L. However, when also taking phylogeny into account and using a sparsity-promoting prior (model~3), both regression coefficients get shrunk to 0 because the association is not strongly enough identified by the data alone.
+Using epitope prediction as an additional source of information (model~4) allows to disentangle the association of the correlated alleles with P49L and identify B*13 as associated with P49L. The false-positive association between P49L and A*30 remains being shrunk towards 0.  
 \section{Discussion}
 
 HAMdetector follows a general paradigm of Bayesian modelling, namely to map all information that is available about a system of interest onto a probabilistic model, and then to apply Bayesian inference to learn about probable parameter values of that model, e.g.\ about $\beta_{jk}$, the association of HLA $j$ with replacement $k$. The more relevant information we infuse into the model, the sharper the inference. As HAMdetector includes an unprecedented amount of relevant information, it is only natural that it outperforms other methods.
@@ -403,8 +418,7 @@ However, the good performance of the current version of HAMdetector makes it alr
 
 
 %\section*{Acknowledgements}
-
-
+% \FloatBarrier
 \section*{Funding}
 
 This work has been supported by Deutsche Forschungsgemeinschaft (grant HO 1582/10-1).\vspace*{-12pt}
