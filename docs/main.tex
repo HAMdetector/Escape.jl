@@ -334,12 +334,11 @@ We have 15 HAMs predicted in HDV by Fisher's exact test at significance level $5
 
 For HAMdetector, we use in Table~\ref{tab:false-positives} the posterior probability of a positive regression coefficient ($P(\beta_{jk}>0)$ as measure for the confidence in having detected a HAM. HAMs with strong support have a posterior probability close to 1, associations with no support a probability close to 0.5 (corresponding to a regression coefficient centered around 0). The five predicted HAMs with top posterior probabilities (all $\ge 0.90$) have all been experimentally confirmed. There is only one outlier with posterior probability 0.75 (P89T and B*37).
 
-HAMdetector shows strong support for 15 replacement - allele pairs that have previously not been identified. All of them exceed the significance level of 
-$5\times 10^{-3}$ used in~\citet{Karimzadeh2019}. This shows that HAMdetector is able to identify possible HAMs that would not be detected otherwise. The most striking example for this is K43R - A*02, which using Fisher's exact test has a p-value of 0.22. While this replacement has not been experimentally verified in a IFN-\(\gamma\) production assay yet, it lies within a known A*02 epitope and thus it is highly likely that K43R conveys some form of immune escape. 
+HAMdetector strongly supports 15 replacement - allele pairs that have previously not been identified (question marks in last column of Table~\ref{tab:false-positives}). All of them have association probabilities of 0.90 or higher, while their p-values from Fisher's exact test exceed the significance level of $5\times 10^{-3}$ used in~\citet{Karimzadeh2019}. Given the superior performance of HAMdetector on the experimentally tested HAMs, these 15 bona fide predictions suggest that most true HAMs may still to be discovered. A striking example is K43R - A*02 with a p-value of 0.22 in Fisher's exact test but a HAM-probability of 0.90 and location inside an A*02 restricted epitope. 
 
-\begin{table}
-  \caption{List of HAMs predicted Fisher's exact test (FET). In the last column a ``+'' marks experimental confirmation and a ``-'' a failed confirmation. Column ``post.prob.'' shows the corresponding posterior probabilities for positive associations computed with HAMdetector. \emph{Bona fide} predictions are separated by a horizontal line. These are replacement - allele pairs we expect to to be verified in future experimental tests. The replacement annotated with a (+) lies within a known A*02 epitope.}
-  % \vspace{0.5cm}
+\begin{table}[h!]
+  \caption{List of HAMs predicted by Fisher's exact test (FET). In the last column ``+'' and ``-'' mark experimentally confirmed or rejected HAMs, respectively; ``?'' below the horizontal line indicate untested bona fide predictions. ``post.prob.'' are posterior probabilities for positive associations computed with HAMdetector.}
+  \vspace{0.5cm}
   \begin{tabular}{c|c|c|c|c}
   replacement & allele  & p-value (FET) & post.~prob. & confirmed \\
   \hline
@@ -371,7 +370,7 @@ $5\times 10^{-3}$ used in~\citet{Karimzadeh2019}. This shows that HAMdetector is
   D46E & B*57 & 0.0190 & 0.91 & ? \\
   R88K & A*68 & 0.0123 & 0.91 & ? \\
   T149P & B*52 & 0.0281 & 0.91 & ? \\
-  K43R & A*02 & 0.2158 & 0.90 & (+) \\
+  K43R & A*02 & 0.2158 & 0.90 & ? \\
   N22S & B*08 & 0.0405 & 0.90 & ? \\
   \end{tabular}
   \label{tab:false-positives}
@@ -379,18 +378,15 @@ $5\times 10^{-3}$ used in~\citet{Karimzadeh2019}. This shows that HAMdetector is
 
  \subsection{Linkage disequilibrium}
 
- Table~\ref{tab:false-positives} shows that for 3 of the false positives identified with Fisher's exact test, HAMdetector identifies associations with the same replacement but a different allele (P49L - B*13 instead of P49L - A*30; K43R - A*02 instead of K43R - B*13; and D33E - B*13 instead of D33E - A*03).
- One possible explanation for this observation is HLA-Linkage disequilibrium and accordingly correlation between HLA alleles in the dataset due to random sampling variation.
-Indeed, out of the 12 times P49L is observed in sequences annotated with A*30, B*13 is also present in 5 of those cases (Spearman's rank correlation coefficient \(\rho = 0.5\)). A similar observation can be done for K43R and D33E, albeit the correlation between the respective alleles is much weaker.
+ For three of the false positives proposed by Fisher's exact test (Table~\ref{tab:false-positives}), HAMdetector identifies associations with the same replacement but a different allele (P49L - B*13 instead of P49L - A*30; K43R - A*02 instead of K43R - B*13; and D33E - B*13 instead of D33E - A*03). One possible explanation for this observation is HLA linkage disequilibrium \hl{DaHo: and accordingly correlation between HLA alleles in the dataset due to random sampling variation. (Satz etwas opak.)} Indeed, out of the 12 times P49L is observed in sequences annotated with A*30, B*13 is also present in 5 of those cases (Spearman's rank correlation coefficient \(\rho = 0.5\)). A similar observation can be made for K43R and D33E, although the correlation between the respective alleles is much weaker.
 
 \begin{figure}
   \includegraphics[width=1.1\linewidth]{plots/P49L_combined.pdf}
-  \caption{Marginal posteriors for the regression coefficients of A*30 and B*13 for replacement P49L. The association between P49L and A*30 identified by Fisher's exact test turned out to be a false positive.}
+  \caption{Marginal posteriors for the regression coefficients of A*30 (left column) and B*13 (right column) for replacement P49L with different model stages (rows).}
   \label{fig:linkage}
 \end{figure}
 
-Figure~\ref{fig:linkage} shows regression coefficients of the HLA alleles A*30 and B*13 for replacement P49L. When using a simple logistic regression model without any additions (model~1), both A*30 and B*13 show medium evidence of being associated with replacement P49L. However, when also taking phylogeny into account and using a sparsity-promoting prior (model~3), both regression coefficients get shrunk to 0 because the association is not strongly enough identified by the data alone.
-Using epitope prediction as an additional source of information (model~4) allows to disentangle the association of the correlated alleles with P49L and identify B*13 as associated with P49L. The false-positive association between P49L and A*30 remains being shrunk towards 0.  
+Figure~\ref{fig:linkage} shows regression coefficients of the HLA alleles A*30 and B*13 for replacement P49L. With the simplest logistic regression model (model~1), both A*30 and B*13 have medium evidence of being associated with replacement P49L. However, with phylogeny and sparsity-promoting prior (model~3) both regression coefficients shrink close to 0 -- the associations are not convincingly supported by the data. Using epitope prediction as additional source of information (model~4) allows to disentangle the association of the correlated alleles with P49L and identify B*13 as likely associated with P49L. The association between P49L and A*30 (predicted by Fisher's exact test) remains shrunk towards 0.  
 \section{Discussion}
 
 HAMdetector follows a general paradigm of Bayesian modelling, namely to map all information that is available about a system of interest onto a probabilistic model, and then to apply Bayesian inference to learn about probable parameter values of that model, e.g.\ about $\beta_{jk}$, the association of HLA $j$ with replacement $k$. The more relevant information we infuse into the model, the sharper the inference. As HAMdetector includes an unprecedented amount of relevant information, it is only natural that it outperforms other methods.
