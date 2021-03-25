@@ -4,6 +4,7 @@
 \access{Advance Access Publication Date: Day Month Year}
 \appnotes{Manuscript Category}
 \usepackage{soul}
+\usepackage[paper=b4paper, layout=b4paper]{geometry}
 
 \begin{document}
 \firstpage{1}
@@ -51,21 +52,7 @@ Immune escape is a driver of viral evolution in populations and patients, and th
 
 \subsection{Identifying HLA escape mutations}
 
-There are several experimental methods available to study HLA escape~\citep{Timm2004}.  \hl{DaHo: use key references, e.g. those that have introduced a technique; alternatively: cite review like articles that give an overview of several experimental methods} \hl{DaHa: see .tex comments for possible citations} However, these methods are relatively slow and costly, especially for screening purposes. A promising approach that makes efficient use of frequently available data is to combine viral genome sequencing, host HLA determination, computational identification by statistical association analysis, and targeted experimental validation~\citep{Carlson2012}.
-
-% IFN-gamma ELISPOT:
-% A  Solid-Phase Enzyme-Linked Immunospot (ELISPOT) Assay for Enumeration of Specific Antibody-Secreting Cells \citep{Czerkinsky1983}
-% Quantification of antigen specific CD8+ T cells using an ELISPOT assay \citep{Miyahira1995}
-
-% Chromium release
-% Quantitative assay of the lytic action of immune lymphoid cells on 51-Cr-labelled allogeneic target cells in vitro; inhibition by isoantibody and by drugs \citep{Brunner1968}
-
-% Intracellular cytokine staining
-% Intracellular cytokine optimization and standard operating procedure \citep{Lamoreaux2006}
-% The assessment of antigen-specific CD8+ T cells through the combination of MHC class I tetramer and intracellular staining \citep{Appay2002}
-
-% HLA tetramer staining
-% Phenotypic analysis of antigen-specific T lymphocytes \citep{Altman1996}
+There are several experimental methods available to study HLA escape~\citep{Czerkinsky1983, Brunner1968, Lamoreaux2006, Altman1996}. However, these methods are relatively slow and costly, especially for screening purposes. A promising approach that makes efficient use of frequently available data is to combine viral genome sequencing, host HLA determination, computational identification by statistical association analysis, and targeted experimental validation~\citep{Carlson2012}.
 
 As the selection pressure exerted by cytotoxic T cells depends on successful recognition of viral peptides on the cell surface and thus on binding to the HLA encoded MHC I protein, escape mutations are usually HLA allele specific and can therefore be detected as HLA allele dependent ``footprints'' in sequence alignments of viral proteins  \citep{Moore2002}, i.e.\ as HLA associated mutations (HAM) or replacements enriched in viral sequences from hosts with a specific HLA allele.
 
@@ -73,15 +60,15 @@ One way of quantifying this enrichment is Fisher's exact test~\citep{Fisher1922}
 
 Fisher's exact test is a conventional null hypothesis significance test (NHST) that generates p-values. In this case, the null hypothesis is that HLA allele \(H\) and  replacement \(R_{i}\) are independent, and the p-value is the probability of observing a deviation from independence that is at least as extreme as in the data at hand under the assumption that the null hypothesis is true.
 
-Fisher's exact test has the advantage of being fast and easy to apply~\citep{Budeus2016}, but it also has several disadvantages~\citep{Carlson2008}. The most striking one is that viral sequences share a common phylogenetic history, and,  therefore, treating sequences as independent and identically distributed samples may under- or overestimate effect sizes. In the context of hypothesis testing, this leads to increased false positive and false negative rates. \hl{There are at least two references we could cite here: Osborne2002 is the reference usually cited in this context and contains the phrase "When these assumptions are not met the results may not be trustworthy, resulting in a Type I or Type II error, \dots" It is more of a summary for psychologists though and contains some questionable advice like removing outliers for increased power. There is also Scariano1987 who looks at type I/type II errors in one-way ANOVA when independence is violated, this may be a better reference. I have not found any article on the violation of independence in fisher's exact test specifically.} \citep{Osborne2002} \citep{Scariano1987}
+Fisher's exact test has the advantage of being fast and easy to apply~\citep{Budeus2016}, but it also has several disadvantages~\citep{Carlson2008}. The most striking one is that viral sequences share a common phylogenetic history, and,  therefore, treating sequences as independent and identically distributed samples may under- or overestimate effect sizes. In the context of hypothesis testing, this leads to increased false positive and false negative rates \citep{Osborne2002, Scariano1987}.
 
-Another issue with Fisher's exact test is the genomic proximity of human HLA class I loci (on chromosome 6) leading to linkage disequilibrium -- inheritance of HLA alleles can be correlated. Therefore spurious associations can occur if associations of replacements with individual HLA alleles is tested: if HLA allele \(H_1\) is associated with an amino acid replacement \(R\) because of immune escape, but \(H_1\) is in linkage disequilibrium with allele \(H_2\), this leads to an association of \(R\) and \(H_2\), even without being an escape mutation from $H_2$.
+Another issue with Fisher's exact test is the genomic proximity of human HLA class I loci (on chromosome 6 \citep{Francke1977}) leading to linkage disequilibrium -- inheritance of HLA alleles can be correlated. Therefore, spurious associations can occur if associations of replacements with individual HLA alleles are tested: if HLA allele \(H_1\) is associated with an amino acid replacement \(R\) because of immune escape, but \(H_1\) is in linkage disequilibrium with allele \(H_2\), this leads to an association of \(R\) and \(H_2\), even without being an escape mutation from $H_2$.
 
 \citet{Carlson2008} developed the Phylogenetic Dependency Network, a method that accounts for several of the aforementioned problems, in particular phylogenetic bias and  HLA linkage disequilibrium. However, it is based on null hypothesis significance testing.
 
 \subsection{Issues with p-values for screening}
 
-There are fundamental statistical issues with p-values as screening tool~\citep{Amrhein2017}:
+There are fundamental statistical issues with p-values as a screening tool~\citep{Amrhein2017}:
 with small effect sizes and high variance between measurements, as is often the case with biological data, statistically significant results can be misleading, have the wrong direction (type S error), or greatly overestimate an effect (type M error)~\citep{Gelman2014}. Such problems are more and more appreciated in the context of the current ``replication crisis'', which describes that scientific claims with seemingly strong statistical evidence fail to replicate~\citep{Ioannidis2005, Begley:2012, Baker2016Nature-reproducibility-crisis}.
 
 These problems are exacerbated if the p-values are used for screening purposes (multiple testing problem). The probability  of  obtaining a statistically significant result increases with each additional test, even in absence of any real effect. When using p-values as a filter, it is therefore likely to obtain significant effects that are in fact not real. To circumvent this problem, a common strategy is to control the false discovery rate~\citep{Benjamini1995}. These adjustment procedures have the problem that, when performing many of such comparisons, none but the very largest effects remain.
@@ -106,13 +93,13 @@ We chose a logistic regression model as backbone because it is easily extensible
 
 where \(y_{ik}\) is the binary encoded observation of replacement $k$ in viral sequence $i$ (each observed amino acid state $k$ contributes a separate column to $y_{ik}$); \(\theta_{ik}\) is the estimated probability that we observe replacement \(k\) in sequence \(i\); \(X_{ij}\) is 1 if sequence \(i\) comes from host individual HLA allele \(j\) and 0 otherwise; $\beta_{jk}$ is the HLA regression coefficient of HLA allele \(j\) for replacement \(k\); \(D\) is the number of HLA alleles in the dataset; the logistic inverse link function transforms the linear model in parentheses to the probability scale of $\theta_{ik}$.
 
-The main parameters of interests for HAMdetector are the regression coefficients $\beta_{jk}$, as they quantify the strength of association between the occurrence of replacement \(k\) and each of the observed HLA alleles. The $\beta_{jk}$ are on the log-odds scale, i.e.\ if we go from viral sequences from hosts without HLA allele $j$ to those from hosts with $j$, the log-odds $\log (p_k/(1-p_k))$ of observing replacement \(k\) increase by addition of $\beta_{jk}$.
+The main parameters of interest for HAMdetector are the regression coefficients $\beta_{jk}$, as they quantify the strength of association between the occurrence of replacement \(k\) and each of the observed HLA alleles. The $\beta_{jk}$ are on the log-odds scale, i.e.\ if we go from viral sequences from hosts without HLA allele $j$ to those from hosts with $j$, the log-odds $\log (p_k/(1-p_k))$ of observing replacement \(k\) increase by addition of $\beta_{jk}$.
 
 % Reasoning about coefficients on the log-odds scale can sometimes be unintuitive. A useful approximation to interpret logistic regression coefficients on the probability scale is the so-called divide-by-4 rule, which means that a regression coefficient of 2 corresponds to an expected increase on the probability scale of about 2/4 = 50\%. DaHo: das gilt nur näherungsweise in der Nähe von p=0.5 (Wendepunkt) 
 
 \subsection{Inclusion of additional information}
 
-On top of the paired data of viral sequences and host HLA alleles modeled by the backbone (Eq~\ref{eq:backbone}), we extend the model to include further information of relevance to improve HAM detection, namely phylogenetic information, and predictions of epitope peptide processing and MHC I affinity, as described in the following.
+On top of the paired data of viral sequences and host HLA alleles modeled by the backbone (Eq~\ref{eq:backbone}), we extend the model to include further information of relevance to improve HAM detection, namely phylogenetic information and predictions of epitope peptide processing and MHC I affinity, as described in the following.
 
 \subsubsection{Phylogeny}
 One problem that occurs when analyzing sequence data is that species (here: viral strains) share a common phylogenetic history. Thus replacements are not independently and identically distributed, and therefore violate a common assumption of standard statistical methods. In fact, \citet{Bhattacharya2007} demonstrated the importance of correcting for the phylogenetic structure in identifying HLA associations.
@@ -120,7 +107,7 @@ One problem that occurs when analyzing sequence data is that species (here: vira
 The most popular approach in phylogeny-aware regression of binary variables is to estimate an additional multivariate normally distributed intercept, where the covariance matrix is based on the branch lengths of a given phylogenetic tree~\citep{Ives2009, Ives2014}.
 This approach turned out to be too computationally expensive in our model, hence we chose a strategy similar to the one in \citet{Carlson2008}:
 
-Consider a phylogenetic tree \(\Psi\) obtained from standard maximum likelihood methods for a given multiple sequence alignment. We are interested in estimating \(P(y_{ik}=1|\Psi)\), that is, the probability of observing the replacement \(k\) in sequence \(i\) based on the underlying phylogenetic model. A quantity that can be readily computed using phylogenetic software like RAxML-NG~\cite{Kozlov2019} is \(P(\Psi|y_{ik}=1)\). For this, we keep the tree topology fixed, annotate the tree with the binary observations \(y_{ik}\) at its leaves and optimize the branch lengths. \(P(\Psi|y_{ik}=1)\) is then the likelihood of the annotated phylogenetic tree. Similarly, we can also compute \(P(\Psi|y_{ik}=0)\) by flipping the annotation of sequence $i$ from 1 to 0 (keeping all other observations). With  $P(\Psi|y_{ik}=1)$ and $P(\Psi|y_{ik}=0)$ known and the relative frequencies of 0 an 1 as priors, we can estimate $P(y_{ik}=1|\Psi)$ by applying Bayes' theorem. The estimated probabilities based on phylogeny are then included in the model as additional intercepts (second term of logistic argument):
+Consider a phylogenetic tree \(\Psi\) obtained from standard maximum likelihood methods for a given multiple sequence alignment. We are interested in estimating \(P(y_{ik}=1|\Psi)\), that is, the probability of observing the replacement \(k\) in sequence \(i\) based on the underlying phylogenetic model. A quantity that can be readily computed using phylogenetic software like RAxML-NG~\citep{Kozlov2019} is \(P(\Psi|y_{ik}=1)\). For this, we keep the tree topology fixed, annotate the tree with the binary observations \(y_{ik}\) at its leaves and optimize the branch lengths. \(P(\Psi|y_{ik}=1)\) is then the likelihood of the annotated phylogenetic tree. Similarly, we can also compute \(P(\Psi|y_{ik}=0)\) by flipping the annotation of sequence $i$ from 1 to 0 (keeping all other observations). With  $P(\Psi|y_{ik}=1)$ and $P(\Psi|y_{ik}=0)$ known and the relative frequencies of 0 an 1 as priors, we can estimate $P(y_{ik}=1|\Psi)$ by applying Bayes' theorem. The estimated probabilities based on phylogeny are then included in the model as additional intercepts (second term of logistic argument):
 
 \begin{equation}
 \begin{aligned}
@@ -140,7 +127,7 @@ The logit transform is used because it cancels out with the logistic inverse lin
 
 As outlined earlier, escape mutations often appear as HAMs. Given the underlying mechanism, it is not surprising that escape mutations are enriched in CTL epitopes, i.e.\ in those viral peptides presented by MHC I to T cell receptors \citep{Bronke2013}. This suggests that knowledge of epitope regions can be used to boost HAM detection. Fortunately, availability of large experimental data sets \citep{Vita2019} has enabled the development of computational tools that predict with good accuracy the binding of peptides to MHC I molecules encoded by various HLA alleles \citep{Mei2020}. 
 
-Not only mutations in CTL epitopes can lead to failure of MHC I to present epitopes, but also mutations at epitope-flanking positions that interfere with pre-processing of peptides, notably proteasomal cleavage of viral proteins \hl{DaHo: citation}.
+Not only mutations in CTL epitopes can lead to failure of MHC I to present epitopes, but also mutations at epitope-flanking positions that interfere with pre-processing of peptides, notably proteasomal cleavage of viral proteins~\citep{Milicic2005, Gall2007}.
 
 In HAMdetector we use MHCFlurry 2.0~\citep{ODonnell2020} to predict epitopes that are properly processed and presented by MHC I. For this, we create an input matrix of dimensions $R\times D$, where $R$ is the number of evaluated replacements and $D$ is the number of observed HLA alleles in the dataset. The elements of this matrix are binary encoded and contain a 1 if that position is predicted to be in an epitope, and 0 otherwise. Given an amino acid sequence, MHCFlurry provides a list of possible epitopes (9-13 mers) and HLA allele pairs and calculates a rank based on comparisons with random epitope and HLA pairs. For the binarization we use the rank threshold of 0.2\% suggested by MHCFlurry.
 
@@ -148,21 +135,20 @@ We use epitope prediction as information about the expected degree of sparsity, 
 
 \begin{equation}
   \begin{aligned}
-    \lambda_{jk} &\sim \text{Cauchy}^{+}(0, \text{exp}(Z_{jk}\beta_{\text{epi}})) \\
+    \lambda_{jk} &\sim \text{Cauchy}^{+}(0, \sigma_{j}\text{exp}(Z_{jk}\beta_{\text{epi}})) \\
     \beta_{\text{epi}} &\sim \text{Normal}^{+}(1, 2),
   \end{aligned}
 \end{equation}
  
 where \(Z_{jk}\) is 1 if HLA allele \(j\) is predicted to restrict the alignment position corresponding to replacement \(k\), and 0 otherwise. The parameter \(\beta_{\text{epi}}\) governs the increase in scale of the  corresponding local shrinkage parameters. The larger the estimated values of \(\beta_{\text{epi}}\) are, the more likely it is to see non-zero regression coefficients for these HLA alleles.
 
-%\hl{DaHo: komplexer Zusammenhang von pre-processing escape und HLA; bitte besprechen}
-
 \subsubsection{Sparsity-inducing priors}
   
-Sparsity-promoting priors \citep{Piironen2017} can drastically improve predictive performance, because the model is better able to differentiate between signal and noise. These priors convey the a priori expectation that most coefficients in a regression model are close to 0, i.e.\ that non-zero coefficients are sparse. This assumption is likely correct for HLA-associated mutations, because the number of epitopes that are restricted by a given HLA allele is typically small compared to the number of all possible epitopes. If no epitope spanning a given alignment position is presented on the MHC I molecule, any apparent association between a replacement and the respective HLA allele is likely to be due to random viral sequence variation or HLA linkage disequilibrium. \hl{DaHo: Wie ist das mit compensatory mutations *außerhalb* von Epitopen? Z.B. https://jvi.asm.org/content/86/2/991}
-  
+Sparsity-promoting priors \citep{Piironen2017} can drastically improve predictive performance, because the model is better able to differentiate between signal and noise. These priors convey the a priori expectation that most coefficients in a regression model are close to 0, i.e.\ that non-zero coefficients are sparse. This assumption is likely correct for HLA-associated mutations, because the number of epitopes that are restricted by a given HLA allele is typically small compared to the number of all possible epitopes. As presentation on MHC I is a necessary condition for the HLA system to function, most associations between an HLA allele and a replacement are likely truly zero, with the confounding factors HLA linkage disequilibrium and codon covariation, e.g. in the form of compensatory mutations that lie outside an epitope~\citep{Ruhl2011}.
+
 There is a range of sparsity-promoting priors with slightly different properties. They share the common structure of placing most probability mass very close to 0, with heavy tails to accommodate the non-zero coefficients.
-For our model, we use a so-called horseshoe prior \citep{Carvalho2010}, a scale-mixture of Gaussians:
+For our model, we use the so-called regularized horseshoe prior \citep{Piironen2017}, which is an improvement of the original horseshoe prior presented by \citet{Carvalho2010}, in that it additionally allows some shrinkage for the non-zero coefficients. The original horseshoe prior is given by:
+
 \begin{equation}
   \label{eq:sparsity-prior}
   \begin{aligned}
@@ -171,12 +157,11 @@ For our model, we use a so-called horseshoe prior \citep{Carvalho2010}, a scale-
     \tau &\sim \text{Cauchy}^{+}(0, \tau_{0}),
   \end{aligned}
 \end{equation}
-where \(\beta_{jk}\) are the regression coefficients; \(\tau\) and \(\lambda_{jk}\) are the so-called global and local shrinkage parameters, respectively;, \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution; $\tau_0$ is the overall degree of sparsity.
+where \(\beta_{jk}\) are the regression coefficients; \(\tau\) and \(\lambda_{jk}\) are the so-called global and local shrinkage parameters, respectively;, \(\text{Cauchy}^{+}\) is the positively constrained Cauchy distribution; $\tau_0$ is the overall degree of sparsity. Shrinkage of the non-zero coefficients in the regularized horseshoe prior is achieved by replacing \(\lambda_{jk}^2\) with \(\tilde{\lambda}^{2}_{jk} = \frac{c_{k}^{2}\lambda_{jk}^{2}}{c_{k}^{2} + \tau_{k}^{2}\lambda_{jk}^{2}}\), where the additional parameter \(c\) governs the magnitude of shrinkage for the non-zero coefficients.
 
 With Eq~\ref{eq:sparsity-prior} the global shrinkage parameter \(\tau\) is typically very small and shrinks most of the regression coefficients close to 0, whereas the local shrinkage parameters $\lambda_{jk}$ can occasionally be very large to allow some coefficients to escape that shrinkage.
 
-The overall degree of sparsity $\tau_0$ can be chosen based on the expected number of non-zero coefficients \citep{Piironen2017}. \hl{DaHo: do we do this? How?}
-
+The overall degree of sparsity $\tau_0$ can be chosen based on the expected number of non-zero coefficients \citep{Piironen2016}.
 
 \subsection{Full model specification}
 
@@ -197,13 +182,14 @@ The full specification of the HAMdetector model is:
    \beta_{jk} &\sim \text{Normal}(0, \tau_{k}^{2}\tilde{\lambda}^{2}_{jk}) & \\
    \tilde{\lambda}^{2}_{jk} &= \frac{c_{k}^{2}\lambda_{jk}^{2}}{c_{k}^{2} + \tau_{k}^{2}\lambda_{jk}^{2}} & \\
     c_{k}^2 &\sim \text{Inv-Gamma}(3.5, 3.5) & \text{(*)} \\
-   \lambda_{jk} &\sim \text{Cauchy}^{+}(0, \sigma_{j}^2\text{exp}(Z_{jk}\beta_{\text{epi}})) & \\
+   \lambda_{jk} &\sim \text{Cauchy}^{+}(0, \sigma_{j}\text{exp}(Z_{jk}\beta_{\text{epi}})) & \\
    \tau_{k} &\sim \text{Cauchy}^{+}(0, \tau_{0k}) & \text{(*)} \\
    \tau_{0k} &= \frac{10}{D-10}\frac{2}{\sqrt{N}} & \\
   \end{aligned}
 \end{equation}
+where \(N\) is the number of available annotated sequences.
 
-The full model specification includes some aspects that were not covered in the previous sections. In particular, the overall phylogeny-weight $\gamma$ in Eq~\ref{eq:backbone} is replaced in the full model by  hierarchically modelled  \(\gamma_{k}\), which allows partial pooling across replacements (even with a global parameter \(\gamma\) the model works reasonably well). All other additions (\(\tilde{\lambda}_{jk}^{2}\) and \(\tau_{0k}\)) are taken from \citet{Piironen2017}. Briefly, the addition of  \(\tilde{\lambda}_{jk}^{2}\) allows some regularization for the non-zero coefficients and the parameterization of \(\tau_{0k}\) allows to place a prior on the expected number of non-zero coefficients.  This is particularly useful for logistic regression models, as some shrinkage helps to deal with issues of separability and collinearity that commonly occur with logistic regression models. \hl{DaHo: Bedeutung von $N$ in $\tau_{0k}$?}
+The full model specification includes some aspects that were not covered in the previous sections. In particular, the overall phylogeny-weight $\gamma$ in Eq~\ref{eq:backbone} is replaced in the full model by  hierarchically modelled  \(\gamma_{k}\), which allows partial pooling across replacements (even with a global parameter \(\gamma\) the model works reasonably well). All other additions (\(\tilde{\lambda}_{jk}^{2}\) and \(\tau_{0k}\)) are explained in detail in \citet{Piironen2017}. Briefly, the addition of  \(\tilde{\lambda}_{jk}^{2}\) allows some regularization for the non-zero coefficients and the parameterization of \(\tau_{0k}\) allows to place a prior on the expected number of non-zero coefficients.  This is particularly useful for logistic regression models, as some shrinkage helps to deal with issues of separability and collinearity that commonly occur with logistic regression models.
 
 \subsubsection{Prior justification}
 
@@ -213,18 +199,18 @@ The hierarchical mean and standard deviation of the phylogeny coefficients \(\ga
 
 The prior on $c_k^2$ implies a Student-t prior with 7 degrees of freedom and a scale of 1 on the non-zero HLA regression coefficients \(\beta_{jk}\). A Student-t prior with these parameters is a reasonable default choice for logistic regression models \citep{Piironen2017}.
 
-The value of \(\tau_{0k}\) implies 10 effective non-zero HLA regression coefficients per replacement. The rationale behind this parameterization is again outlined in \citet{Piironen2017}. The value of 10 corresponds to a generously estimated magnitude based on available HIV epitope maps \hl{DaHo: citation?}.
+The value of \(\tau_{0k}\) implies 10 effective non-zero HLA regression coefficients per replacement. The rationale behind this parameterization is again outlined in \citet{Piironen2017}. The value of 10 corresponds to a generously estimated magnitude based on available HIV epitope maps~\citep{immunology2018editors}.
 The model is also parameterized in a way that assumes an equal degree of sparsity across all alignment positions a priori. We also tried to model \(\tau_k\) hierarchically, but observed sampling issues due to the resulting unfavorable geometry of the posterior.
 
 
 \subsection{Model implementation}
-All models were implemented in Stan 2.23 \citep{Stan2021}, a probabilistic programming language and Hamiltonian Monte Carlo sampler for efficient numerical computation of posterior distributions. The Stan code is available \hl{DaHo: at ...} in two versions: One optimized for readability and one optimized for speed by utilizing Stan's multithreading and GPU capabilities. A Julia \citep{Bezanson2017} package is available \hl{DaHo: at ...} to run the model on custom data. Due to restrictions of dependencies (MHCFlurry and RAxML-ng), HAMdetector is only available on Linux. %We additionally provide Docker images to easily run the model on any operating system in a containerized environment, assuming Docker is installed. 
+All models were implemented in Stan 2.23 \citep{Stan2021}, a probabilistic programming language and Hamiltonian Monte Carlo sampler for efficient numerical computation of posterior distributions. The Stan code is available at ... in two versions: One optimized for readability and one optimized for speed by utilizing Stan's multithreading and GPU capabilities. A Julia \citep{Bezanson2017} package is available at ... to run the model on custom data. Due to restrictions of dependencies (MHCFlurry and RAxML-ng), HAMdetector is only available on Linux. %We additionally provide Docker images to easily run the model on any operating system in a containerized environment, assuming Docker is installed. 
 
 
 \subsection{Model diagnostics}
 
 \subsubsection{Convergence diagnostics}
-We use the split-\(\hat{R}\) convergence diagnostic to identify Markov chain convergence issues \citep{Gelman1992, Stan2021}. We require a value of \(\hat{R}\) below 1.01 for all model parameters. Additionally, we require that the effective sample size \(N_{\text{eff}}\) is above 500 for all model parameters and that sampling occurs without any divergent transitions \citep{Stan2021}.
+We use the split-\(\hat{R}\) convergence diagnostic to identify Markov chain convergence issues \citep{Gelman1992, gelman2013bayesian}. We require a value of \(\hat{R}\) below 1.01 for all model parameters. Additionally, we require that the effective sample size \(\text{N}_{\text{eff}}\)~\citep{Stan2021} is above 500 for all model parameters and that sampling occurs without any divergent transitions~\citep{Betancourt2017a}.
 
 \subsubsection{Posterior predictive checks}
 
@@ -243,19 +229,18 @@ Another performance measure is the ability to generalize to unseen data. To exam
 From the LOOCV we obtain the Expected Log-Predictive Density (ELPD) $\sum_{i=1}^{n}\log(\int p(y_i|\theta)p(\theta|y_{i-1})d\theta))$ for samples $i=1,\ldots,n$, $i$th observation $y_i$, data $y_{i-1}$ with $i$ left out, and model parameters $\theta$. Thus, the ELPD is the average log predictive density of the observed data points based on the leave-one-out posterior distributions. This measure has the advantage over other performance measures like classification accuracy, that it not only takes the location of the predictive distribution (the number of correct predictions) into account, but also the width, i.e.\ how confident the model is in its predictions.
 
   \subsection{Data}
- \hl{DaHo: das Material in Materials and Methods sind die Daten; die sollten hier kurz beschrieben werden, möglichst mit Referenzen}
 
 The model was fit with several data sets:
 
 \begin{itemize}
-  \item A large HIV dataset \hl{DaHo: paper?} consisting of 1383 sequences, that were kindly provided by Zabrina Brumme and collaborators and were also used in the Phylogenetic Dependency Network study~\citep{Carlson2008}. The dataset contains sequences spanning the \textit{gag}, \textit{pol}, \textit{env}, \textit{nef}, \textit{vif}, \textit{vpr}, \textit{vpu}, \textit{tat} and \textit{rev} genes.
+  \item A large HIV dataset consisting of a subset of sequences from the HOMER~\citep{Brumme2007, Brumme2008} cohort, the Western Australian HIV Cohort Study (WAHC,~\citet{Moore2002, Bhattacharya2007}) and the US AIDS Clinical Trials Group (ACTG) protocols 5142 participants~\citep{John2008} who also provided Human DNA under ACTG protocol 5128~\citep{haas2003multi} (total \(N=1383\)). These data were kindly provided by Zabrina Brumme and collaborators and were in part also used in the Phylogenetic Dependency Network study~\citep{Carlson2008}. The dataset contains sequences spanning the \textit{gag}, \textit{pol}, \textit{env}, \textit{nef}, \textit{vif}, \textit{vpr}, \textit{vpu}, \textit{tat} and \textit{rev} genes.
   \item A set of 351 HIV sequences mostly spanning the \textit{pol} gene from the Arevir database~\citep{Roomp2006}.
   \item A set of 544 Hepatitis-B-Virus sequences that were kindly provided by Jörg Timm. The dataset contains sequences of the HBe, LHBs, Pol and HBx proteins.
-  \item A set of 104 Hepatitis-D-Virus sequences containing the HDV-antigen that were kindly provided by Michael Roggendorf. \hl{DaHo: bitte von Hadi geeignetes Zitat erfragen}
+  \item A set of 104 Hepatitis-D-Virus sequences containing the HDV-antigen that were kindly provided by Michael Roggendorf~\citep{Karimzadeh2018}.
   \item A set of 41 HIV sequences spanning the \textit{gag} and \textit{pol} genes that were kindly provided by Rongge Yang. 
 \end{itemize}
 
-\hl{DaHo: sources of known epitopes?}
+Lists of known epitopes were gathered from the Immune Epitope Database (IEDB, \citet{Vita2019}) for HIV sequences, and the Hepitopes database~\cite{Lumley2016} for Hepatitis-B-Virus sequences. 
 
 \subsection{Data preparation}
 For all sequences, we applied the following preparation steps:
@@ -273,11 +258,10 @@ For all sequences, we applied the following preparation steps:
 In order to understand what the different building blocks of HAMdetector contribute, we applied four different Bayesian models of increasing complexity to each dataset, starting with the standard logistic regression model (Eq~\ref{eq:backbone}), and adding then the further components, i.e.\ the horseshoe prior (Eq~\ref{eq:sparsity-prior}), phylogeny (Eq~\ref{eq:phylogeny}), and epitope prediction, resulting in the full model (Eq~\ref{eq:full}). For comparisons to existing methods, we also applied Fisher's exact test and the Phylogenetic Dependency Network \cite{Carlson2008} to the same data.
 
 \subsection{Run times and convergence}
-Run times of HAMdetector on a ... were of the order of ... \hl{DaHo: bitte ergänzen}
-All model fits showed no signs of inference issues. In total, samples were drawn from four Hamiltonian Markov chains with 1000 iterations each after 1000 warm-up iterations. The effective sample size exceeded 500 for all model parameters, $\hat{R}$ convergence diagnostic values were below 1.01 in all cases.
+For a standard officie computer, run times of HAMdetector on the smaller HDV dataset were of the order of minutes and on the order of hours for the Hepatitis B dataset. For the large HIV dataset, the models were run overnight. Run times scale approximately linearly with the product \(NK\), where \(N\) is the number of sequences and \(K\) is the number of replacements. All model fits showed no signs of inference issues. In total, samples were drawn from four Hamiltonian Markov chains with 1000 iterations each after 300 warm-up iterations. The effective sample size exceeded 500 for all model parameters, $\hat{R}$ convergence diagnostic values were below 1.01 in all cases.
 
 \subsection{Posterior predictive checks}
-The model yields well-calibrated posterior predictive probabilities of replacements. This is exemplified in Figure~\ref{fig:calibration} for HBV core protein, but also holds true for the other datasets (Supplementary Figures \hl{XXX-YYY}).
+The model yields well-calibrated posterior predictive probabilities of replacements. This is exemplified in Figure~\ref{fig:calibration} for HBV core protein, but also holds true for the other datasets (Supplementary Figures ...-...).
 
 \begin{figure}[!ht]
  \includegraphics[width=1.0\linewidth]{plots/phylogeny_calibration.pdf}  
@@ -345,6 +329,7 @@ We have 15 HAMs predicted in HDV by Fisher's exact test at significance level $5
 
 For HAMdetector, we use in Table~\ref{tab:false-positives} the posterior probability of a positive regression coefficient ($P(\beta_{jk}>0)$ as measure for the confidence in having detected a HAM. HAMs with strong support have a posterior probability close to 1, associations with no support a probability close to 0.5 (corresponding to a regression coefficient centered around 0). The five predicted HAMs with top posterior probabilities (all $\ge 0.89$) have all been experimentally confirmed. There is only one outlier with posterior probability 0.75 (P89T and B*37).
 
+
 \begin{table}[h!]
   \caption{List of HAMs predicted Fisher's exact test (FET). In the last column a ``+'' marks experimental confirmation and a ``-'' a failed confirmation. Column ``post.prob.'' shows the corresponding posterior probabilities for positive associations computed with HAMdetector.}
   \vspace{0.5cm}
@@ -354,18 +339,33 @@ For HAMdetector, we use in Table~\ref{tab:false-positives} the posterior probabi
   S170N       & B*15 & $3\cdot10^{-8}$      & 0.99                                & +                        \\
   D101E       & B*37 & 0.0002                        & 0.96                                & +                        \\
   R105K       & B*27 & 0.0011                        & 0.93                                & +                        \\
-  R139K       & B*41 & 0.0034                        & 0.91                                & +                        \\
-  E47D        & B*18 & 0.0027                        & 0.89                                & +                        \\
+  R139K       & B*41 & 0.0034                        & 0.92                                & +                        \\
+  E47D        & B*18 & 0.0027                        & 0.90                                & +                        \\
   D33E        & B*13 & 0.0001                        & 0.86                                & -                        \\
   T134A       & A*68 & 0.0045                        & 0.82                                & -                        \\
   K43R        & B*13 & 0.0021                        & 0.77                                & -                        \\
+  P89T        & B*37 & 0.0011                        & 0.75                                & +                        \\
   D47E        & A*30 & 0.0010                        & 0.76                                & -                        \\
   K113R       & B*13 & 0.0043                        & 0.76                                & -                        \\
-  P89T        & B*37 & 0.0011                        & 0.75                                & +                        \\
   A107T       & B*14 & 0.0028                        & 0.70                                & -                        \\
   P49L        & A*30 & 0.0031                        & 0.63                                & -                        \\
-  Q100L       & B*13 & 0.0018                        & 0.61                                & -                        \\
-  D96E        & B*13 & 0.0035                        & 0.50                                & -                       
+  Q100L       & B*13 & 0.0018                        & 0.60                                & -                        \\
+  D96E        & B*13 & 0.0035                        & 0.51                                & -  \\\hline
+  E46D & A*02 & 0.0054 & 0.97 & ? \\
+  V81I & A*68 & 0.0073 & 0.97 & ? \\
+  K113N & B*08 & 0.0063 & 0.96 & ? \\
+  A71T & B*41 & 0.0065 & 0.96 & ? \\
+  L188I & A*68 & 0.0632 & 0.94 & ? \\
+  T95S & A*01 & 0.0285 & 0.93 & ? \\
+  D33E & A*03 & 0.0226 & 0.93 & ? \\
+  P49L & B*13 & 0.0035 & 0.92 & ? \\
+  A74S & A*68 & 0.0123 & 0.91 & ? \\
+  E29D & B*44 & 0.0559 & 0.91 & ? \\
+  D46E & B*57 & 0.0190 & 0.91 & ? \\
+  R88K & A*68 & 0.0123 & 0.91 & ? \\
+  T149P & B*52 & 0.0281 & 0.91 & ? \\
+  K43R & A*02 & 0.2158 & 0.90 & ? \\
+  N22S & B*08 & 0.0405 & 0.90 & ? \\
   \end{tabular}
   \label{tab:false-positives}
  \end{table}
