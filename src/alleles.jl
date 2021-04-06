@@ -18,7 +18,7 @@ struct HLAType
         for gene in ("A", "B", "C")
             c = count(genes .== gene) 
             if c > 2
-                error("HLA type must contain at most 2 $gene alleles, got $(c)")
+                error("HLA type must contain at  2 $gene alleles, got $(c)")
             end
         end
 
@@ -130,6 +130,10 @@ function Base.isless(x::HLAAllele, y::HLAAllele)
     end
 
     return false
+end
+
+function parse_allele(::Missing)
+    return missing
 end
 
 function parse_allele(x::AbstractString)
