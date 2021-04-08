@@ -387,6 +387,19 @@ HAMdetector strongly supports 15 replacement - allele pairs that have previously
 \end{figure}
 
 Figure~\ref{fig:linkage} shows regression coefficients of the HLA alleles A*30 and B*13 for replacement P49L. With the simplest logistic regression model (model~1), both A*30 and B*13 have medium evidence of being associated with replacement P49L. However, with phylogeny and sparsity-promoting prior (model~3) both regression coefficients shrink close to 0 -- the associations are not convincingly supported by the data. Using epitope prediction as additional source of information (model~4) allows to disentangle the association of the correlated alleles with P49L and identify B*13 as likely associated with P49L. The association between P49L and A*30 (predicted by Fisher's exact test) remains shrunk towards 0.  
+
+\subsection{HAMs outside epitopes}
+\label{sec:hams-outs-epit}
+
+imperfect epitope / processing predictions
+
+compensatory mutations
+
+we expect HAMs outside epitopes - are there such HAMs?
+
+Figure
+
+
 \section{Discussion}
 
 HAMdetector follows a general paradigm of Bayesian modelling, namely to map all information that is available about a system of interest onto a probabilistic model, and then to apply Bayesian inference to learn about probable parameter values of that model, e.g.\ about $\beta_{jk}$, the association of HLA $j$ with replacement $k$. The more relevant information we infuse into the model, the sharper the inference. As HAMdetector includes an unprecedented amount of relevant information, it is only natural that it outperforms other methods.
