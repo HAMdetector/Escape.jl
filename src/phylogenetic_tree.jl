@@ -23,21 +23,21 @@ end
 function phylogenetic_tree(data::AbstractHLAData)
     !ismissing(data.tree) && return data.tree
 
-    temp_fasta = tempname() * ".fasta"
-    temp_name = basename(tempname())
+    temp_prefix = tempname()
+    temp_fasta = temp_prefix * ".fasta"
+
     write_numbered_fasta(data, temp_fasta)
 
-    model = "PROTGAMMAAUTO"
-    @suppress Base.run(`raxmlHPC -s $temp_fasta -m $model -p 53 
-                        -n $(temp_name) -w $(tempdir()) -T $(Threads.nthreads())`)
-    unrooted_tree_path = joinpath(tempdir(), "RAxML_result.$(temp_name)")
-    @suppress Base.run(`raxmlHPC -f I -m $model -t $unrooted_tree_path 
-                        -w $(tempdir()) -n $(temp_name * "_rooted") 
-                        -T $(Threads.nthreads())`)
-
-    final_tree_path = joinpath(tempdir(), "RAxML_rootedTree.$(temp_name * "_rooted")")
+    model = "LG+G+I"
+    @suppress Base.run(`raxml-ng --msa $temp_fasta --model $model --threads auto 
+        --workers auto`)
+    tree = phylogenetic_tree(readline(temp_fasta * ".raxml.bestTree"))
     
-    return phylogenetic_tree(readline(final_tree_path))
+    raxml_files = ["bestModel", "bestTree", "log", "mlTrees", "rba", "startTree"]
+    rm(temp_fasta)
+    rm.(temp_fasta .* ".raxml." .* raxml_files)
+
+    return tree
 end
 
 function write_numbered_fasta(data::AbstractHLAData, filepath::String)

@@ -6,17 +6,13 @@ Escape.jl is a package for identifying HLA escape mutations. Based on annotated 
 
 1. install [raxml-ng](https://github.com/amkozlov/raxml-ng). `raxml-ng --version` must work
     from the terminal.
-2. install [raxmlHPC](https://github.com/stamatak/standard-RAxML). Rename the binary
-    to `raxmlHPC`. `raxmlHPC -v` must work from the terminal.
-3. install [netMHCpan](https://services.healthtech.dtu.dk/software.php).
-    Set the environment variable `NETMHC_ROOTDIR` to the directory containing
-    the `netMHCpan` shell script.
-    `run(`$(joinpath(ENV["NETMHC_ROOTDIR"], "netMHCpan"))`)` must work from the Julia REPL.
-2. clone the repository: `git clone --depth 1 gogs@gogs.zmb.uni-due.de:habermann/Escape.jl.git Escape`
+2. install [mhcflurry](https://github.com/openvax/mhcflurry).
+    `run(`mhcflurry-predict-scan -h`)` must work from the Julia REPL.
+3. clone the repository: `git clone --depth 1 gogs@gogs.zmb.uni-due.de:habermann/Escape.jl.git Escape`
     into the same directory where `StanInterface` and `Loo` are already there.
-3. `activate` the project, `instantiate` it (all in Pkg mode).
-4. run `build` (in Pkg mode) to compile the Stan models.
-4. hopefully, `test` should run without any errors.
+4. `activate` the project, `instantiate` it (all in Pkg mode).
+5. run `build` (in Pkg mode) to compile the Stan models.
+6. hopefully, `test` should run without any errors.
 
 ## running models
 
