@@ -12,7 +12,7 @@ function Escape.run(
     sf = StanInterface.stan(
         joinpath(@__DIR__, "..", "models", "model_$(T)"), input;
         stan_args = "adapt delta=0.85 algorithm=hmc engine=nuts max_depth=10",
-        iter = 600, refresh = 1, stan_kwargs...
+        refresh = 1, stan_kwargs...
     )
 
     return HLAModelResult(model, data, sf, replacements, alleles)
