@@ -1,4 +1,4 @@
-function run_partition(model::HLAModel{T}, data::AbstractHLAData;
+function run_blockwise(model::HLAModel{T}, data::AbstractHLAData;
     mincount::Int = 1,
     depth::Int = 1,
     partitions = Iterators.partition(replacements(data, mincount = mincount), 100),
@@ -9,7 +9,7 @@ function run_partition(model::HLAModel{T}, data::AbstractHLAData;
     input = stan_input(model, data, depth = depth, mincount = mincount)
     alleles = sort(unique_alleles(hla_types(data), depth = depth))
     
-    sf_files = pmap(x -> run_partition_(model, data, x; 
+    sf_files = pmap(x -> run_blockwise_(model, data, x; 
         mincount = mincount, depth = depth, wp = wp, stan_kwargs...), wp, partitions)
     sf_1 = deserialize(sf_files[1]) # used to access iter, chains field etc.
     combined_d = [Dict{String, Vector{Float64}}() for i in 1:sf_1.chains]
@@ -37,8 +37,8 @@ function run_partition(model::HLAModel{T}, data::AbstractHLAData;
     return HLAModelResult(model, data, combined_sf, vcat(partitions...), alleles)
 end
 
-function run_partition_(model::HLAModel{T}, data::AbstractHLAData, replacements;
-    mincount, depth, keep_all_parameters, wp, stan_kwargs...
+function run_blockwise_(model::HLAModel{T}, data::AbstractHLAData, replacements;
+    mincount, depth, wp, stan_kwargs...
 ) where T
 
     input = stan_input(model, data, depth = depth)
