@@ -38,7 +38,7 @@ function run_partition(model::HLAModel{T}, data::AbstractHLAData;
 end
 
 function run_partition_(model::HLAModel{T}, data::AbstractHLAData, replacements;
-    mincount, depth, wp, stan_kwargs...
+    mincount, depth, keep_all_parameters, wp, stan_kwargs...
 ) where T
 
     input = stan_input(model, data, depth = depth)
@@ -81,6 +81,8 @@ function run_partition_(model::HLAModel{T}, data::AbstractHLAData, replacements;
         refresh = 1, stan_kwargs...
     )
 
+    reduce_size!(sf)
+    
     serialize(io, sf)
     close(io)
 

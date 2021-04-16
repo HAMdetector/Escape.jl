@@ -1,6 +1,7 @@
 function Escape.run(
     model::HLAModel{T}, data::AbstractHLAData;
     mincount::Int = 1,
+    keep_all_parameters::Bool = false,
     depth::Int = 1,
     stan_kwargs... 
 ) where T
@@ -14,6 +15,8 @@ function Escape.run(
         stan_args = "adapt delta=0.85 algorithm=hmc engine=nuts max_depth=10",
         refresh = 1, stan_kwargs...
     )
+
+    !keep_all_parameters && reduce_size!(sf)
 
     return HLAModelResult(model, data, sf, replacements, alleles)
 end
@@ -59,8 +62,16 @@ function stan_input(
     return d
 end
 
-function reduce_size(sf::StanInterface.Stanfit)
-    
+function reduce_size!(sf::StanInterface.Stanfit)
+    for d in sf.result
+        for key in keys(d)
+            if !any(startswith.(key, ["lp__", "b_phy", "b0_hla", "beta_hla"]))
+                delete!(d, key)
+            end
+        end
+    end
+
+    return sf
 end
 
 function epitope_information(
