@@ -59,6 +59,10 @@ function stan_input(
     return d
 end
 
+function reduce_size(sf::StanInterface.Stanfit)
+    
+end
+
 function epitope_information(
     model::AbstractHLAModel, data::AbstractHLAData, r::Vector{Replacement}, depth::Int
 )
