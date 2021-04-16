@@ -55,7 +55,7 @@ function theta_i(sf::StanInterface.Stanfit, p::Dict, i::Int)
 
     r = rs[i]
     
-    nu = zeros(length(p["lp__"]))
+    nu = zeros(length(p["beta_hla.1.1"]))
 
     for d in 1:D
         beta_hla = p["beta_hla.$r.$d"]
