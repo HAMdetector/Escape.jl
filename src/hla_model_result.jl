@@ -64,6 +64,12 @@ function replacement_summary(
     return df
 end
 
+function reduce_size!(result::HLAModelResult)
+    reduce_size!(result.sf)
+
+    return result
+end
+
 hla_model(result::HLAModelResult) = result.model
 hla_data(result::HLAModelResult) = result.data
 stanfit(result::HLAModelResult) = result.sf
