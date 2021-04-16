@@ -35,3 +35,17 @@ end
 
     @test @suppress Escape.replacement_summary(result) isa DataFrame
 end
+
+@testset "reduce_size!(::HLAModelResult)" begin
+    ds = Escape.HLADataset("Test")
+    m = Escape.HLAModel{4}()
+    data = ds.data[1]
+
+    res = @suppress Escape.run(m, data, iter = 5, warmup = 5, chains = 1, 
+        keep_all_parameters = true)
+    
+    previous_size = Base.summarysize(res)
+    Escape.reduce_size!(res)
+
+    @test Base.summarysize(res) < previous_size
+end
