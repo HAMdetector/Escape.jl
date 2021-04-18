@@ -21,7 +21,9 @@ function run_blockwise(model::HLAModel{T}, data::AbstractHLAData;
             i = i + 1
             for d in 1:sf.data["D"]
                 for (res_idx, res) in enumerate(sf.result)
-                    combined_d[res_idx]["b_phy.$i"] = res["b_phy.$r_idx"]
+                    if "b_phy.1" in keys(res)
+                        combined_d[res_idx]["b_phy.$i"] = res["b_phy.$r_idx"]
+                    end
                     combined_d[res_idx]["b0_hla.$i"] = res["b0_hla.$r_idx"]
                     combined_d[res_idx]["beta_hla.$i.$d"] = res["beta_hla.$r_idx.$d"]
                 end
