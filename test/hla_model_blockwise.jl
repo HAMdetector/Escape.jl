@@ -15,4 +15,7 @@
             @test key in keys(res_blockwise.sf.result[1])
         end
     end
+
+    @test res_blockwise = @suppress Escape.run_blockwise(Escape.HLAModel{1}(), data, 
+        partitions = partitions, iter = 5, warmup = 5, chains = 1) isa Escape.HLAModelResult
 end
