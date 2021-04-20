@@ -55,3 +55,12 @@ end
     @test !((r_4 => parse_allele("B52")) in map)
 
 end
+
+@testset "match_epitope(::String, ::HLAData)" begin
+    data = Escape.HLADataset("Test").data[1]
+
+    @test Escape.match_epitope("SARA", data) == 2
+    @test Escape.match_epitope("SVMG", data) == 6
+    @test isnothing(Escape.match_epitope("SMRA", data))
+    @test Escape.match_epitope("SMRA", data, max_levenshtein_distance = 1) == 2  
+end

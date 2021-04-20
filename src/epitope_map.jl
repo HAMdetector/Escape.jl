@@ -49,3 +49,23 @@ function Base.in(x::Pair{Replacement, HLAAllele}, y::EpitopeMap)
 
     return false
 end
+
+function match_epitope(epitope::String, data::AbstractHLAData; 
+        max_levenshtein_distance::Int = 0
+)
+    position = Int[]
+    query = ApproximateSearchQuery(LongAminoAcidSeq(epitope))
+
+    for record in records(data)
+        sequence = BioSequences.sequence(record)
+        idx = approxsearchindex(sequence, query, max_levenshtein_distance)
+        
+        if idx != 0
+            push!(position, idx)
+        end
+    end
+
+    length(position) != 0 || return nothing
+
+    return position[1]
+end
