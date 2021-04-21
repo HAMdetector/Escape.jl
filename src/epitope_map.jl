@@ -18,7 +18,7 @@ struct EpitopeMap
             error("start and stop positions must be positive.")
         elseif !all(length.(epitopes) .== (stops .- starts .+ 1))
             error("epitope length must match the given start and stop positions.")
-        elseif !(maplength >= maximum(stops))
+        elseif (length(stops) != 0) && !(maplength >= maximum(stops))
             error("maplength must be >= largest stop position.") 
         end
 
@@ -58,6 +58,9 @@ function match_epitope(epitope::String, data::AbstractHLAData;
 
     for record in records(data)
         sequence = BioSequences.sequence(record)
+        sequence_string = replace(string(sequence), 'X' => '-')
+        sequence = LongAminoAcidSeq(sequence_string)
+
         idx = approxsearchindex(sequence, query, max_levenshtein_distance)
         
         if idx != 0
@@ -65,7 +68,7 @@ function match_epitope(epitope::String, data::AbstractHLAData;
         end
     end
 
-    length(position) != 0 || return nothing
+    length(unique(position)) == 1 || return nothing
 
     return position[1]
 end
