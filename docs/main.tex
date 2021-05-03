@@ -81,8 +81,10 @@ Instead of performing many hypothesis tests and trying to adjust for them, we pr
 \begin{methods}
   \section{Materials and methods}
 
-  Our general approach for HAMdetector is to fit Bayesian regression models that captures relationships between host HLA alleles and replacements in viral proteomes. This Bayesian approach is advantageous because it allows use of: (1) prior information (e.g.\ knowledge of effect magnitudes), (2) relevant additional information (phylogeny, epitope information), (3) a problem-specific structure, (4) partial pooling~\citep{Gelman2010}.
+  Our general approach for HAMdetector is to fit Bayesian regression models that captures relationships between host HLA alleles and replacements in viral proteomes.
   
+  This Bayesian approach is advantageous because it allows use of: (1) prior information (e.g.\ knowledge of effect magnitudes), (2) relevant additional information (phylogeny, epitope information), (3) a problem-specific structure, (4) partial pooling~\citep{Gelman2010}.
+
 \subsection{Model backbone}
 
 We chose a logistic regression model as backbone because it is easily extensible, and because coefficients can be interpreted in the familiar way as summands on the log-odds scale.
@@ -141,14 +143,14 @@ We use epitope prediction as information about the expected degree of sparsity, 
     \beta_{\text{epi}} &\sim \text{Normal}^{+}(1, 2),
   \end{aligned}
 \end{equation}
- 
+
 where \(Z_{jk}\) is 1 if HLA allele \(j\) is predicted to restrict the alignment position corresponding to replacement \(k\), and 0 otherwise. The parameter \(\beta_{\text{epi}}\) governs the increase in scale of the  corresponding local shrinkage parameters. The larger the estimated values of \(\beta_{\text{epi}}\) are, the more likely it is to see non-zero regression coefficients for these HLA alleles.
 
 \subsubsection{Sparsity-inducing priors}
   
-Sparsity-promoting priors \citep{Piironen2017} can drastically improve predictive performance, because the model is better able to differentiate between signal and noise. These priors convey the a priori expectation that most coefficients in a regression model are close to 0, i.e.\ that non-zero coefficients are sparse. This assumption is likely correct for HLA-associated mutations, because the number of epitopes that are restricted by a given HLA allele is typically small compared to the number of all possible epitopes. As presentation on MHC I is a necessary condition for the HLA system to function, most associations between an HLA allele and a replacement are likely truly zero, though sometimes confounding factors such as HLA linkage disequilibrium may lead to the appearance of sizeable associations.
-\hl{DaHo: kann man so nicht schreiben, weil die kompensatorischen Mutationen zu *echten* Assoziationen führen: ``and codon covariation,
-e.g. in the form of compensatory mutations that lie outside an epitope~\citep{Ruhl2011}.'' Ich finde trotzdem den Punkt der kompensatorischen Mutationen wichtig; sollte vielleicht in der Diskussion aufgegriffen werden. Z.B. ist es interessant zu sehen, ob unser Verfahren bei Positionen außerhalb von Epitopen immer noch einen Vorteil bei der Erkennung von Assoziationen liefert, oder zumindest solche Assoziationen wie in \citet{Ruhl2011} noch erkennt.}
+Sparsity-promoting priors \citep{Piironen2017} can drastically improve predictive performance, because the model is better able to differentiate between signal and noise. These priors convey the a priori expectation that most coefficients in a regression model are close to 0, i.e.\ that non-zero coefficients are sparse. This assumption is likely correct for HLA-associated mutations, because the number of epitopes that are restricted by a given HLA allele is typically small compared to the number of all possible epitopes. As presentation on MHC I is a necessary condition for the HLA system to function, most associations between an HLA allele and a replacement are likely truly zero, with the exception of other factors such as HLA linkage disequilibrium and codon covariation, e.g. in the form of compensatory mutations that lie outside and epitope~\citep{Ruhl2011}.
+% \hl{DaHo: kann man so nicht schreiben, weil die kompensatorischen Mutationen zu *echten* Assoziationen führen: ``and codon covariation,
+% e.g. in the form of compensatory mutations that lie outside an epitope~\citep{Ruhl2011}.'' Ich finde trotzdem den Punkt der kompensatorischen Mutationen wichtig; sollte vielleicht in der Diskussion aufgegriffen werden. Z.B. ist es interessant zu sehen, ob unser Verfahren bei Positionen außerhalb von Epitopen immer noch einen Vorteil bei der Erkennung von Assoziationen liefert, oder zumindest solche Assoziationen wie in \citet{Ruhl2011} noch erkennt.}
 
 There is a range of sparsity-promoting priors with slightly different properties. They share the common structure of placing most probability mass very close to 0, with heavy tails to accommodate the non-zero coefficients.
 For our model, we use the so-called regularized horseshoe prior \citep{Piironen2017}, which is an improvement of the original horseshoe prior presented by \citet{Carvalho2010}, in that it additionally allows some shrinkage for the non-zero coefficients. The original horseshoe prior is given by:
@@ -378,7 +380,9 @@ HAMdetector strongly supports 15 replacement - allele pairs that have previously
 
  \subsection{Linkage disequilibrium}
 
- For three of the false positives proposed by Fisher's exact test (Table~\ref{tab:false-positives}), HAMdetector identifies associations with the same replacement but a different allele (P49L - B*13 instead of P49L - A*30; K43R - A*02 instead of K43R - B*13; and D33E - B*13 instead of D33E - A*03). One possible explanation for this observation is HLA linkage disequilibrium \hl{DaHo: and accordingly correlation between HLA alleles in the dataset due to random sampling variation. (Satz etwas opak.)} Indeed, out of the 12 times P49L is observed in sequences annotated with A*30, B*13 is also present in 5 of those cases (Spearman's rank correlation coefficient \(\rho = 0.5\)). A similar observation can be made for K43R and D33E, although the correlation between the respective alleles is much weaker.
+ For three of the false positives proposed by Fisher's exact test (Table~\ref{tab:false-positives}), HAMdetector identifies associations with the same replacement but a different allele (P49L - B*13 instead of P49L - A*30; K43R - A*02 instead of K43R - B*13; and D33E - B*13 instead of D33E - A*03). One possible explanation for this observation is HLA linkage disequilibrium and accordingly correlation between HLA alleles in the dataset due to random sampling variation.
+ 
+ %\hl{DaHo: and accordingly correlation between HLA alleles in the dataset due to random sampling variation. (Satz etwas opak.)} Indeed, out of the 12 times P49L is observed in sequences annotated with A*30, B*13 is also present in 5 of those cases (Spearman's rank correlation coefficient \(\rho = 0.5\)). A similar observation can be made for K43R and D33E, although the correlation between the respective alleles is much weaker.
 
 \begin{figure}
   \includegraphics[width=1.1\linewidth]{plots/P49L_combined.pdf}
@@ -412,12 +416,12 @@ Another extension of our model would be to better account for phylogenetic uncer
 
 However, the good performance of the current version of HAMdetector makes it already a valuable tool for the study of interactions between viruses and T cell immunity.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%
-%     please remove the " % " symbol from \centerline{\includegraphics{fig01.eps}}
-%     as it may ignore the figures.
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% %
+% %     please remove the " % " symbol from \centerline{\includegraphics{fig01.eps}}
+% %     as it may ignore the figures.
+% %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -428,19 +432,19 @@ However, the good performance of the current version of HAMdetector makes it alr
 
 
 
-%\section*{Acknowledgements}
+\section*{Acknowledgements}
 % \FloatBarrier
 \section*{Funding}
 
 This work has been supported by Deutsche Forschungsgemeinschaft (grant HO 1582/10-1).\vspace*{-12pt}
 
 \bibliographystyle{natbib}
-%\bibliographystyle{achemnat}
+% \bibliographystyle{achemnat}
 %\bibliographystyle{plainnat}
 %\bibliographystyle{abbrv}
-%\bibliographystyle{bioinformatics}
+% \bibliographystyle{bioinformatics}
 %
-%\bibliographystyle{plain}
+% \bibliographystyle{plain}
 %
 \bibliography{references}
 \end{document}
