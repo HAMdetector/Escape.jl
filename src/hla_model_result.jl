@@ -24,6 +24,7 @@ function replacement_summary(
         n_replacement_with_hla = Int[]
     )
 
+    # using length(rs) to circumvent wrong data for blockwise runs
     R = si["R"]
     D = si["D"]
     Z = si["Z"]
@@ -32,7 +33,7 @@ function replacement_summary(
         fisher = Escape.run(Escape.FisherTest(), data; fdr = fdr)
     end
 
-    for r in 1:R
+	for r in 1:length(rs)
         fisher_idx = fisher_p ? findfirst(x -> x == rs[r], fisher.replacements) : 0
 
         for d in 1:D
@@ -41,6 +42,12 @@ function replacement_summary(
             p_value = fisher_p ? fisher.p_values[fisher_idx][alleles[d]] : 0
             n_total = fisher_p ? sum(fisher.counts[fisher_idx][alleles[d]][1, :]) : 0
             n_with_hla = fisher_p ? fisher.counts[fisher_idx][alleles[d]][1, 1] : 0
+			
+			if r > size(Z, 1)
+				z = 0
+			else 
+				z = Z[r, d]
+			end
 
             push!(df, 
                 [ 
@@ -51,7 +58,7 @@ function replacement_summary(
                     lower,
                     upper,
                     p_value,
-                    Z[r, d],
+                    z,
                     n_total,
                     n_with_hla
                 ]
