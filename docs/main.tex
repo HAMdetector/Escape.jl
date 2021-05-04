@@ -4,9 +4,15 @@
 \access{Advance Access Publication Date: Day Month Year}
 \appnotes{Manuscript Category}
 \usepackage{soul}
+\usepackage{graphicx}
 \usepackage[paper=b4paper, layout=b4paper]{geometry}
+% \usepackage{float}
+\usepackage[section]{placeins}
 \usepackage{float}
-% \usepackage[section]{placeins}
+\usepackage[export]{adjustbox}
+% \multicols{2}
+% \usepackage{minipa}
+% \usepackage{dblfloatfix}
 
 \begin{document}
 \firstpage{1}
@@ -222,7 +228,7 @@ We use the split-\(\hat{R}\) convergence diagnostic to identify Markov chain con
 
 In posterior predictive checks, we simulate new data from the inferred posterior distribution and the likelihood, and we compare these simulated data with representative real data \citep{Gabry2019}. A good model should predict data that are consistent with real data. This general idea was employed in two ways to test our models.
 
-For a first posterior predictive check we used \emph{calibration plots}: two binned quantities were plotted against each other, the observed relative frequencies of replacements $f(y_{ik}=1)$, and the predicted probabilities $P(y_{ik}=1|\text{model})$. In such a plot, a well-calibrated model should yield points following the diagonal. Technically, all observations were first sorted by increasing estimated probability $P(y_{ik}=1|\text{model})$ and grouped into $n$ bins. For each bin, the fraction of observations with $y_{ik}=1$ (observed event percentage) was then plotted against the midpoint of each bin. The cutpoints of the bins are indicated by error bars.
+For a first posterior predictive check we used \emph{calibration plots} (Fig. \ref{fig:calibration}): two binned quantities were plotted against each other, the observed relative frequencies of replacements $f(y_{ik}=1)$, and the predicted probabilities $P(y_{ik}=1|\text{model})$. In such a plot, a well-calibrated model should yield points following the diagonal. Technically, all observations were first sorted by increasing estimated probability $P(y_{ik}=1|\text{model})$ and grouped into $n$ bins. For each bin, the fraction of observations with $y_{ik}=1$ (observed event percentage) was then plotted against the midpoint of each bin. The cutpoints of the bins are indicated by error bars.
 % We applied calibration plots twice, first with the phylogenetic component of model, and then with the full model. 
 
 Second, we assessed the abilities of different models and methods to discover HAMs with \emph{HAM enrichment plots}. These plots are based on the observation that CTL escape mutations are enriched in epitopes \citep{Bronke2013}. Hence, the degree by which methods for HAM prediction recover this trend is a measure of model performance. To implement this measure, we first ranked all evaluated replacements according to their respective credibility of being a HAM, computed as integral of the marginal posterior $P(\beta_{jk}>0)$. For comparison with established methods, namely Fisher's exact test and Phylogenetic Dependency Network \citep{Carlson2008}, ranked lists based on p- and q-values, respectively, were computed. Then we calculated for each rank $r$ the accumulated number $N_e(r)$ of predictions of this rank or better ranks were located inside known epitopes. The higher the curve $N_e(r)$, the higher the enrichment of predicted HAMs in epitopes, see e.g.\ Fig.\ \ref{fig:comparison}.
@@ -270,8 +276,8 @@ For a standard office computer, run times of HAMdetector on the smaller HDV data
 The model yields well-calibrated posterior predictive probabilities of replacements. This is exemplified in Figure~\ref{fig:calibration} for HBV core protein, but also holds true for the other datasets (Supplementary Figures ...-...).
 
 \begin{figure}
- \includegraphics[width=1.0\linewidth]{plots/phylogeny_calibration.pdf}  
-  \caption{Calibration plot for the HBV core protein.}
+ \includegraphics[width=1.0\linewidth]{plots/calibration_plot.pdf}  
+  \caption{Calibration plot for the HBe antigen.}
   \label{fig:calibration}
 \end{figure}
 
@@ -395,14 +401,26 @@ Figure~\ref{fig:linkage} shows regression coefficients of the HLA alleles A*30 a
 \subsection{HAMs outside epitopes}
 \label{sec:hams-outs-epit}
 
-imperfect epitope / processing predictions
+The epitope and processing predictions that HAMdetector uses are imperfect, as the underlying tools extrapolate binding affinities for new epitopes based on experimental data. Bayesian statistics provides a coherent framework to make use of imperfect data. In HAMdetector, this is achieved by an additional parameter \(\beta_{\text{epi}}\) that governs how strongly the model takes an apparent association between a replacement and the corresponding HLA allele into account. By default, the regression coefficients that quantify the strength of association between allele and replacement are shrunk towards 0, and only in the presence of considerable evidence in favor of an association (e.g. because the replacement often co-occurs with a certain HLA allele), this shrinkage is overcome by the observed data.
 
-compensatory mutations
+If the epitope prediction happens to be reliable, i.e. when the presence of a predicted epitope correlates strongly with the probability observing the replacement in a host with the respective HLA allele, the parameter \(\beta_{\text{epi}}\) is estimated to be large and less evidence by the sequence data is enough to escape the shrinkage and estimate a non-zero association between allele and replacement, compared to associations that do not lie inside a predicted epitope.
+Likewise, if the epitope prediction turns out to be non-reliable, \(\beta_{\text{epi}}\) is estimated to be close to 0 and the presence of a predicted epitope does not strongly affect the conclusions drawn from the sequence data.
 
-we expect HAMs outside epitopes - are there such HAMs?
+However, it is important to consider that biologically relevant HLA escape mutations do not necessarily have to lie within or close to the boundary of an epitope. Compensatory mutations \citep{Kelleher2001, Ruhl2011, NeumannHaefelin2011} can confer a strong selective advantage, e.g. by partially restoring replicative capacity that would otherwise be impaired by the exclusive presence of a certain HLA escape mutation. As they also facilitate HLA escape and are associated with HLA alleles in a sequence alignment, they can also be considered as HLA escape mutations.
+In a sequence alignment, compensatory mutations can occur far away from the epitope they are associated with, as they might be the result of improved physical interactions with another amino acid in the folded, three-dimensional protein.
 
-Figure
+We therefore also expect HAMs outside epitopes and one possible concern is that the model focuses too strongly on associations with replacements that lie within the boundary of predicted epitopes.
 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\linewidth]{plots/m3_m4_HBe.pdf}
+  \caption{Integral of the marginal posterior $P(\beta_{jk}>0)$ for the HAMdetector model with epitope prediction (model 4) and without epitope prediction (model 3).}
+  \label{fig:m3m4}
+\end{figure}
+
+Figure~\ref{fig:m3m4} shows posterior probabilities \(P(\beta_{jk}>0)\) for replacement--HLA allele pairs as calculated by HAMdetector with (model 4) and without (model 3) epitope prediction. Each replacement--HLA allele pair is represented by a dot and colored according to whether or not that position lies within a predicted epitope.
+For replacements that do not lie within a predicted epitope, both models provide similar estimates (points across the diagonal). However, some replacements--HLA pairs that have only weak evidence of association in model 3 have strong support in model 4, which is explained by the additional evidence provided by epitope prediction.
+The figure shows that the model is still able to identify associations outside predicted epitopes and that epitope information augments evidence obtained from sequence data. 
 
 \section{Discussion}
 
@@ -432,8 +450,7 @@ However, the good performance of the current version of HAMdetector makes it alr
 
 
 
-\section*{Acknowledgements}
-% \FloatBarrier
+% \section*{Acknowledgements}
 \section*{Funding}
 
 This work has been supported by Deutsche Forschungsgemeinschaft (grant HO 1582/10-1).\vspace*{-12pt}
