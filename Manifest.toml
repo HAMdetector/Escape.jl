@@ -21,12 +21,6 @@ version = "0.8.2"
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
-[[BinDeps]]
-deps = ["Libdl", "Pkg", "SHA", "URIParser", "Unicode"]
-git-tree-sha1 = "1289b57e8cf019aede076edab0587eb9644175bd"
-uuid = "9e28174c-4ba2-5203-b857-d8d62c4213ee"
-version = "1.0.2"
-
 [[BioGenerics]]
 deps = ["TranscodingStreams"]
 git-tree-sha1 = "57deb413ca9f4c8bc7d4c6e98ebe217ff728c737"
@@ -413,7 +407,9 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[Loo]]
 deps = ["CSV", "DataFrames", "Distributions", "HypothesisTests", "LinearAlgebra", "PrettyTables", "Random", "Requires", "SortingAlgorithms", "StanInterface", "Statistics", "StatsBase", "StatsFuns", "Suppressor", "Test"]
-path = "../Loo"
+git-tree-sha1 = "047a6c58d8d62d037beae88b5934d96738f787eb"
+repo-rev = "v.0.1.0"
+repo-url = "https://github.com/HAMdetector/Loo.jl.git"
 uuid = "17760cec-3789-11e9-196f-659854311368"
 version = "0.1.0"
 
@@ -668,8 +664,10 @@ uuid = "860ef19b-820b-49d6-a774-d7a799459cd3"
 version = "0.1.2"
 
 [[StanInterface]]
-deps = ["BinDeps", "DelimitedFiles", "Distributed", "Distributions", "Random", "SharedArrays", "Statistics", "StatsBase", "Suppressor", "Test"]
-path = "../StanInterface"
+deps = ["CSV", "DelimitedFiles", "Distributed", "Distributions", "Mmap", "Random", "SharedArrays", "Statistics", "StatsBase", "Suppressor", "Test"]
+git-tree-sha1 = "b1fba6f785df3237fe006766fd1b094d645b6a5d"
+repo-rev = "v.0.1.0"
+repo-url = "https://github.com/HAMdetector/StanInterface.jl.git"
 uuid = "e89815f6-a2f7-11e8-0a3f-6d3140f294c6"
 version = "0.1.0"
 
@@ -738,12 +736,6 @@ version = "0.9.5"
 git-tree-sha1 = "29509c4862bfb5da9e76eb6937125ab93986270a"
 uuid = "7200193e-83a8-5a55-b20d-5d36d44a0795"
 version = "1.1.2"
-
-[[URIParser]]
-deps = ["Unicode"]
-git-tree-sha1 = "53a9f49546b8d2dd2e688d216421d050c9a31d0d"
-uuid = "30578b45-9adc-5946-b283-645ec420af67"
-version = "0.4.1"
 
 [[URIs]]
 git-tree-sha1 = "7855809b88d7b16e9b029afd17880930626f54a2"
