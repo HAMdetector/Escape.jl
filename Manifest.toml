@@ -407,13 +407,9 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[Loo]]
 deps = ["CSV", "DataFrames", "Distributions", "HypothesisTests", "LinearAlgebra", "PrettyTables", "Random", "Requires", "SortingAlgorithms", "StanInterface", "Statistics", "StatsBase", "StatsFuns", "Suppressor", "Test"]
-<<<<<<< HEAD
 git-tree-sha1 = "047a6c58d8d62d037beae88b5934d96738f787eb"
 repo-rev = "v.0.1.0"
 repo-url = "https://github.com/HAMdetector/Loo.jl.git"
-=======
-path = "../Loo"
->>>>>>> a916862d6a27785b708d4052587042ce85d8e472
 uuid = "17760cec-3789-11e9-196f-659854311368"
 version = "0.1.0"
 
@@ -746,15 +742,6 @@ git-tree-sha1 = "29509c4862bfb5da9e76eb6937125ab93986270a"
 uuid = "7200193e-83a8-5a55-b20d-5d36d44a0795"
 version = "1.1.2"
 
-<<<<<<< HEAD
-=======
-[[URIParser]]
-deps = ["Unicode"]
-git-tree-sha1 = "53a9f49546b8d2dd2e688d216421d050c9a31d0d"
-uuid = "30578b45-9adc-5946-b283-645ec420af67"
-version = "0.4.1"
-
->>>>>>> a916862d6a27785b708d4052587042ce85d8e472
 [[URIs]]
 git-tree-sha1 = "7855809b88d7b16e9b029afd17880930626f54a2"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
