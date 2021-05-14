@@ -1,14 +1,8 @@
 @testset "Loo" begin
-    if !isfile(joinpath(@__DIR__, "data", "result_loo.jls"))
-        result = @suppress Escape.run(
-            Escape.HLAModel{4}(), Escape.HLADataset("Test").data[1], 
-            mincount = 1, iter = 2000, chains = 4
-        )
-
-        serialize(joinpath(@__DIR__, "data", "result_loo.jls"), result)
-    end
-
-    result = deserialize(joinpath(@__DIR__, "data", "result_loo.jls"))
+    result = @suppress Escape.run(
+        Escape.HLAModel{4}(), Escape.HLADataset("Test").data[1], 
+        mincount = 1, iter = 10, warmup = 10, chains = 4, seed = 123
+    )
 
     sf = Escape.stanfit(result)
     p = extract(sf)
