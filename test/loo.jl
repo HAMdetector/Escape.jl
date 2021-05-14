@@ -2,7 +2,7 @@
     if !isfile(joinpath(@__DIR__, "data", "result_loo.jls"))
         result = @suppress Escape.run(
             Escape.HLAModel{4}(), Escape.HLADataset("Test").data[1], 
-            mincount = 1, iter = 200, chains = 4
+            mincount = 1, iter = 2000, chains = 4
         )
 
         serialize(joinpath(@__DIR__, "data", "result_loo.jls"), result)
