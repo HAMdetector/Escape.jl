@@ -4,7 +4,12 @@ using Escape
 makedocs(
     sitename = "Escape",
     format = Documenter.HTML(),
-    modules = [Escape]
+    modules = [Escape],
+    pages = [
+        "installation.md",
+        "quick_start.md",
+        "advanced_usage.md"
+    ]
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.

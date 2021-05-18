@@ -17,8 +17,7 @@ line like `export PATH=$PATH:/directory/containing/the/raxml-ng/binary`, where t
 the semicolon is modified to point to the directory containing the RAxML-NG binary.
 
 You can test if RAxML-NG is correctly installed by running `raxml-ng --version` from the
-command line, which should print the currently installed version number and the list
-of developers and contributors.
+command line, which should print the currently installed version number.
 
 ## Installing [MHCflurry](https://github.com/openvax/mhcflurry)
 

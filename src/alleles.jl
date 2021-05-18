@@ -85,11 +85,6 @@ function Base.in(allele::HLAAllele, hla_type::HLAType)
     return false
 end
 
-"""
-valid HLA alleles must use ':' to seperate fields and have the 'HLA-' prefix.
-In contrast to the official nomenclature, 2-digit alleles are allowed 
-(e.g. HLA-A*11)
-"""
 function HLAAllele(s::AbstractString)
     if is_valid_allele(s)
         regex = raw"HLA-([ABC])\*(\d{2}(?!\d)):?((?<=:)\d{2,3}(?!\d))?:?" *
