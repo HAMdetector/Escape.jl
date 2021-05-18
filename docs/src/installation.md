@@ -63,4 +63,7 @@ To install HAMdetector, open a Julia REPL (usually done typing by `julia` from t
 switch into package mode by typing `]`, followed by `add https://github.com/HAMdetector/Escape.jl`.
 
 To check if all dependencies are correctly installed and HAMdetector functions as it
-is supposed to, run `test Escape`. 
+is supposed to, run `test Escape`.
+
+It is also strongly recommended setting the `JULIA_NUM_THREADS` environment variable to
+the number of available CPU threads or equivalently starting julia with `julia -t auto`.
