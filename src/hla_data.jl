@@ -29,7 +29,6 @@ mutable struct HLAData <: AbstractHLAData
         if !ismissing(stan_input)
             m = ErrorException("stan_input is not in a valid format.")
             is_valid(stan_input) || throw(m)
-            length(records) == stan_input["R"]
         end
         
         new(name, records, hla_types, tree, stan_input)
@@ -65,7 +64,7 @@ function is_valid(input::Dict{String, Any})
     required_keys = ("Z", "rs", "S","idx", "X", "y", "N", "D", "R", "phy")
     all(map(x -> x in keys(input), required_keys)) || return false
     size(input["Z"]) == (input["R"], input["D"]) || return false
-    maximum(input["rs"]) == input["R"] || return false
+    maximum(input["rs"]) <= input["R"] || return false
     maximum(input["idx"]) == input["S"] || return false
     size(input["X"]) == (input["S"], input["D"]) || return false
     size(input["phy"]) == (input["R"], input["S"]) || return false

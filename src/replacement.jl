@@ -37,7 +37,11 @@ function replacements(data::AbstractHLAData; mincount::Int = 1)
         end
     end
     
-    return replacements
+    if data isa SplitHLAData
+        return replacements[data.split]
+    else
+        return replacements
+    end
 end
 
 function targets(replacement::Replacement, data::AbstractHLAData)

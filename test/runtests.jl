@@ -18,6 +18,7 @@ using Suppressor
 include("alleles.jl")
 include("abstract_hla_model.jl")
 include("hla_data.jl")
+include("split_hla_data.jl")
 include("hla_dataset.jl")
 include("dataset_rousseau.jl")
 include("replacement.jl")
