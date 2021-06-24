@@ -1,16 +1,3 @@
-function Escape.loo(result::HLAModelResultIO)
-    pw = Loo.PointwiseLoo[]
-    size = Tuple{Int, Int}[]
-
-    for res in result
-        loo = Escape.loo(res)
-        push!(pw, loo.pointwise_loo...)
-        push!(size, loo.size)
-    end
-
-    return Loo.LooResult(pw, (size[1][1], sum(x -> x[2], size)))
-end
-
 function Escape.loo(result::HLAModelResult)
     d = stan_input(result)
     N = d["N"]
