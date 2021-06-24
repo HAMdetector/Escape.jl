@@ -65,7 +65,7 @@ function is_valid(input::Dict{String, Any})
     all(map(x -> x in keys(input), required_keys)) || return false
     size(input["Z"]) == (input["R"], input["D"]) || return false
     maximum(input["rs"]) <= input["R"] || return false
-    maximum(input["idx"]) == input["S"] || return false
+    maximum(input["idx"]) <= input["S"] || return false
     size(input["X"]) == (input["S"], input["D"]) || return false
     size(input["phy"]) == (input["R"], input["S"]) || return false
 

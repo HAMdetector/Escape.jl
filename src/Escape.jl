@@ -25,5 +25,6 @@ include("hla_model_result.jl")
 include("hla_model_result_io.jl")
 include("loo.jl")
 include("posterior_predictive_checks.jl")
+include("split_hla_result.jl")
 
 end

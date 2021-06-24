@@ -168,7 +168,7 @@ function binned_intervals(result::HLAModelResult; bins = 20, samples = 200)
     return df
 end
 
-function binned_indices(theta::Matrix; bins = 20)
+function binned_indices(theta::AbstractMatrix; bins = 20)
     cutpoints = range(0, 1, length = bins)
     bins = [Int[] for i in 1:bins]
 

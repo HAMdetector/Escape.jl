@@ -58,7 +58,8 @@ function split_hla_data(data::HLAData, n::Int = 10)
         split_data_ = SplitHLAData(data.name, data.records, data.hla_types, data.tree,
             stan_input, split, i)
         
-            @assert length(Escape.replacements(split_data_)) == stan_input["R"]
+        @assert length(Escape.replacements(split_data_)) == stan_input["R"]
+        
         push!(split_data, split_data_)
     end
 
