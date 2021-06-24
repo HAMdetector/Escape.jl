@@ -4,6 +4,7 @@ struct SplitHLAData <: AbstractHLAData
     hla_types::Vector{HLAType}
     tree::Union{Missing, PhylogeneticTree}
     stan_input::Dict{String, Any}
+    original_data::HLAData
     split::UnitRange{Int64}
     split_idx::Int
 
@@ -13,6 +14,7 @@ struct SplitHLAData <: AbstractHLAData
         hla_types::Vector{HLAType},
         tree::Union{Missing, PhylogeneticTree},
         stan_input::Union{Missing, Dict{String, Any}},
+        original_data::HLAData,
         split::UnitRange{Int64},
         split_idx::Int
     )        
@@ -33,7 +35,7 @@ struct SplitHLAData <: AbstractHLAData
             is_valid(stan_input) || throw(m)
         end
         
-        new(name, records, hla_types, tree, stan_input, split, split_idx)
+        new(name, records, hla_types, tree, stan_input, original_data, split, split_idx)
     end
 end
 
@@ -56,7 +58,7 @@ function split_hla_data(data::HLAData, n::Int = 10)
         stan_input["phy"] = stan_input["phy"][split, :]
         
         split_data_ = SplitHLAData(data.name, data.records, data.hla_types, data.tree,
-            stan_input, split, i)
+            stan_input, data, split, i)
         
         @assert length(Escape.replacements(split_data_)) == stan_input["R"]
         
