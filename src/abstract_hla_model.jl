@@ -1,10 +1,8 @@
 export AbstractHLAModel
-export AbstractHLAModelResult
 export HLAModel
 export HLAModelResult
 
 abstract type AbstractHLAModel end
-abstract type AbstractHLAModelResult end
 
 struct HLAModel{x} <: AbstractHLAModel end
 
