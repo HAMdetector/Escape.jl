@@ -20,7 +20,8 @@ function phylogenetic_tree(newick_string::String)
     return PhylogeneticTree(graph)
 end
 
-function phylogenetic_tree(data::AbstractHLAData)
+function phylogenetic_tree(data::AbstractHLAData; model::String = "LG+G+I", 
+        verbose::Bool = false)
     !ismissing(data.tree) && return data.tree
 
     temp_prefix = tempname()
@@ -28,9 +29,13 @@ function phylogenetic_tree(data::AbstractHLAData)
 
     write_numbered_fasta(data, temp_fasta)
 
-    model = "LG+G+I"
-    @suppress Base.run(`raxml-ng --msa $temp_fasta --model $model --threads auto 
+    if verbose
+        Base.run(`raxml-ng --msa $temp_fasta --model $model --threads auto 
+            --workers auto`)
+    else
+        @suppress Base.run(`raxml-ng --msa $temp_fasta --model $model --threads auto 
         --workers auto`)
+    end
     tree = phylogenetic_tree(readline(temp_fasta * ".raxml.bestTree"))
     
     raxml_files = ["bestModel", "bestTree", "log", "mlTrees", "rba", "startTree"]

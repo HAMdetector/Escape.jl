@@ -93,7 +93,7 @@ function phylogeny_information(
 )
     R = length(r)
     N = length(data.hla_types)
-    tree = phylogenetic_tree(data)
+    tree = phylogenetic_tree(data, verbose = true)
 
     if phylogeny_information(model) == PhylogenyIncluded()
         phy = @showprogress "phylogeny " @distributed hcat for i in 1:R
