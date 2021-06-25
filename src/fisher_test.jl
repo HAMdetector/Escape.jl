@@ -2,7 +2,7 @@ export FisherTest, FisherTestResult
 
 struct FisherTest <: AbstractHLAModel end
 
-struct FisherTestResult <: AbstractHLAModelResult
+struct FisherTestResult
     replacements::Vector{Replacement}
     counts::Vector{Dict{HLAAllele, Array{Int, 2}}}
     p_values::Vector{Dict{HLAAllele, Float64}}

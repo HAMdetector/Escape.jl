@@ -78,12 +78,7 @@ function epitope_information(
     model::AbstractHLAModel, data::AbstractHLAData, r::Vector{Replacement}, depth::Int
 )
     N = length(unique_alleles(data.hla_types, depth = depth))
-
-    if epitope_information(model) == EpitopesIncluded()
-        Z = Escape.epitope_feature_matrix(data, depth = depth)[map(x -> x.position, r), :]
-    else
-        Z = zeros(Int, length(r), N)
-    end
+    Z = Escape.epitope_feature_matrix(data, depth = depth)[map(x -> x.position, r), :]
 
     return Z
 end
@@ -95,14 +90,10 @@ function phylogeny_information(
     N = length(data.hla_types)
     tree = phylogenetic_tree(data, verbose = true)
 
-    if phylogeny_information(model) == PhylogenyIncluded()
-        phy = @showprogress "phylogeny " @distributed hcat for i in 1:R
-            phylogeny_probabilities(r[i], data, tree)
-        end
-        phy = phy'
-    else
-        phy = zeros(Int, R, N)
+    phy = @showprogress "phylogeny " @distributed hcat for i in 1:R
+        phylogeny_probabilities(r[i], data, tree)
     end
+    phy = phy'
 
     return phy
 end

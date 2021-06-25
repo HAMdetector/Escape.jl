@@ -25,6 +25,10 @@ function replacement_summary(
     return df
 end
 
+function SplitHLAModelResult(results)
+    return SplitHLAModelResult(x -> getindex(results, x), length(results))
+end
+
 function Escape.loo(result::SplitHLAModelResult)
     pw = Vector{Loo.PointwiseLoo}()
     draws = 0

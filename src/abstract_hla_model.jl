@@ -15,12 +15,3 @@ struct HLAModelResult{T}
     replacements::Vector{Replacement}
     alleles::Vector{HLAAllele}
 end
-
-struct PhylogenyIncluded end
-struct PhylogenyExluded end
-
-struct EpitopesIncluded end
-struct EpitopesExcluded end
-
-phylogeny_information(::HLAModel) = PhylogenyIncluded()
-epitope_information(::HLAModel) = EpitopesIncluded()

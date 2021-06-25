@@ -42,12 +42,13 @@ function replacement_summary(
             p_value = fisher_p ? fisher.p_values[fisher_idx][alleles[d]] : 0
             n_total = fisher_p ? sum(fisher.counts[fisher_idx][alleles[d]][1, :]) : 0
             n_with_hla = fisher_p ? fisher.counts[fisher_idx][alleles[d]][1, 1] : 0
-			
-			if r > size(Z, 1)
-				z = 0
-			else 
-				z = Z[r, d]
-			end
+            
+            z = Z[r, d]
+			# if r > size(Z, 1)
+			# 	z = 0
+			# else 
+			# 	z = Z[r, d]
+			# end
 
             push!(df, 
                 [ 
