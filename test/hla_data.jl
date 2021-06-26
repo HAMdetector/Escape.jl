@@ -31,6 +31,12 @@
     )
 end
 
+@testset "check_hla_matrix(::AbstractMatrix)" begin
+    @test_throws ErrorException Escape.check_hla_matrix(zeros(50, 0))
+    @test_logs (:warn,) Escape.check_hla_matrix([0 0 1; 0 0 0; 1 1 1])
+    @test isnothing(Escape.check_hla_matrix([0 0 1; 1 1 1; 1 0 1]))
+end
+
 @testset "check_inputs(::String, ::String))" begin
     alignment_file = joinpath(@__DIR__, "data", "test_large_annotated_2_digits.fasta")
     tree_file = joinpath(@__DIR__, "data", "phylogeny.tree")

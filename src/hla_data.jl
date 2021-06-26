@@ -158,18 +158,10 @@ function compute_stan_input(
     hla_types = Escape.hla_types(data)
 
     X = Float64.(hla_matrix(hla_types; allele_depth = allele_depth))
-    size(X, 2) != 0 || error("Could not parse any HLA alleles with " * 
-        "allele_depth = $allele_depth. " *
-        "Try setting allele_depth = 1 for HLA alleles with 2-digit accuracy.")
+    check_hla_matrix(X)
     no_hlas = map(x -> all(x .== 0), eachrow(X))
-    no_hlas_idx = findall(no_hlas)
-    if any(no_hlas)
-        @warn "No HLA alleles parsed for sequences with index: " *
-            "$no_hlas_idx. " *
-            "These sequences are not included in the model."
-    end
-
     with_hla = .!no_hlas
+
     r = replacements(data)
     phy = phylogeny_information(data, r)
     Z = epitope_information(data, r, allele_depth)
@@ -200,6 +192,21 @@ function compute_stan_input(
     )
 
     return d
+end
+
+function check_hla_matrix(X::AbstractMatrix)    
+    size(X, 2) != 0 || error("Could not parse any HLA alleles with " * 
+        "allele_depth = $allele_depth. " *
+        "Try setting allele_depth = 1 for HLA alleles with 2-digit accuracy.")
+    no_hlas = map(x -> all(x .== 0), eachrow(X))
+
+    if any(no_hlas)
+        @warn "No HLA alleles parsed for sequences with index: " *
+            "$(findall(no_hlas))). " *
+            "These sequences are not included in the model."
+    end
+
+    return nothing
 end
 
 function epitope_information(
