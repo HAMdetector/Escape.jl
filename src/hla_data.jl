@@ -111,6 +111,37 @@ function HLAData(;
     end
 end
 
+function hla_annotation_df(hla_annotation_file::String)
+    df = CSV.read(hla_annotation_file, DataFrame)
+
+    if names(df) != ["identifier", "A1", "A2", "B1", "B2", "C1", "C2"]
+        error("Expected column names are [:identifier, :A1, :A2, :B1, :B2, :C1, :C2], " * 
+            "got $(names(df)).")
+    end
+
+    N = nrow(df)
+    parsed_df = DataFrame(
+        :identifier => Vector{String}(undef, N),
+        :A1 => Vector{HLAAllele}(undef, N), :A2 => Vector{HLAAllele}(undef, N),
+        :B1 => Vector{HLAAllele}(undef, N), :B2 => Vector{HLAAllele}(undef, N),
+        :C1 => Vector{HLAAllele}(undef, N), :C2 => Vector{HLAAllele}(undef, N),
+    )
+
+    parsed_df[!, :identifier] = df[!, :identifier]
+
+    for col in (:A1, :A2, :B1, :B2, :C1, :C2)
+        parsed_df[!, col] = parse_allele.(df[!, col])
+
+        if mean(ismissing.(df[!, col])) > 0.3
+            @warn "HLA annotation column $col contains more than 30% missing values. " *
+                "Please check if HLA alleles are parsed correctly using the " *
+                """parse_allele(::String) function, e.g. parse_allele("A03")"""
+        end
+    end
+
+    return parsed_df
+end
+
 function check_inputs(alignment_file, tree_file)
     alignment_error_string = "Alignment file $alignment_file does not exist."
     tree_error_string  = "Phylogenetic tree file $tree_file does not exist."

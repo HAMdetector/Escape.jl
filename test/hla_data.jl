@@ -37,7 +37,7 @@ end
     @test isnothing(Escape.check_hla_matrix([0 0 1; 1 1 1; 1 0 1]))
 end
 
-@testset "check_inputs(::String, ::String))" begin
+@testset "check_inputs(::AbstractString, ::AbstractString))" begin
     alignment_file = joinpath(@__DIR__, "data", "test_large_annotated_2_digits.fasta")
     tree_file = joinpath(@__DIR__, "data", "phylogeny.tree")
 
@@ -49,6 +49,22 @@ end
     @test_throws ArgumentError Escape.check_inputs(
         alignment_file, joinpath(@__DIR__, "data", "test.tree")
     )
+end
+
+@testset "hla_annotation_df(::String)" begin
+    
+    @test_throws ErrorException Escape.hla_annotation_df(
+        joinpath(@__DIR__, "data", "hla_annotation_wrong_format.csv")
+    )
+    @test_logs (:warn,) Escape.hla_annotation_df(
+        joinpath(@__DIR__, "data", "hla_annotation_sparse.csv")
+    )
+    @test Escape.hla_annotation_df(
+        joinpath(@__DIR__, "data", "hla_annotation_2_digits.csv")
+    ) isa DataFrame
+    @test Escape.hla_annotation_df(
+        joinpath(@__DIR__, "data", "hla_annotation_4_digits.csv")
+    ) isa DataFrame
 end
 
 @testset "phylogeny_information(::AbstractHLAData, ::Vector{Replacement})" begin
