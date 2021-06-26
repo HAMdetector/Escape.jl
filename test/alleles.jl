@@ -82,7 +82,7 @@ end
 @testset "limit_hla_accuracy(::HLAAllele)" begin
     allele = parse_allele("A*11:01:05N")
     @test limit_hla_accuracy(allele) == parse_allele("A*11")
-    @test limit_hla_accuracy(allele, depth = 2) == parse_allele("A*1101")
+    @test limit_hla_accuracy(allele, allele_depth = 2) == parse_allele("A*1101")
     @test limit_hla_accuracy(parse_allele("A11")) == parse_allele("A*11")
 end
 

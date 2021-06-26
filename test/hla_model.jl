@@ -1,29 +1,3 @@
-@testset "phylogeny_information(::AbstractHLAModel, ::AbstractHLAData, ::Vector{Replacement})" begin
-    ds = Escape.HLADataset("Test")
-    m = Escape.HLAModel{4}()
-    data = ds.data[1]
-    r = Escape.replacements(ds.data[1])
-
-    @test @suppress collect(Escape.phylogeny_information(m, data, r)) isa Matrix
-end
-
-@testset "epitope_information(::AbstractHLAModel, ::AbstractHLAData, ::Vector{Replacement}, ::Int)" begin
-    ds = Escape.HLADataset("Test")
-    m = Escape.HLAModel{4}()
-    data = ds.data[1]
-    r = Escape.replacements(ds.data[1])
-
-    @test @suppress collect(Escape.epitope_information(m, data, r, 1)) isa Matrix
-end
-
-@testset "stan_input(::AbstractHLAModel, ::AbstractHLAData)" begin
-    ds = Escape.HLADataset("Test")
-    m = Escape.HLAModel{4}()
-    data = ds.data[1]
-
-    @test Escape.stan_input(m, data) isa Dict
-end
-
 @testset "Escape.run(::HLAModel, data::AbstractHLAData)" begin
     ds = Escape.HLADataset("Test")
     m = Escape.HLAModel{4}()

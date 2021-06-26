@@ -30,15 +30,15 @@ function HLAType(::Missing)
     HLAType((missing, missing, missing, missing, missing, missing))
 end
 
-function hla_matrix(data::Vector{HLAType}; depth::Int = 1)
-    alleles = sort(unique_alleles(data, depth = depth))
+function hla_matrix(data::Vector{HLAType}; allele_depth::Int = 1)
+    alleles = sort(unique_alleles(data, allele_depth = allele_depth))
     m = zeros(Int, length(data), length(alleles))
 
     for i in eachindex(data)
         hla_type = data[i]
         for allele in hla_type.alleles
-            a = limit_hla_accuracy(allele, depth = depth)
-            (ismissing(a) || hla_accuracy(a) != depth) && continue
+            a = limit_hla_accuracy(allele, allele_depth = allele_depth)
+            (ismissing(a) || hla_accuracy(a) != allele_depth) && continue
 
             m[i, findfirst(x -> x == a, alleles)] = 1
         end
@@ -47,8 +47,8 @@ function hla_matrix(data::Vector{HLAType}; depth::Int = 1)
     return m
 end
 
-function hla_matrix_standardized(data::Vector{HLAType}; depth::Int = 1)
-    alleles = sort(unique_alleles(data, depth = depth))
+function hla_matrix_standardized(data::Vector{HLAType}; allele_depth::Int = 1)
+    alleles = sort(unique_alleles(data, allele_depth = allele_depth))
     m = zeros(Float64, length(data), length(alleles))
 
     for (i, allele) in enumerate(alleles)
@@ -77,7 +77,7 @@ function Base.in(allele::HLAAllele, hla_type::HLAType)
     for a in hla_type.alleles
         ismissing(a) && continue
 
-        if allele == limit_hla_accuracy(a, depth = hla_accuracy(allele))
+        if allele == limit_hla_accuracy(a, allele_depth = hla_accuracy(allele))
             return true
         end
     end
@@ -211,13 +211,13 @@ function Base.rand(::Type{HLAType}, d::Int)
     return [rand(HLAType) for i in 1:d]
 end
 
-function unique_alleles(hla_types::Vector{HLAType}; depth::Int = 1)
+function unique_alleles(hla_types::Vector{HLAType}; allele_depth::Int = 1)
     alleles = Vector{HLAAllele}()
     
     for hla_type in hla_types
         for allele in hla_type.alleles
-            a = limit_hla_accuracy(allele, depth = depth)
-            (ismissing(a) || hla_accuracy(a) != depth) && continue
+            a = limit_hla_accuracy(allele, allele_depth = allele_depth)
+            (ismissing(a) || hla_accuracy(a) != allele_depth) && continue
 
             if a ∉ alleles
                 push!(alleles, a)
@@ -228,17 +228,17 @@ function unique_alleles(hla_types::Vector{HLAType}; depth::Int = 1)
     return alleles
 end
 
-function limit_hla_accuracy(::Missing; depth::Int = 1)
+function limit_hla_accuracy(::Missing; allele_depth::Int = 1)
     return missing
 end
 
-function limit_hla_accuracy(s::HLAAllele; depth::Int = 1)
-    1 <= depth <= 5 || error("depth must be between 1 and 5.")
+function limit_hla_accuracy(s::HLAAllele; allele_depth::Int = 1)
+    1 <= allele_depth <= 5 || error("allele_depth must be between 1 and 5.")
 
     HLA_components::Vector{Union{Missing, String}} = [missing for i in 1:6]
     HLA_components[1] = s.gene
     fields = fieldnames(HLAAllele)
-    for i in 2:(depth + 1)
+    for i in 2:(allele_depth + 1)
         HLA_components[i] = getfield(s, fields[i]) 
     end
 

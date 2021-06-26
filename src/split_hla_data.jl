@@ -4,6 +4,8 @@ struct SplitHLAData <: AbstractHLAData
     hla_types::Vector{HLAType}
     tree::Union{Missing, PhylogeneticTree}
     stan_input::Dict{String, Any}
+    allele_depth::Int
+    replacement_mincount::Int
     original_data::HLAData
     split::UnitRange{Int64}
     split_idx::Int
@@ -14,6 +16,8 @@ struct SplitHLAData <: AbstractHLAData
         hla_types::Vector{HLAType},
         tree::Union{Missing, PhylogeneticTree},
         stan_input::Union{Missing, Dict{String, Any}},
+        allele_depth::Int,
+        replacement_mincount::Int,
         original_data::HLAData,
         split::UnitRange{Int64},
         split_idx::Int
@@ -35,14 +39,15 @@ struct SplitHLAData <: AbstractHLAData
             is_valid(stan_input) || throw(m)
         end
         
-        new(name, records, hla_types, tree, stan_input, original_data, split, split_idx)
+        new(name, records, hla_types, tree, stan_input, allele_depth, replacement_mincount,
+            original_data, split, split_idx)
     end
 end
 
 function split_hla_data(data::HLAData, n::Int = 10)
     split_data = SplitHLAData[]
-    replacements = Escape.replacements(data, mincount = 1)
-    stan_input = Escape.stan_input(HLAModel{4}(), data)
+    replacements = Escape.replacements(data)
+    stan_input = Escape.stan_input(data)
     R = stan_input["R"]
     splits = Iterators.partition(1:R, ceil(Int, R // n))
 
@@ -52,7 +57,7 @@ function split_hla_data(data::HLAData, n::Int = 10)
 
         stan_input_split["Z"] = stan_input_split["Z"][split, :]
         stan_input_split["rs"] = map(x -> findfirst(y -> y == x, split), 
-            stan_input_split["rs"][in_split])
+        stan_input_split["rs"][in_split])
         stan_input_split["idx"] = stan_input_split["idx"][in_split]
         stan_input_split["y"] = stan_input_split["y"][in_split]
         stan_input_split["N"] = length(in_split)
@@ -60,7 +65,7 @@ function split_hla_data(data::HLAData, n::Int = 10)
         stan_input_split["phy"] = stan_input_split["phy"][split, :]
         
         split_data_ = SplitHLAData(data.name, data.records, data.hla_types, data.tree,
-            stan_input_split, data, split, i)
+            stan_input_split, allele_depth(data), replacement_mincount(data), data, split, i)
         
         @assert length(Escape.replacements(split_data_)) == stan_input_split["R"]
         

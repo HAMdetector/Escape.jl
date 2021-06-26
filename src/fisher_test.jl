@@ -9,12 +9,11 @@ struct FisherTestResult
     log_odds::Vector{Dict{HLAAllele, Float64}}
 end
 
-function Escape.run(model::FisherTest, data::AbstractHLAData; fdr::Bool = false,
-                    mincount::Int = 1, depth::Int = 1)
+function Escape.run(model::FisherTest, data::AbstractHLAData; fdr::Bool = false)
 
-    r = replacements(data, mincount = mincount)
-    m = hla_matrix(data.hla_types; depth = depth)
-    alleles = sort(unique_alleles(data.hla_types, depth = depth))
+    r = replacements(data)
+    m = hla_matrix(data.hla_types; allele_depth = allele_depth)
+    alleles = sort(unique_alleles(data.hla_types, allele_depth = allele_depth))
 
     counts = [Dict{HLAAllele, Array{Int, 2}}() for _ in 1:length(r)]
     p_values = [Dict{HLAAllele, Float64}() for _ in 1:length(r)]
@@ -56,11 +55,11 @@ function adjust_p_values!(x::Vector{Dict{HLAAllele, Float64}})
 end
 
 function Escape.run(model::FisherTest, data::AbstractHLAData, replacement::Replacement;
-                    wp = WorkerPool(workers()), depth::Int = 1)
+                    wp = WorkerPool(workers()), allele_depth::Int = 1)
     y = targets(replacement, data)
-    m = hla_matrix(data.hla_types; depth = depth)
+    m = hla_matrix(data.hla_types; allele_depth = allele_depth)
 
-    alleles = sort(unique_alleles(data.hla_types, depth = depth))
+    alleles = sort(unique_alleles(data.hla_types, allele_depth = allele_depth))
 
     counts = Dict{HLAAllele, Array{Int, 2}}()
     p_values = Dict{HLAAllele, Float64}()

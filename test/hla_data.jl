@@ -2,16 +2,68 @@
     fasta_path = joinpath(@__DIR__, "data", "test.fasta")
     hla_types = rand(HLAType, 5)
 
-    @test typeof(HLAData("test", fasta_path, hla_types, missing, missing)) <: AbstractHLAData
-    @test HLAData("test", fasta_path, hla_types, missing, missing) isa HLAData
+    @test typeof(HLAData("test", fasta_path, hla_types, missing, missing, 
+        allele_depth = 1, replacement_mincount = 1)) <: AbstractHLAData
+    @test HLAData("test", fasta_path, hla_types, missing, missing, 
+        allele_depth = 1, replacement_mincount = 1) isa HLAData
 
     tree = phylogenetic_tree("(4:1.2,5:1.5,(1:0.5,(2:1.6,3:0.7):0.5):0.6);")
-    @test typeof(HLAData("test", fasta_path, hla_types, tree, missing)) <: AbstractHLAData
-    @test HLAData("test", fasta_path, hla_types, tree, missing) isa HLAData
+    @test typeof(HLAData("test", fasta_path, hla_types, tree, missing, 
+        allele_depth = 1, replacement_mincount = 1)) <: AbstractHLAData
+    @test HLAData("test", fasta_path, hla_types, tree, missing, 
+        allele_depth = 1, replacement_mincount = 1) isa HLAData
 
     wrong_tree = phylogenetic_tree("(X:1.2,5:1.5,(1:0.5,(2:1.6,3:0.7):0.5):0.6);")
     wrong_tree_2 = phylogenetic_tree("(3:0.3,4:0.4)5:0.5);")
 
-    @test_throws ErrorException HLAData("test", fasta_path, hla_types, wrong_tree, missing) 
-    @test_throws DimensionMismatch HLAData("test", fasta_path, hla_types, wrong_tree_2, missing)
+    @test_throws ErrorException HLAData(
+        "test", fasta_path, hla_types, wrong_tree, missing, 
+        allele_depth = 1, replacement_mincount = 1
+    ) 
+    @test_throws DimensionMismatch HLAData(
+        "test", fasta_path, hla_types, wrong_tree_2, missing, 
+        allele_depth = 1, replacement_mincount = 1
+    )
+
+    @test_throws ErrorException HLAData(
+        "test", fasta_path, hla_types, tree, missing, 
+        allele_depth = 3, replacement_mincount = 1
+    )
+end
+
+@testset "check_inputs(::String, ::String))" begin
+    alignment_file = joinpath(@__DIR__, "data", "test_large_annotated_2_digits.fasta")
+    tree_file = joinpath(@__DIR__, "data", "phylogeny.tree")
+
+    @test isnothing(Escape.check_inputs(alignment_file, tree_file))
+    @test_throws ArgumentError Escape.check_inputs(
+        joinpath(@__DIR__, "data", "test.fasta"), tree_file
+    )
+
+    @test_throws ArgumentError Escape.check_inputs(
+        alignment_file, joinpath(@__DIR__, "data", "test.tree")
+    )
+end
+
+@testset "phylogeny_information(::AbstractHLAData, ::Vector{Replacement})" begin
+    ds = Escape.HLADataset("Test")
+    data = ds.data[1]
+    r = Escape.replacements(ds.data[1])
+
+    @test @suppress collect(Escape.phylogeny_information(data, r)) isa Matrix
+end
+
+@testset "epitope_information(::AbstractHLAData, ::Vector{Replacement}, ::Int)" begin
+    ds = Escape.HLADataset("Test")
+    data = ds.data[1]
+    r = Escape.replacements(ds.data[1])
+
+    @test @suppress collect(Escape.epitope_information(data, r, 1)) isa Matrix
+end
+
+@testset "compute_stan_input(::AbstractHLAData)" begin
+    ds = Escape.HLADataset("Test")
+    data = ds.data[1]
+
+    @test @suppress Escape.compute_stan_input(data) isa Dict
 end

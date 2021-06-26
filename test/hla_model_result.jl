@@ -4,7 +4,7 @@
     if !isfile(joinpath(@__DIR__, "data", "result.jls"))
         result = @suppress Escape.run(
             Escape.HLAModel{4}(), Escape.HLADataset("Test").data[1], 
-            mincount = 1, iter = 10, chains = 1
+            iter = 10, chains = 1
         )
 
         serialize(joinpath(@__DIR__, "data", "result.jls"), result)
@@ -22,7 +22,6 @@ end
     if !isfile(joinpath(@__DIR__, "data", "result.jls"))
         result = @suppress Escape.run(
             Escape.HLAModel{4}(), Escape.HLADataset("Test").data[1],
-            mincount = 1,
             result_dir = tempdir(),
             result_name = splitdir(tmp)[end],
             iter = 200, warmup = 200, chains = 4

@@ -1,10 +1,11 @@
 function epitope_feature_matrix(
-    data::AbstractHLAData; rank_threshold::Real = 2, depth::Int = 1,
+    data::AbstractHLAData; rank_threshold::Real = 2, allele_depth::Int = 1,
 )
-    df = epitope_prediction(data, rank_threshold = rank_threshold, depth = depth)
+    df = epitope_prediction(data, rank_threshold = rank_threshold, 
+        allele_depth = allele_depth)
     
     hla_types = Escape.hla_types(data)
-    alleles = sort(unique_alleles(hla_types, depth = depth))
+    alleles = sort(unique_alleles(hla_types, allele_depth = allele_depth))
     
     positions = sequence_length(records(data))
 
@@ -20,10 +21,13 @@ function epitope_feature_matrix(
     return m
 end
 
-function epitope_prediction(data::AbstractHLAData; rank_threshold::Real = 2, depth::Int = 1)
+function epitope_prediction(data::AbstractHLAData; 
+    rank_threshold::Real = 2, allele_depth::Int = 1
+)
+    
     records = Escape.records(data)
     consensus = replace(consensus_sequence(records), '-' => 'X')
-    alleles = unique_alleles(hla_types(data), depth = depth)
+    alleles = unique_alleles(hla_types(data), allele_depth = allele_depth)
 
     df = epitope_prediction(consensus, alleles, rank_threshold = rank_threshold)
 
@@ -34,7 +38,9 @@ function epitope_prediction(
     query::String, alleles::Vector{HLAAllele};
     rank_threshold::Real = 100
 )
-    alleles = intersect(alleles, valid_alleles())
+    @assert all(hla_accuracy.(alleles) .== hla_accuracy(alleles[1]))
+    
+    alleles = intersect(alleles, valid_alleles(; allele_depth = hla_accuracy(alleles[1])))
     alleles = string.(alleles)
     output_file = tempname()
 
@@ -54,12 +60,15 @@ function epitope_prediction(
     return df
 end
 
-function valid_alleles()
+function valid_alleles(; allele_depth::Int = 1)
     mhcflurry_output = @suppress read(`mhcflurry-predict --list-supported-alleles`, String)
     valid_allele_strings = split(mhcflurry_output, '\n')
     filter!(x -> startswith(x, "HLA"), valid_allele_strings)
 
-    valid_alleles = map(x -> limit_hla_accuracy(parse_allele(x)), valid_allele_strings)
+    valid_alleles = map(x -> limit_hla_accuracy(
+        parse_allele(x), allele_depth = allele_depth), 
+        valid_allele_strings
+    )
 
     return unique(skipmissing(valid_alleles))
 end

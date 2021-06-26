@@ -1,7 +1,7 @@
 @testset "Loo" begin
     result = @suppress Escape.run(
         Escape.HLAModel{4}(), Escape.HLADataset("Test").data[1], 
-        mincount = 1, iter = 10, warmup = 10, chains = 4, seed = 123
+        iter = 10, warmup = 10, chains = 4, seed = 123
     )
 
     sf = Escape.stanfit(result)
