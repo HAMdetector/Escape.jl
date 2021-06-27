@@ -37,7 +37,7 @@ end
     @test isnothing(Escape.check_hla_matrix([0 0 1; 1 1 1; 1 0 1]))
 end
 
-@testset "check_inputs(::AbstractString, ::AbstractString))" begin
+@testset "check_inputs(::String, ::String))" begin
     alignment_file = joinpath(@__DIR__, "data", "test_large_annotated_2_digits.fasta")
     tree_file = joinpath(@__DIR__, "data", "phylogeny.tree")
 
@@ -49,6 +49,40 @@ end
     @test_throws ArgumentError Escape.check_inputs(
         alignment_file, joinpath(@__DIR__, "data", "test.tree")
     )
+end
+
+@testset "check_inputs(::String, ::String, ::String)" begin
+    alignment_file = joinpath(@__DIR__, "data", "test_large.fasta")
+    tree_file = joinpath(@__DIR__, "data", "phylogeny.tree")
+    hla_annotation_file = joinpath(@__DIR__, "data", "hla_annotation_2_digits.csv")
+
+    @test_throws ArgumentError Escape.check_inputs(
+        joinpath(@__DIR__, "data", "no_alignment.fasta"), tree_file, hla_annotation_file
+    )
+    @test_throws ArgumentError Escape.check_inputs(
+        alignment_file, joinpath(@__DIR__, "data", "no_phylogeny.tree"), hla_annotation_file
+    )
+    @test_throws ArgumentError Escape.check_inputs(
+        alignment_file, tree_file, joinpath(@__DIR__, "data", "no_annotation.csv")
+    )
+    @test_throws ArgumentError Escape.check_inputs(
+        joinpath(@__DIR__, "data", "test.fasta"), tree_file, hla_annotation_file
+    )
+    @test_throws ArgumentError Escape.check_inputs(
+        joinpath(@__DIR__, "data", "test_large_wrong_id.fasta"), 
+        tree_file, 
+        hla_annotation_file
+    )
+    @test_throws ArgumentError Escape.check_inputs(
+        alignment_file, 
+        joinpath(@__DIR__, "data", "phylogeny_id_wrong_leaf.tree"), 
+        hla_annotation_file
+    )
+
+    @test Escape.check_inputs(alignment_file, tree_file, hla_annotation_file) |> isnothing
+
+    tree_file = joinpath(@__DIR__, "data", "phylogeny_id_leaves.tree")
+    @test Escape.check_inputs(alignment_file, tree_file, hla_annotation_file) |> isnothing
 end
 
 @testset "hla_annotation_df(::String)" begin

@@ -142,6 +142,45 @@ function hla_annotation_df(hla_annotation_file::String)
     return parsed_df
 end
 
+function check_inputs(alignment_file, tree_file, hla_annotation_file)
+    alignment_error_string = "Alignment file $alignment_file does not exist."
+    tree_error_string  = "Phylogenetic tree file $tree_file does not exist."
+    hla_annotation_string = "HLA annotation file $hla_annotation_file does not exist."
+
+    isfile(alignment_file) || throw(ArgumentError(alignment_error_string))
+    isfile(tree_file) || throw(ArgumentError(tree_error_string))
+    isfile(hla_annotation_file) || throw(ArgumentError(hla_annotation_string))
+
+    df = hla_annotation_df(hla_annotation_file)
+    r = records(alignment_file)
+    tree = phylogenetic_tree(readline(tree_file))
+    leaf_names = Set(map(x -> get_property(tree, x, :name), leaves(tree)))
+
+    if length(leaf_names) != length(r)
+        throw(ArgumentError("Number of leaves of the phylogenetic tree " * 
+            "($(length(leaf_names))) does not match number of records " * 
+            "($(length(r)))"))
+    end
+
+    idx_labeled_leaves = Set(leaf_names) == Set(string.(1:length(r))) 
+
+    for record in r
+        annotation = FASTA.identifier(record)
+        
+        if !(annotation ∈ df[!, :identifier])
+            throw(ArgumentError("Sequence with ID $annotation does not " * 
+                "exist in the HLA annotation file."))
+        end
+
+        if !(idx_labeled_leaves) & !(annotation ∈ leaf_names) 
+            throw(ArgumentError("Sequence with ID $annotation does not " *
+                "exist in phylogenetic tree."))
+        end
+    end
+
+    return nothing
+end
+
 function check_inputs(alignment_file, tree_file)
     alignment_error_string = "Alignment file $alignment_file does not exist."
     tree_error_string  = "Phylogenetic tree file $tree_file does not exist."
