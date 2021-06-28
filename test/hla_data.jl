@@ -123,3 +123,47 @@ end
 
     @test @suppress Escape.compute_stan_input(data) isa Dict
 end
+
+@testset "HLAData(; kwargs...)" begin
+    alignment_file_2_digits = joinpath(@__DIR__, "data", 
+        "test_large_annotated_2_digits.fasta")
+    alignment_file_4_digits = joinpath(@__DIR__, "data", 
+        "test_large_annotated_4_digits.fasta")
+    alignment_file_ID = joinpath(@__DIR__, "data", "test_large.fasta")
+    tree_file = joinpath(@__DIR__, "data", "phylogeny.tree")
+    hla_annotation_file_2_digits = joinpath(@__DIR__, "data", "hla_annotation_2_digits.csv")
+    hla_annotation_file_4_digits = joinpath(@__DIR__, "data", "hla_annotation_4_digits.csv")
+
+
+    @test @suppress HLAData(
+        alignment_file = alignment_file_2_digits, 
+        tree_file = tree_file,
+        replacement_mincount = 2
+    ) isa Escape.HLAData
+
+    @test @suppress HLAData(
+        alignment_file = alignment_file_4_digits, 
+        tree_file = tree_file,
+        allele_depth = 2
+    ) isa Escape.HLAData
+
+    @test @suppress HLAData(
+        alignment_file = alignment_file_ID, 
+        tree_file = tree_file, 
+        hla_annotation_file = hla_annotation_file_2_digits,
+    ) isa Escape.HLAData
+
+    @test @suppress HLAData(
+        alignment_file = alignment_file_ID,
+        tree_file = tree_file,
+        hla_annotation_file = hla_annotation_file_4_digits,
+        allele_depth = 1
+    ) isa Escape.HLAData
+
+    @test @suppress HLAData(
+        alignment_file = alignment_file_ID,
+        tree_file = tree_file,
+        hla_annotation_file = hla_annotation_file_4_digits,
+        allele_depth = 2
+    ) isa Escape.HLAData
+end

@@ -87,6 +87,7 @@ function HLAData(;
 )
 
     tree = phylogenetic_tree(readline(tree_file))
+
     if hla_annotation_file == ""
         check_inputs(alignment_file, tree_file)
         hla_types = let 
@@ -100,15 +101,30 @@ function HLAData(;
 
             hla_types
         end
+    else
+        check_inputs(alignment_file, tree_file, hla_annotation_file)
+        df = hla_annotation_df(hla_annotation_file)
+        hla_types = let 
+            hla_types = HLAType[]
 
-        data = Escape.HLAData(name, alignment_file, hla_types, tree, missing,
-            allele_depth = allele_depth, replacement_mincount = replacement_mincount)
-        stan_input = Escape.stan_input(Escape.HLAModel{4}(), data, 
-            allele_depth = allele_depth, replacement_mincount = replacement_mincount)
+            for row in eachrow(df)
+                push!(hla_types, HLAType(tuple(
+                    row[:A1], row[:A2], row[:B1], row[:B2], row[:C1], row[:C2]
+                )))
+            end
 
-        return HLAData(name, alignment_file, hla_types, tree, stan_input, 
-            allele_depth = allele_depth, replacement_mincount = replacement_mincount)
+            hla_types
+        end
     end
+
+    data = Escape.HLAData(name, alignment_file, hla_types, tree, missing,
+        allele_depth = allele_depth, replacement_mincount = replacement_mincount)
+    stan_input = Escape.compute_stan_input(
+        data, allele_depth = allele_depth, replacement_mincount = replacement_mincount
+    )
+
+    return HLAData(name, alignment_file, hla_types, tree, stan_input, 
+        allele_depth = allele_depth, replacement_mincount = replacement_mincount)
 end
 
 function hla_annotation_df(hla_annotation_file::String)
