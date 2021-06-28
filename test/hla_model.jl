@@ -39,10 +39,6 @@ end
         data, iter = 5, warmup = 5, chains = 1
     ) isa Escape.HLAModelResult
 
-    @test @suppress Escape.run_model(
-        data, iter = 5, warmup = 5, chains = 1
-    ) isa Escape.HLAModelResult
-
     save_file = tempname() * ".jld2"
     @test !isfile(save_file)
     @suppress Escape.run_model(
@@ -51,6 +47,21 @@ end
     )
     @test isfile(save_file)
     rm(save_file)
+end
+
+@testset "Escape.run_model(::AbstractHLAData)" begin
+    alignment_file_2_digits = joinpath(@__DIR__, "data", 
+    "test_large_annotated_2_digits.fasta")
+    tree_file = joinpath(@__DIR__, "data", "phylogeny.tree")
+
+    data = @suppress HLAData(
+        alignment_file = alignment_file_2_digits, 
+        tree_file = tree_file
+    )
+
+    @test @suppress Escape.run_model(
+        data, iter = 5, warmup = 5, chains = 1
+    ) isa Escape.HLAModelResult
 
     save_file = tempname() * ".jld2"
     @test !isfile(save_file)
@@ -59,5 +70,4 @@ end
     )
     @test isfile(save_file)
     rm(save_file)
-
 end
