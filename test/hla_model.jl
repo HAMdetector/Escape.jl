@@ -36,18 +36,18 @@ end
 
     @test @suppress Escape.run_model(
         Escape.HLAModel{3}(), 
-        data, iter = 20, warmup = 20, chains = 1
+        data, iter = 5, warmup = 5, chains = 1
     ) isa Escape.HLAModelResult
 
     @test @suppress Escape.run_model(
-        data, iter = 20, warmup = 20, chains = 1
+        data, iter = 5, warmup = 5, chains = 1
     ) isa Escape.HLAModelResult
 
     save_file = tempname() * ".jld2"
     @test !isfile(save_file)
     @suppress Escape.run_model(
         Escape.HLAModel{3}(), 
-        data, iter = 20, warmup = 20, chains = 1, save_file = save_file
+        data, iter = 5, warmup = 5, chains = 1, save_file = save_file
     )
     @test isfile(save_file)
     rm(save_file)
@@ -55,7 +55,7 @@ end
     save_file = tempname() * ".jld2"
     @test !isfile(save_file)
     @suppress Escape.run_model(
-        data, iter = 20, warmup = 20, chains = 1, save_file = save_file
+        data, iter = 5, warmup = 5, chains = 1, save_file = save_file
     )
     @test isfile(save_file)
     rm(save_file)
