@@ -49,6 +49,15 @@ end
     @test Base.summarysize(res) < previous_size
 end
 
+@testset "diagnostics(::HLAModelResult)" begin
+    ds = Escape.HLADataset("Test")
+    data = ds.data[1]
+
+    res = @suppress Escape.run(Escpae.HLAModel{1}(), data, iter = 5, warmup = 5, chians = 1)
+
+    @test Escape.diagnostics(res) == res.sf.diagnostics
+end
+
 @testset "load_result(::String)" begin
     ds = Escape.HLADataset("Test")
 

@@ -80,6 +80,12 @@ function reduce_size!(result::HLAModelResult)
     return result
 end
 
+function diagnostics(result::HLAModelResult)
+    sf = stanfit(result)
+    
+    return sf.diagnostics
+end
+
 hla_model(result::HLAModelResult) = result.model
 hla_data(result::HLAModelResult) = result.data
 stanfit(result::HLAModelResult) = result.sf
