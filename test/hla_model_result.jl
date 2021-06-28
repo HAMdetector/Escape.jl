@@ -48,3 +48,13 @@ end
 
     @test Base.summarysize(res) < previous_size
 end
+
+@testset "load_result(::String)" begin
+    ds = Escape.HLADataset("Test")
+
+    save_file = tempname() * ".jld2"
+    res = @suppress Escape.run_model(ds.data[1], warmup = 10, iter = 10, chains = 1, 
+        save_file = save_file)
+
+    @test Escape.load_result(save_file) isa Escape.HLAModelResult
+end

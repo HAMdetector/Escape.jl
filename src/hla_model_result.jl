@@ -1,3 +1,11 @@
+function load_result(save_file::String) 
+    isfile(save_file) || error("File $save_file does not exist.")
+
+    result = load(save_file)["result"]
+
+    return result
+end
+
 function replacement_summary(
     result::HLAModelResult; 
     fdr::Bool = false,

@@ -1,21 +1,48 @@
 function run_model(
     data::AbstractHLAData;
     keep_all_parameters::Bool = false,
+    save_file::String = "",
     stan_kwargs...
 ) where T
 
-    return Escape.run(
+    if save_file != ""
+        save(save_file, Dict("result" => "test"))
+        rm(save_file)
+    end
+
+    result = Escape.run(
         Escape.HLAModel{4}(), data; keep_all_parameters = keep_all_parameters, stan_kwargs...
     )
+
+    if save_file != ""
+        save(save_file, Dict("result" => result))
+    end
+
+    return result
 end
 
 function run_model(
     model::HLAModel{T}, data::AbstractHLAData;
     keep_all_parameters::Bool = false,
+    save_file::String = "",
     stan_kwargs...
 ) where T
 
-    return Escape.run(model, data; keep_all_parameters = keep_all_parameters, stan_kwargs...)
+    if save_file != ""
+        save(save_file, Dict("result" => "test"))
+        rm(save_file)
+    end
+
+    result = Escape.run(
+        model, data; 
+        keep_all_parameters = keep_all_parameters, stan_kwargs...
+    )
+
+    if save_file != ""
+        save(save_file, Dict("result" => result))
+    end
+
+    return result
 end
 
 function Escape.run(
