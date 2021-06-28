@@ -166,4 +166,29 @@ end
         hla_annotation_file = hla_annotation_file_4_digits,
         allele_depth = 2
     ) isa Escape.HLAData
+
+    save_file = tempname() * ".jld2"
+    @test !isfile(save_file)
+    @suppress HLAData(
+        alignment_file = alignment_file_2_digits, 
+        tree_file = tree_file,
+        save_file = save_file
+    ) isa Escape.HLAData
+    @test isfile(save_file)
+    rm(save_file)
+end
+
+@testset "load_data(::String)" begin
+    alignment_file_2_digits = joinpath(@__DIR__, "data", 
+    "test_large_annotated_2_digits.fasta")
+    tree_file = joinpath(@__DIR__, "data", "phylogeny.tree")
+
+    save_file = tempname() * ".jld2"
+    @suppress HLAData(
+        alignment_file = alignment_file_2_digits, 
+        tree_file = tree_file,
+        save_file = save_file
+    ) isa Escape.HLAData
+
+    @test Escape.load_data(save_file) isa Escape.HLAData
 end

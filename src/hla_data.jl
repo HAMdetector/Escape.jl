@@ -1,5 +1,13 @@
 export HLAData
 
+function load_data(save_file::String) 
+    isfile(save_file) || error("File $save_file does not exist.")
+
+    data = load(save_file)["data"]
+
+    return data
+end
+
 mutable struct HLAData <: AbstractHLAData
     name::String
     records::Vector{FASTX.FASTA.Record}
@@ -69,7 +77,7 @@ function HLAData(
     tree::Union{Missing, PhylogeneticTree},
     stan_input::Union{Missing, Dict{String, Any}};
     allele_depth::Int = 1,
-    replacement_mincount::Int = 1,
+    replacement_mincount::Int = 1
 )   
     records = Escape.records(fasta_file)
 
@@ -83,8 +91,14 @@ function HLAData(;
     hla_annotation_file::String = "",
     name = splitext(basename(alignment_file))[1],
     allele_depth = 1,
-    replacement_mincount = 1
+    replacement_mincount = 1,
+    save_file = ""
 )
+
+    if save_file != ""
+        save(save_file, Dict("data" => "test"))
+        rm(save_file)
+    end
 
     tree = phylogenetic_tree(readline(tree_file))
 
@@ -123,8 +137,14 @@ function HLAData(;
         data, allele_depth = allele_depth, replacement_mincount = replacement_mincount
     )
 
-    return HLAData(name, alignment_file, hla_types, tree, stan_input, 
+    data = HLAData(name, alignment_file, hla_types, tree, stan_input, 
         allele_depth = allele_depth, replacement_mincount = replacement_mincount)
+
+    if save_file != ""
+        save(save_file, Dict("data" => data))
+    end
+
+    return data
 end
 
 function hla_annotation_df(hla_annotation_file::String)
