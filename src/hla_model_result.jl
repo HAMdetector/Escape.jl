@@ -32,7 +32,6 @@ function replacement_summary(
         n_replacement_with_hla = Int[]
     )
 
-    # using length(rs) to circumvent wrong data for blockwise runs
     R = si["R"]
     D = si["D"]
     Z = si["Z"]
@@ -52,11 +51,6 @@ function replacement_summary(
             n_with_hla = fisher_p ? fisher.counts[fisher_idx][alleles[d]][1, 1] : 0
             
             z = Z[r, d]
-			# if r > size(Z, 1)
-			# 	z = 0
-			# else 
-			# 	z = Z[r, d]
-			# end
 
             push!(df, 
                 [ 
