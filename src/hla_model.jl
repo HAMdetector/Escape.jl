@@ -1,3 +1,23 @@
+function run_model(
+    data::AbstractHLAData;
+    keep_all_parameters::Bool = false,
+    stan_kwargs...
+) where T
+
+    return Escape.run(
+        Escape.HLAModel{4}(), data; keep_all_parameters = keep_all_parameters, stan_kwargs...
+    )
+end
+
+function run_model(
+    model::HLAModel{T}, data::AbstractHLAData;
+    keep_all_parameters::Bool = false,
+    stan_kwargs...
+) where T
+
+    return Escape.run(model, data; keep_all_parameters = keep_all_parameters, stan_kwargs...)
+end
+
 function Escape.run(
     model::HLAModel{T}, data::AbstractHLAData;
     keep_all_parameters::Bool = false,

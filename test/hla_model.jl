@@ -23,3 +23,23 @@ end
     @test !("aux1_tau.1" in keys(res.sf.result[1]))
     @test new_size < previous_size
 end
+
+@testset "Escape.run_model(::HLAModel, ::AbstractHLAData)" begin
+    alignment_file_2_digits = joinpath(@__DIR__, "data", 
+        "test_large_annotated_2_digits.fasta")
+    tree_file = joinpath(@__DIR__, "data", "phylogeny.tree")
+
+    data = @suppress HLAData(
+        alignment_file = alignment_file_2_digits, 
+        tree_file = tree_file
+    )
+
+    @test @suppress Escape.run_model(
+        Escape.HLAModel{3}(), 
+        data, iter = 50, warmup = 50, chains = 1
+    ) isa Escape.HLAModelResult
+
+    @test @suppress Escape.run_model(
+        data, iter = 50, warmup = 50, chains = 1
+    ) isa Escape.HLAModelResult
+end
