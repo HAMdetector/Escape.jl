@@ -233,6 +233,14 @@ git-tree-sha1 = "04690cc5008b38ecbdfede949220bc7d9ba26397"
 uuid = "7746bdde-850d-59dc-9ae8-88ece973131d"
 version = "2.59.0+4"
 
+[[HAMdetector_model_binaries_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "aff2d5db589e40aad1c55c0e49d620b72e99fcc8"
+repo-rev = "master"
+repo-url = "https://github.com/HAMdetector/HAMdetector_model_binaries_jll.jl.git"
+uuid = "42556b90-06fa-5035-9d39-4d53cd3bfd44"
+version = "0.1.0+0"
+
 [[HTTP]]
 deps = ["Base64", "Dates", "IniFile", "MbedTLS", "NetworkOptions", "Sockets", "URIs"]
 git-tree-sha1 = "c9f380c76d8aaa1fa7ea9cf97bddbc0d5b15adc2"

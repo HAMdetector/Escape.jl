@@ -58,11 +58,15 @@ function Escape.run(
     alleles = sort(unique_alleles(Escape.hla_types(data), 
         allele_depth = allele_depth(data)))
 
-    sf = StanInterface.stan(
-        joinpath(@__DIR__, "..", "models", "model_$(T)"), input;
-        stan_args = "adapt delta=0.85 algorithm=hmc engine=nuts max_depth=10",
-        refresh = 1, iter = 1000, warmup = 300, stan_kwargs...
-    )
+    sf = model_1() do exe
+        model_path = exe[begin:end-1] * string(T)
+        
+        StanInterface.stan(
+            model_path, input;
+            stan_args = "adapt delta=0.85 algorithm=hmc engine=nuts max_depth=10",
+            refresh = 1, iter = 1000, warmup = 300, stan_kwargs...
+        )
+    end
 
     !keep_all_parameters && reduce_size!(sf)
 
