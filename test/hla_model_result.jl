@@ -53,7 +53,7 @@ end
     ds = Escape.HLADataset("Test")
     data = ds.data[1]
 
-    res = @suppress Escape.run(Escpae.HLAModel{1}(), data, iter = 5, warmup = 5, chians = 1)
+    res = @suppress Escape.run(Escape.HLAModel{1}(), data, iter = 5, warmup = 5, chains = 1)
 
     @test Escape.diagnostics(res) == res.sf.diagnostics
 end

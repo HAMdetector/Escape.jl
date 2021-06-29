@@ -147,6 +147,10 @@ function HLAData(;
     return data
 end
 
+function Base.show(io::IO, x::HLAData)
+    print(io, """HLAData("$(name(x))", $(length(records(x))) records)""")
+end
+
 function hla_annotation_df(hla_annotation_file::String)
     df = CSV.read(hla_annotation_file, DataFrame)
 
@@ -330,6 +334,13 @@ end
 function phylogeny_information(
     data::AbstractHLAData, r::Vector{Replacement}
 )
+
+    if nworkers() == 1
+        @warn "Calculating phylogeny information on a single worker only. It is strongly " *
+            "advised to add more workers with: \n using Distributed \n " *
+            "addprocs($(Sys.CPU_THREADS)) \n @everywhere using Escape \n"
+    end
+
     R = length(r)
     N = length(data.hla_types)
     tree = phylogenetic_tree(data, verbose = true)
