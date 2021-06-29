@@ -20,12 +20,12 @@ function Escape.HLADataset(::Val{:Test})
     hla_data_2 = HLAData("protein_2", fasta_path, rand(HLAType, 15), missing, missing)
 
     if !isfile(joinpath(sequence_dir, "test_input_1.jls"))
-        input = Escape.stan_input(Escape.HLAModel{4}(), hla_data_1)
+        input = Escape.compute_stan_input(hla_data_1)
         serialize(joinpath(sequence_dir, "test_input_1.jls"), input)
     end
     
     if !isfile(joinpath(sequence_dir, "test_input_2.jls"))
-        input = Escape.stan_input(Escape.HLAModel{4}(), hla_data_2)
+        input = Escape.compute_stan_input(hla_data_2)
         serialize(joinpath(sequence_dir, "test_input_2.jls"), input)
     end
 
