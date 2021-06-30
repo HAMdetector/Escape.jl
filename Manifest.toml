@@ -962,6 +962,14 @@ uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 
+[[raxml_ng_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "d0b168cf16718cc7bffd8e0c5e3a43ed2333da60"
+repo-rev = "main"
+repo-url = "https://github.com/HAMdetector/raxml_ng_jll.jl.git"
+uuid = "43212305-17f8-588b-b284-440d77d456cb"
+version = "1.0.2+0"
+
 [[x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "d713c1ce4deac133e3334ee12f4adff07f81778f"

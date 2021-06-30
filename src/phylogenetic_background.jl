@@ -67,7 +67,7 @@ function L(tree::PhylogeneticTree)
     fasta_file = write_fasta(tree)
     tree_file = write_newick(tree)
 
-    output = read(`raxml-ng --evaluate --msa $fasta_file --tree $tree_file
+    output = read(`$(raxml_ng()) --evaluate --msa $fasta_file --tree $tree_file
         --model BIN --opt-model on --opt-branches off --threads 1 --nofiles`, 
         String)
 
