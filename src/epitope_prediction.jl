@@ -15,6 +15,7 @@ function epitope_feature_matrix(
         allele_idx = findfirst(x -> x == parse_allele(row[:best_allele]), alleles)
         start_idx = row[:pos] + 1
         stop_idx = start_idx + length(row[:peptide]) - 1
+
         m[start_idx:stop_idx, allele_idx] .= 1
     end
 
@@ -39,36 +40,52 @@ function epitope_prediction(
     rank_threshold::Real = 100
 )
     @assert all(hla_accuracy.(alleles) .== hla_accuracy(alleles[1]))
-    
-    alleles = intersect(alleles, valid_alleles(; allele_depth = hla_accuracy(alleles[1])))
-    alleles = string.(alleles)
+    accuracy = min(2, hla_accuracy(alleles[1]))
+
+    valid_4_digits = valid_alleles()
+    filter!(x -> parse(Int, x.field_2) <= 1, valid_4_digits)
+
+    valid_matching_digits = limit_hla_accuracy.(
+        valid_4_digits, 
+        allele_depth = accuracy
+    )
+
+    alleles = valid_4_digits[map(x -> x in alleles, valid_matching_digits)]
+    allele_strings = String[]
     output_file = tempname()
 
-    allele_argument = ""
-    for allele in alleles
-        allele_argument *= allele * ','
+    for allele in string.(alleles)
+        push!(allele_strings, allele[1:5] * allele[7:end])
     end
-    allele_argument = allele_argument[1:end-1]
-
-    @suppress run(`mhcflurry-predict-scan --sequences $query --alleles $allele_argument 
-        --results-all --out $output_file`)
+    
+    @suppress run(
+        `$(Conda.BINDIR)/mhcflurry-predict-scan
+            --alleles $allele_strings 
+            --sequences $query
+            --out $output_file
+            --results-all`
+    )
 
     df = DataFrame(CSV.File(output_file))
     filter!(x -> (x[:affinity_percentile] <= rank_threshold) | 
         (x[:presentation_percentile] <= rank_threshold), df)
 
+    df[!, :best_allele] = Escape.limit_hla_accuracy.(
+        parse_allele.(df[!, :best_allele]), 
+        allele_depth = accuracy
+    ) .|> string
+
     return df
 end
 
-function valid_alleles(; allele_depth::Int = 1)
-    mhcflurry_output = @suppress read(`mhcflurry-predict --list-supported-alleles`, String)
+function valid_alleles()
+    mhcflurry_output = @suppress read(
+        `$(Conda.BINDIR)/mhcflurry-predict --list-supported-alleles`, String
+    )
     valid_allele_strings = split(mhcflurry_output, '\n')
     filter!(x -> startswith(x, "HLA"), valid_allele_strings)
 
-    valid_alleles = map(x -> limit_hla_accuracy(
-        parse_allele(x), allele_depth = allele_depth), 
-        valid_allele_strings
-    )
+    valid_alleles = parse_allele.(valid_allele_strings)
 
     return unique(skipmissing(valid_alleles))
 end
