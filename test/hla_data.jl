@@ -102,7 +102,7 @@ end
 end
 
 @testset "phylogeny_information(::AbstractHLAData, ::Vector{Replacement})" begin
-    ds = Escape.HLADataset("Test")
+    ds = @suppress Escape.HLADataset("Test")
     data = ds.data[1]
     r = Escape.replacements(ds.data[1])
 
