@@ -30,10 +30,10 @@ function phylogenetic_tree(data::AbstractHLAData; model::String = "LG+G+I",
     write_numbered_fasta(data, temp_fasta)
 
     if verbose
-        Base.run(`raxml-ng --msa $temp_fasta --model $model --threads auto 
+        Base.run(`$(raxml_ng()) --msa $temp_fasta --model $model --threads auto 
             --workers auto`)
     else
-        @suppress Base.run(`raxml-ng --msa $temp_fasta --model $model --threads auto 
+        @suppress Base.run(`$(raxml_ng()) --msa $temp_fasta --model $model --threads auto 
         --workers auto`)
     end
     tree = phylogenetic_tree(readline(temp_fasta * ".raxml.bestTree"))
