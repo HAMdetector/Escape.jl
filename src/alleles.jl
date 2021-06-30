@@ -225,7 +225,7 @@ function unique_alleles(hla_types::Vector{HLAType}; allele_depth::Int = 1)
         end
     end
 
-    return alleles
+    return sort(alleles)
 end
 
 function limit_hla_accuracy(::Missing; allele_depth::Int = 1)
@@ -235,14 +235,24 @@ end
 function limit_hla_accuracy(s::HLAAllele; allele_depth::Int = 1)
     1 <= allele_depth <= 5 || error("allele_depth must be between 1 and 5.")
 
-    HLA_components::Vector{Union{Missing, String}} = [missing for i in 1:6]
+    HLA_components = Vector{Union{Missing, String}}(undef, 6)
+    fill!(HLA_components, missing)
+
     HLA_components[1] = s.gene
-    fields = fieldnames(HLAAllele)
-    for i in 2:(allele_depth + 1)
-        HLA_components[i] = getfield(s, fields[i]) 
+    HLA_components[2] = s.field_1
+    
+    if allele_depth >= 2
+        HLA_components[3] = s.field_2
+    elseif allele_depth >= 3
+        HLA_components[4] = s.field_3
+    elseif allele_depth >= 4
+        HLA_components[5] = s.field_4
+    elseif allele_depth == 6
+        HLA_components[6] = s.suffix
     end
 
-    return HLAAllele(HLA_components...)
+    return HLAAllele(HLA_components[1], HLA_components[2], HLA_components[3],
+        HLA_components[4], HLA_components[5], HLA_components[6])
 end
 
 function hla_accuracy(s::HLAAllele)
