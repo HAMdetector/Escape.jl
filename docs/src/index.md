@@ -1,9 +1,17 @@
 # HAMdetector: A Bayesian regression model that integrates information to detect HLA-associated mutations
 
+![](https://github.com/HAMdetector/Escape.jl/actions/workflows/CI.yml/badge.svg)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://hamdetector.github.io/Escape.jl/dev/)
+ [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 Escape.jl (HAMdetector) is a software package for identifying HLA associated substitutions based on annotated sequence data (aligned viral sequences paired to host HLA class I data).
 
 HAMdetector makes use of information from epitope prediction via [MHCflurry 2.0](https://github.com/openvax/mhcflurry) and phylogeny (based on [RAxML-NG](https://github.com/amkozlov/raxml-ng)).
 The model is fit using [Stan](https://github.com/stan-dev/cmdstan).
+
+See the [documentation](https://timholy.github.io/Revise.jl/stable):
+
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://hamdetector.github.io/Escape.jl/dev/)
 
 # Software requirements
 
