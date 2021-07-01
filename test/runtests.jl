@@ -14,6 +14,7 @@ using StanInterface
 using StaticArrays
 using Statistics
 using Suppressor
+using LinearAlgebra
 
 include("alleles.jl")
 include("abstract_hla_model.jl")
