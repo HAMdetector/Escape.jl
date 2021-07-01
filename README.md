@@ -16,8 +16,8 @@ In the Julia REPL, switch to Pkg-mode by typing the `]` character.
 Then add `HAMdetector_registry` to your registry and install the `Escape` package:
 
 ```
-] registry add https://github.com/HAMdetector/HAMdetector_registry.git
-add Escape
+pkg> registry add https://github.com/HAMdetector/HAMdetector_registry.git
+pkg> add Escape
 ```
 
 To make sure that HAMdetector was installed correctly, a large suite of unit tests can be run with `] test Escape`.
