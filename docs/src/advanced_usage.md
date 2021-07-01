@@ -61,13 +61,4 @@ data = HLAData(
     tree_file = "/home/user/Desktop/phylogeny.tree",
     allele_depth = 2
 )
-
-## Speeding up computations
-
-Run-time of the phylogeny calculations can be reduced drastically by
-either setting the `JULIA_NUM_THREADS` environment variable to the number of available
-CPU threads or equivalently by starting julia with `julia -t auto`.
-
-Similarly, you should also make sure to enable multi-threading in CmdStan by specifying
-`STAN_THREADS=true` in the make/local file inside the CmdStan directory, as explained
-in the [CmdStan manual](https://mc-stan.org/docs/cmdstan-guide/parallelization.html).
+```
