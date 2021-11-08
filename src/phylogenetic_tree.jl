@@ -119,12 +119,12 @@ end
 
 function newick_string(tree::PhylogeneticTree)
     graph = Escape.graph(tree)
-    n = LightGraphs.neighbors(graph, 1)
+    n = Graphs.neighbors(graph, 1)
     length(n) == 0 && return "();"
     length(n) == 1 && return "(" * newick_string(graph, n[1]) * ");"
 
-    newick = "(" * newick_string(graph, LightGraphs.neighbors(graph, 1)[1])
-    for n in LightGraphs.neighbors(graph, 1)[2:end]
+    newick = "(" * newick_string(graph, Graphs.neighbors(graph, 1)[1])
+    for n in Graphs.neighbors(graph, 1)[2:end]
         newick *= ","
         newick *= newick_string(graph, n)
     end
@@ -139,11 +139,11 @@ function newick_string(graph::AbstractMetaGraph, v::Int)
     branch_length = get_prop(graph, inneighbors(graph, v)[1], v, :branch_length)
     branch_length = ismissing(branch_length) ? "" : string(branch_length)
     
-    if length(LightGraphs.neighbors(graph, v)) == 0
+    if length(Graphs.neighbors(graph, v)) == 0
         return string(name, branch_length != "" ? ":" : "", branch_length)
     else
-        newick = "(" * newick_string(graph, LightGraphs.neighbors(graph, v)[1])
-        for n in LightGraphs.neighbors(graph, v)[2:end]
+        newick = "(" * newick_string(graph, Graphs.neighbors(graph, v)[1])
+        for n in Graphs.neighbors(graph, v)[2:end]
             newick *= ","
             newick *= newick_string(graph, n)
         end

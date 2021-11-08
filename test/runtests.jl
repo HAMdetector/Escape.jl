@@ -5,7 +5,7 @@ using DataFrames
 using Distributions
 using FASTX
 using HypothesisTests
-using LightGraphs
+using Graphs
 using Loo
 using MetaGraphs
 using Plots
