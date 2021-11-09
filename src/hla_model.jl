@@ -1,3 +1,5 @@
+export run_model
+
 function run_model(
     data::AbstractHLAData;
     keep_all_parameters::Bool = false,

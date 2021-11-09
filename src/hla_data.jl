@@ -1,4 +1,5 @@
 export HLAData
+export load_data
 
 function load_data(save_file::String) 
     isfile(save_file) || error("File $save_file does not exist.")

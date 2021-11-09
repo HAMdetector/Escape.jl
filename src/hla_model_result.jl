@@ -1,3 +1,6 @@
+export load_result
+export replacement_summary
+
 function load_result(save_file::String) 
     isfile(save_file) || error("File $save_file does not exist.")
 
