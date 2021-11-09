@@ -169,12 +169,6 @@ git-tree-sha1 = "f425293f7e0acaf9144de6d731772de156676233"
 uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 version = "0.27.10"
 
-[[Documenter]]
-deps = ["Base64", "Dates", "DocStringExtensions", "IOCapture", "InteractiveUtils", "JSON", "LibGit2", "Logging", "Markdown", "REPL", "Test", "Unicode"]
-git-tree-sha1 = "47f13b6305ab195edb73c86815962d84e31b0f48"
-uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-version = "0.27.3"
-
 [[Downloads]]
 deps = ["ArgTools", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
@@ -236,12 +230,6 @@ deps = ["Combinatorics", "Distributions", "LinearAlgebra", "Random", "Rmath", "R
 git-tree-sha1 = "dc9bb7abfa265e0cf030635315184a476a2dd5f3"
 uuid = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
 version = "0.10.6"
-
-[[IOCapture]]
-deps = ["Logging", "Random"]
-git-tree-sha1 = "f7be53659ab06ddc986428d3a9dcc95f6fa6705a"
-uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
-version = "0.2.2"
 
 [[IOCapture]]
 deps = ["Logging", "Random"]
