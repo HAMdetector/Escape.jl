@@ -35,6 +35,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 raxml_ng_jll = "43212305-17f8-588b-b284-440d77d456cb"
 
 [compat]
+julia = "1.6"
 BioSequences = "2.0.5"
 CSV = "0.9.10"
 Conda = "1.5.2"
@@ -54,5 +55,4 @@ StaticArrays = "1.2.13"
 StatsBase = "0.33.12"
 StatsFuns = "0.9.12"
 Suppressor = "0.2.0"
-julia = "1.6"
 raxml_ng_jll = "1.0.2"
