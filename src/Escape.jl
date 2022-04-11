@@ -2,9 +2,9 @@ module Escape
 
 using Base.Threads
 using LinearAlgebra, Statistics, DelimitedFiles, Distributed, Serialization
-using CSV, StanInterface, Graphs, MetaGraphs, Suppressor, DataFrames,
+using CondaPkg, CSV, StanInterface, Graphs, MetaGraphs, Suppressor, DataFrames,
       HypothesisTests, MultipleTesting, BioSequences, FASTX,
-      StatsBase, StatsFuns, Distributions, Loo, RecipesBase, Base.Threads, Conda,
+      StatsBase, StatsFuns, Distributions, Loo, RecipesBase, Base.Threads,
       StaticArrays, ProgressMeter, JLD2, HAMdetector_model_binaries_jll, raxml_ng_jll
 
 include("alleles.jl")
@@ -25,5 +25,12 @@ include("hla_model_result.jl")
 include("loo.jl")
 include("posterior_predictive_checks.jl")
 include("split_hla_result.jl")
+
+function __init__()
+    CondaPkg.withenv() do
+        run(`mhcflurry-downloads fetch`)
+        run(`mhcflurry-downloads fetch models_class1_presentation`)
+    end
+end
 
 end

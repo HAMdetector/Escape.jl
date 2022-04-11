@@ -1,0 +1,5 @@
+[deps]
+tensorflow = ""
+
+[pip.deps]
+mhcflurry = ""

@@ -1,12 +1,12 @@
 function epitope_feature_matrix(
     data::AbstractHLAData; rank_threshold::Real = 2, allele_depth::Int = 1,
 )
-    df = epitope_prediction(data, rank_threshold = rank_threshold, 
+    df = epitope_prediction(data, rank_threshold = rank_threshold,
         allele_depth = allele_depth)
-    
+
     hla_types = Escape.hla_types(data)
     alleles = sort(unique_alleles(hla_types, allele_depth = allele_depth))
-    
+
     positions = sequence_length(records(data))
 
     m = zeros(positions, length(alleles))
@@ -22,10 +22,10 @@ function epitope_feature_matrix(
     return m
 end
 
-function epitope_prediction(data::AbstractHLAData; 
+function epitope_prediction(data::AbstractHLAData;
     rank_threshold::Real = 2, allele_depth::Int = 1
 )
-    
+
     records = Escape.records(data)
     consensus = replace(consensus_sequence(records), '-' => 'X')
     alleles = unique_alleles(hla_types(data), allele_depth = allele_depth)
@@ -46,7 +46,7 @@ function epitope_prediction(
     filter!(x -> parse(Int, x.field_2) <= 1, valid_4_digits)
 
     valid_matching_digits = limit_hla_accuracy.(
-        valid_4_digits, 
+        valid_4_digits,
         allele_depth = accuracy
     )
 
@@ -57,21 +57,26 @@ function epitope_prediction(
     for allele in string.(alleles)
         push!(allele_strings, allele[1:5] * allele[7:end])
     end
-    
-    @suppress run(
-        `$(Conda.BINDIR)/mhcflurry-predict-scan
-            --alleles $allele_strings 
-            --sequences $query
-            --out $output_file
-            --results-all`
-    )
+
+    CondaPkg.withenv() do
+        @suppress run(
+            `mhcflurry-predict-scan
+                --alleles $allele_strings
+                --sequences $query
+                --out $output_file
+                --results-all
+                --no-throw`
+        )
+    end
 
     df = DataFrame(CSV.File(output_file))
-    filter!(x -> (x[:affinity_percentile] <= rank_threshold) | 
+    dropmissing!(df, :best_allele)
+
+    filter!(x -> (x[:affinity_percentile] <= rank_threshold) |
         (x[:presentation_percentile] <= rank_threshold), df)
 
     df[!, :best_allele] = Escape.limit_hla_accuracy.(
-        parse_allele.(df[!, :best_allele]), 
+        parse_allele.(df[!, :best_allele]),
         allele_depth = accuracy
     ) .|> string
 
@@ -79,9 +84,12 @@ function epitope_prediction(
 end
 
 function valid_alleles()
-    mhcflurry_output = @suppress read(
-        `$(Conda.BINDIR)/mhcflurry-predict --list-supported-alleles`, String
-    )
+    mhcflurry_output = CondaPkg.withenv() do
+        @suppress read(
+            `mhcflurry-predict --list-supported-alleles`, String
+        )
+    end
+
     valid_allele_strings = split(mhcflurry_output, '\n')
     filter!(x -> startswith(x, "HLA"), valid_allele_strings)
 
@@ -103,7 +111,7 @@ function consensus_sequence(records::Vector{FASTX.FASTA.Record})
             consensus[i] = "-"
         else
             consensus[i] = findfirst(x -> x == maximum(values(counts)), counts)
-        end 
+        end
     end
 
     return string.(consensus...)

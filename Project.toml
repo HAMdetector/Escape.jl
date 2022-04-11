@@ -1,12 +1,12 @@
 name = "Escape"
 uuid = "c9e4727e-aca6-11e8-18a9-b13bcfc7f449"
 authors = ["Daniel Habermann <daniel.habermann@uni-due.de>"]
-version = "0.1.4"
+version = "0.2.0"
 
 [deps]
 BioSequences = "7e6ae17a-c86d-528c-b3b9-7f778a29fe59"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
+CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
@@ -35,10 +35,8 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 raxml_ng_jll = "43212305-17f8-588b-b284-440d77d456cb"
 
 [compat]
-julia = "1.6"
 BioSequences = "2.0.5"
 CSV = "0.9.10"
-Conda = "1.5.2"
 DataFrames = "1.2.2"
 Distributions = "0.25.24"
 FASTX = "1.2.0"
@@ -55,4 +53,5 @@ StaticArrays = "1.2.13"
 StatsBase = "0.33.12"
 StatsFuns = "0.9.12"
 Suppressor = "0.2.0"
+julia = "1.6"
 raxml_ng_jll = "1.0.2"
