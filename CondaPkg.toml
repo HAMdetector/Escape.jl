@@ -1,5 +1,6 @@
 [deps]
 tensorflow = ""
+python = "==3.11"
 
 [pip.deps]
-mhcflurry = ""
+mhcflurry = "@ git+https://github.com/HAMdetector/mhcflurry.git"

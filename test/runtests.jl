@@ -1,6 +1,3 @@
-using Test
-using Escape
-
 using DataFrames
 using Distributions
 using FASTX
@@ -15,6 +12,9 @@ using StaticArrays
 using Statistics
 using Suppressor
 using LinearAlgebra
+
+using Test
+@suppress using Escape
 
 include("alleles.jl")
 include("abstract_hla_model.jl")
