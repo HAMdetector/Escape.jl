@@ -1,7 +1,7 @@
 export load_result
 export replacement_summary
 
-function load_result(save_file::String) 
+function load_result(save_file::String)
     isfile(save_file) || error("File $save_file does not exist.")
 
     result = load(save_file)["result"]
@@ -10,9 +10,9 @@ function load_result(save_file::String)
 end
 
 function replacement_summary(
-    result::HLAModelResult; 
-    fdr::Bool = false,
-    fisher_p::Bool = false
+    result::HLAModelResult;
+    fdr::Bool=false,
+    fisher_p::Bool=false
 )
     sf = stanfit(result)
     si = stan_input(result)
@@ -23,16 +23,16 @@ function replacement_summary(
     rs = replacements(result)
 
     df = DataFrame(
-        allele = HLAAllele[],
-        position = Int[], 
-        replacement = Char[],
-        posterior_p = Float64[],
-        log_odds_lower_95 = Float64[],
-        log_odds_upper_95 = Float64[],
-        fisher_p = Float64[],
-        in_predicted_epitope = Int[],
-        n_replacement_total = Int[],
-        n_replacement_with_hla = Int[]
+        allele=HLAAllele[],
+        position=Int[],
+        replacement=Char[],
+        posterior_p=Float64[],
+        log_odds_lower_95=Float64[],
+        log_odds_upper_95=Float64[],
+        fisher_p=Float64[],
+        in_predicted_epitope=Int[],
+        n_replacement_total=Int[],
+        n_replacement_with_hla=Int[]
     )
 
     R = si["R"]
@@ -40,25 +40,25 @@ function replacement_summary(
     Z = si["Z"]
 
     if fisher_p
-        fisher = Escape.run(Escape.FisherTest(), data; fdr = fdr)
+        fisher = Escape.run(Escape.FisherTest(), data; fdr=fdr)
     end
 
-	for r in 1:length(rs)
+    for r in 1:length(rs)
         fisher_idx = fisher_p ? findfirst(x -> x == rs[r], fisher.replacements) : 0
 
         for d in 1:D
             beta_hla = posterior["beta_hla.$r.$d"]
             lower, upper = quantile(beta_hla, (0.025, 0.975))
-            p_value = fisher_p ? fisher.p_values[fisher_idx][alleles[d]] : 0
-            n_total = fisher_p ? sum(fisher.counts[fisher_idx][alleles[d]][1, :]) : 0
-            n_with_hla = fisher_p ? fisher.counts[fisher_idx][alleles[d]][1, 1] : 0
-            
+            p_value = fisher_p ? fisher.p_values[fisher_idx][alleles[d]] : missing
+            n_total = fisher_p ? sum(fisher.counts[fisher_idx][alleles[d]][1, :]) : missing
+            n_with_hla = fisher_p ? fisher.counts[fisher_idx][alleles[d]][1, 1] : missing
+
             z = Z[r, d]
 
-            push!(df, 
-                [ 
+            push!(df,
+                [
                     alleles[d],
-                    position(rs[r]), 
+                    position(rs[r]),
                     replacement(rs[r]),
                     mean(beta_hla .> 0),
                     lower,
@@ -72,7 +72,7 @@ function replacement_summary(
         end
     end
 
-    sort!(df, :posterior_p, rev = true)
+    sort!(df, :posterior_p, rev=true)
 
     return df
 end
@@ -85,7 +85,7 @@ end
 
 function diagnostics(result::HLAModelResult)
     sf = stanfit(result)
-    
+
     return sf.diagnostics
 end
 
