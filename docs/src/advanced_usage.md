@@ -41,7 +41,7 @@ data = HLAData(
 )
 
 result = Escape.run_model(
-    data, chains = 4, iter = 1000, warmup = 300, stan_args = "adapt_delta=0.95"
+    data, chains = 4, iter = 1000, warmup = 300, stan_args = "adapt delta=0.95"
 )
 ```
 
