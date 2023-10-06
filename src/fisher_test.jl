@@ -4,20 +4,21 @@ struct FisherTest <: AbstractHLAModel end
 
 struct FisherTestResult
     replacements::Vector{Replacement}
-    counts::Vector{Dict{HLAAllele, Array{Int, 2}}}
-    p_values::Vector{Dict{HLAAllele, Float64}}
-    log_odds::Vector{Dict{HLAAllele, Float64}}
+    counts::Vector{Dict{HLAAllele,Array{Int,2}}}
+    p_values::Vector{Dict{HLAAllele,Float64}}
+    log_odds::Vector{Dict{HLAAllele,Float64}}
 end
 
-function Escape.run(model::FisherTest, data::AbstractHLAData; fdr::Bool = false)
+function Escape.run(model::FisherTest, data::AbstractHLAData; fdr::Bool=false,
+    allele_depth::Int=1)
 
     r = replacements(data)
-    m = hla_matrix(data.hla_types; allele_depth = allele_depth)
-    alleles = sort(unique_alleles(data.hla_types, allele_depth = allele_depth))
+    m = hla_matrix(data.hla_types; allele_depth=allele_depth)
+    alleles = sort(unique_alleles(data.hla_types, allele_depth=allele_depth))
 
-    counts = [Dict{HLAAllele, Array{Int, 2}}() for _ in 1:length(r)]
-    p_values = [Dict{HLAAllele, Float64}() for _ in 1:length(r)]
-    log_odds = [Dict{HLAAllele, Float64}() for _ in 1:length(r)]
+    counts = [Dict{HLAAllele,Array{Int,2}}() for _ in 1:length(r)]
+    p_values = [Dict{HLAAllele,Float64}() for _ in 1:length(r)]
+    log_odds = [Dict{HLAAllele,Float64}() for _ in 1:length(r)]
 
     @showprogress "Fisher's exact test " for (i, replacement) in enumerate(r)
         y = targets(replacement, data)
@@ -40,7 +41,7 @@ function Escape.run(model::FisherTest, data::AbstractHLAData; fdr::Bool = false)
     return FisherTestResult(r, counts, p_values, log_odds)
 end
 
-function adjust_p_values!(x::Vector{Dict{HLAAllele, Float64}})
+function adjust_p_values!(x::Vector{Dict{HLAAllele,Float64}})
     for d in x
         p_values = collect(values(d))
         adjusted_p_values = adjust(p_values, BenjaminiHochberg())
@@ -55,15 +56,15 @@ function adjust_p_values!(x::Vector{Dict{HLAAllele, Float64}})
 end
 
 function Escape.run(model::FisherTest, data::AbstractHLAData, replacement::Replacement;
-                    wp = WorkerPool(workers()), allele_depth::Int = 1)
+    wp=WorkerPool(workers()), allele_depth::Int=1)
     y = targets(replacement, data)
-    m = hla_matrix(data.hla_types; allele_depth = allele_depth)
+    m = hla_matrix(data.hla_types; allele_depth=allele_depth)
 
-    alleles = sort(unique_alleles(data.hla_types, allele_depth = allele_depth))
+    alleles = sort(unique_alleles(data.hla_types, allele_depth=allele_depth))
 
-    counts = Dict{HLAAllele, Array{Int, 2}}()
-    p_values = Dict{HLAAllele, Float64}()
-    log_odds = Dict{HLAAllele, Float64}()
+    counts = Dict{HLAAllele,Array{Int,2}}()
+    p_values = Dict{HLAAllele,Float64}()
+    log_odds = Dict{HLAAllele,Float64}()
 
     for (i, allele) in enumerate(alleles)
         mutation_present = Bool.(collect(skipmissing(y)))
@@ -82,14 +83,14 @@ function fisher_exact_test(a::AbstractVector{Bool}, b::AbstractVector{Bool})
     c = zeros(Int, 2, 2)
 
     for i in eachindex(a)
-        c[2 - a[i], 2 - b[i]] += 1
+        c[2-a[i], 2-b[i]] += 1
     end
 
     if (c[:, 1] == [0, 0]) | (c[:, 2] == [0, 0])
-        return (counts = c, p = 1, beta = Inf)
+        return (counts=c, p=1, beta=Inf)
     end
 
-    f = FisherExactTest(c[1,1], c[1,2], c[2,1], c[2,2])
+    f = FisherExactTest(c[1, 1], c[1, 2], c[2, 1], c[2, 2])
 
-    return (counts = c, p = pvalue(f, method = :minlike), beta = log(f.ω))
+    return (counts=c, p=pvalue(f, method=:minlike), beta=log(f.ω))
 end
