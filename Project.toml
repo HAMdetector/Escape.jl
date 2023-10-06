@@ -1,7 +1,7 @@
 name = "Escape"
 uuid = "c9e4727e-aca6-11e8-18a9-b13bcfc7f449"
 authors = ["Daniel Habermann <daniel.habermann@uni-due.de>"]
-version = "0.2.1"
+version = "0.3.0"
 
 [deps]
 BioSequences = "7e6ae17a-c86d-528c-b3b9-7f778a29fe59"
