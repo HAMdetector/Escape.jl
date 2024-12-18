@@ -186,7 +186,14 @@ function Base.show(io::IO, x::HLAAllele)
     print(io, convert(String, x))
 end
 
-function Base.rand(S::Type{HLAAllele}, gene::Symbol)
+
+Base.rand(S::Type{HLAAllele}, gene::Symbol) = Base.rand(Random.default_rng(), S, gene)
+
+function Base.rand(
+        rng::AbstractRNG, 
+        S::Type{HLAAllele}, 
+        gene::Symbol
+)
     gene ∉ [:A, :B, :C] && error("gene must be either :A, :B, or :C")
     fasta_path = joinpath(@__DIR__, "..", "data", "HLA_alleles", 
                          "$(string(gene))_nuc.fasta")
@@ -198,17 +205,21 @@ function Base.rand(S::Type{HLAAllele}, gene::Symbol)
         push!(allele_strings, allele_string)
     end
 
-    return parse_allele(rand(allele_strings))
+    return parse_allele(rand(rng, allele_strings))
 end
 
-function Base.rand(::Type{HLAType})
-    hla_alleles = Tuple(rand(HLAAllele, s) for s in (:A, :A, :B, :B, :C, :C))
+Base.rand(T::Type{HLAType}) = Base.rand(Random.default_rng(), T)
+
+function Base.rand(rng::AbstractRNG, ::Type{HLAType})
+    hla_alleles = Tuple(rand(rng, HLAAllele, s) for s in (:A, :A, :B, :B, :C, :C))
 
     return HLAType(hla_alleles)
 end
 
-function Base.rand(::Type{HLAType}, d::Int)
-    return [rand(HLAType) for i in 1:d]
+Base.rand(T::Type{HLAType}, d::Int) = Base.rand(Random.default_rng(), T::Type{HLAType}, d::Int)
+
+function Base.rand(rng::AbstractRNG, T::Type{HLAType}, d::Int)
+    return [rand(rng, HLAType) for i in 1:d]
 end
 
 function unique_alleles(hla_types::Vector{HLAType}; allele_depth::Int = 1)

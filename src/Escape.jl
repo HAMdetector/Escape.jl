@@ -4,7 +4,7 @@ using Base.Threads
 using LinearAlgebra, Statistics, DelimitedFiles, Distributed, Serialization
 using CondaPkg, CSV, StanInterface, Graphs, MetaGraphs, Suppressor, DataFrames,
       HypothesisTests, MultipleTesting, BioSequences, FASTX,
-      StatsBase, StatsFuns, Distributions, Loo, RecipesBase, Base.Threads,
+      StatsBase, StatsFuns, StableRNGs, Distributions, Loo, Random, RecipesBase, Base.Threads,
       StaticArrays, ProgressMeter, JLD2, HAMdetector_model_binaries_jll, raxml_ng_jll
 
 include("alleles.jl")
