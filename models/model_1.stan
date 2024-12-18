@@ -1,7 +1,7 @@
 // simple logistic regression model, without phylogeny and epitope prediction
 
 functions {
-    vector ll(vector global_pars, vector local_pars, real[] xs, int[] ys) {
+    vector ll(vector global_pars, vector local_pars, array[] real xs, array[] int ys) {
         // extracting integer-valued data from ys
         int y_counts = ys[1];
         int S = ys[2];
@@ -31,21 +31,21 @@ data {
     int D;
     int R;
     matrix[S, D] X;
-    int y[N];
-    int rs[N];
-    int idx[N];
+    array[N] int y;
+    array[N] int rs;
+    array[N] int idx;
     matrix[R, S] phy;
     matrix[R, D] Z;
 }
 
 transformed data {
-    int y_counts_int[R] = rep_array(0, R);
+    array[R] int y_counts_int = rep_array(0, R);
     vector[D] s_j_sq;
-    int ys[R, S] = rep_array(-1, R, S);
-    int idxs[R, S] = rep_array(-1, R, S);
+    array[R, S] int ys = rep_array(-1, R, S);
+    array[R, S] int idxs = rep_array(-1, R, S);
 
-    int y_r[R, 3 + S + S]; // size(1); S(1); D(1); idx(S); y(S)
-    real x_r[R, 1 + D + S + S * D + D]; // tau_0(1); Z(D); phy(S); X(S, D, column major); 
+    array[R, 3 + S + S] int y_r; // size(1); S(1); D(1); idx(S); y(S)
+    array[R, 1 + D + S + S * D + D] real x_r; // tau_0(1); Z(D); phy(S); X(S, D, column major); 
         // s_j_sq(D)
 
     // get size of y (y_counts) for each replacement, fill ys
@@ -88,12 +88,12 @@ transformed data {
 
 parameters {
     vector[R] b0_hla;
-    vector[D] beta_hla[R];
+    array[R] vector[D] beta_hla;
 }
 
 model {
     {
-        vector[D + 1] local_pars[R];
+        array[R] vector[D + 1] local_pars;
         vector[0] global_pars;
 
         for (i in 1:R) {

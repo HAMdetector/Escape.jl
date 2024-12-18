@@ -1,9 +1,9 @@
 // reduced model with phylogeny but without epitope prediction
 
 functions {
-    vector ll(vector global_pars, vector local_pars, real[] xs, int[] ys) {
+    vector ll(vector global_pars, vector local_pars, array[] real xs, array[] int ys) {
         // extracting integer-valued data from ys
-        int D = (num_elements(local_pars) - 3) / 4;
+        int D = (num_elements(local_pars) - 3) %/% 4;
         int y_counts = ys[1];
         int S = ys[2];
 
@@ -50,9 +50,9 @@ data {
     int D;
     int R;
     matrix[S, D] X;
-    int y[N];
-    int rs[N];
-    int idx[N];
+    array[N] int y;
+    array[N] int rs;
+    array[N] int idx;
     matrix[R, S] phy;
     matrix[R, D] Z;
 }
@@ -60,18 +60,18 @@ data {
 transformed data {
     vector[R] y_sums = rep_vector(0, R);
     vector[R] y_counts = rep_vector(0, R);
-    int y_counts_int[R] = rep_array(0, R);
+    array[R] int y_counts_int = rep_array(0, R);
     vector[R] y_means;
     vector[R] pseudo_variances;
     vector[R] pseudo_sigmas;
     vector[R] tau_0s;
     vector[D] s_j_sq;
-    int ys[R, S] = rep_array(-1, R, S);
-    int idxs[R, S] = rep_array(-1, R, S);
+    array[R, S] int ys = rep_array(-1, R, S);
+    array[R, S] int idxs = rep_array(-1, R, S);
     real p0 = 10;
 
-    int y_r[R, 2 + S + S]; // size(1); S(1); idx(S); y(S)
-    real x_r[R, 1 + D + S + S * D + D]; // tau_0(1); Z(D); phy(S); X(S, D, column major); 
+    array[R, 2 + S + S] int y_r; // size(1); S(1); idx(S); y(S)
+    array[R, 1+ D + S + S * D + D] real x_r; // tau_0(1); Z(D); phy(S); X(S, D, column major); 
         // s_j_sq(D)
 
     // get size of y (y_counts) for each replacement, fill ys
@@ -125,15 +125,15 @@ parameters {
     vector[R] b0_hla;
     vector<lower=0>[R] aux1_tau;
     vector<lower=0>[R] aux2_tau;
-    vector<lower=0>[D] aux1_lambda[R];
-    vector<lower=0>[D] aux2_lambda[R];
-    vector<lower=0>[D] c2[R];
-    vector[D] z_std[R];
+    array[R] vector<lower=0>[D] aux1_lambda;
+    array[R] vector<lower=0>[D] aux2_lambda;
+    array[R] vector<lower=0>[D] c2;
+    array[R] vector[D] z_std;
 }
 
 model {
     {
-        vector[3 + 4 * D] local_pars[R];
+        array[R] vector[3 + 4 * D] local_pars;
         vector[0] global_pars;
 
         for (i in 1:R) {
@@ -151,7 +151,7 @@ model {
 }
 
 generated quantities {
-    vector[D] beta_hla[R];
+    array[R] vector[D] beta_hla;
 
     for (r in 1:R) {
         real tau = (aux1_tau[r] * sqrt(aux2_tau[r])) * tau_0s[r];
