@@ -5,7 +5,7 @@
     )
 
     sf = Escape.stanfit(result)
-    p = extract(sf)
+    p = StanInterface.extract(sf)
 
     @test Escape.theta_i(sf, p, 1) isa Vector{Float64}
     @test Escape.pointwise_loglikelihoods(sf, p, 1) isa Vector{Vector{Float64}}

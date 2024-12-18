@@ -3,4 +3,4 @@ tensorflow = ""
 python = "==3.11"
 
 [pip.deps]
-mhcflurry = "@ git+https://github.com/HAMdetector/mhcflurry.git"
+mhcflurry = "@ git+https://github.com/openvax/mhcflurry.git"

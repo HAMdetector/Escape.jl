@@ -16,16 +16,18 @@ end
 @recipe function f(
     ::Calibration_Plot, result::HLAModelResult
 )
-
-    N = result.sf.data["N"]
-    rs = result.sf.data["rs"]
-    idx = result.sf.data["idx"]
+    
     sf = stanfit(result)
-    d = sf.data
-    posterior = extract(sf)
+    stan_data = StanInterface.stan_data(sf)
+    N = stan_data["N"]
+    rs = stan_data["rs"]
+    idx = stan_data["idx"]
+    sf = stanfit(result)
+
+    posterior = StanInterface.extract(sf)
     
     theta_pred = Vector{Float64}(undef, N)
-    y = result.sf.data["y"]
+    y = stan_data["y"]
 
     @threads for i in 1:N
         theta = mean(theta_i(sf, posterior, i))
@@ -61,16 +63,17 @@ end
     ::Phylogeny_Calibration, result::HLAModelResult
 )
 
-    if !("phy" ∈ keys(result.sf.data))
+if !("phy" ∈ keys(StanInterface.stan_data(result.sf)))
         error("HLAModelResult does not contain phylogeny information.")
     end
-
-    N = result.sf.data["N"]
-    rs = result.sf.data["rs"]
-    idx = result.sf.data["idx"]
-
-    theta = [result.sf.data["phy"][rs[i], idx[i]] for i in 1:N]
-    y = result.sf.data["y"]
+    
+    stan_data = StanInterface.stan_data(result.sf)
+    N = stan_data["N"]
+    rs = stan_data["rs"]
+    idx = stan_data["idx"]
+    
+    theta = [stan_data["phy"][rs[i], idx[i]] for i in 1:N]
+    y = stan_data["y"]
 
     @series begin
         seriestype := :calibration

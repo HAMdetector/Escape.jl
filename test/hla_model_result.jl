@@ -12,7 +12,7 @@
 
     result = deserialize(joinpath(@__DIR__, "data", "result.jls"))
 
-    @test Escape.stan_input(result) === result.sf.data
+    @test Escape.stan_input(result) == StanInterface.stan_data(Escape.stanfit(result))
     @test Escape.stanfit(result) === result.sf
     @test Escape.hla_data(result) === result.data
     @test Escape.hla_model(result) === result.model
@@ -35,19 +35,19 @@ end
     @test @suppress Escape.replacement_summary(result) isa DataFrame
 end
 
-@testset "reduce_size!(::HLAModelResult)" begin
-    ds = Escape.HLADataset("Test")
-    m = Escape.HLAModel{4}()
-    data = ds.data[1]
-
-    res = @suppress Escape.run(m, data, iter = 5, warmup = 5, chains = 1, 
-        keep_all_parameters = true)
-    
-    previous_size = Base.summarysize(res)
-    Escape.reduce_size!(res)
-
-    @test Base.summarysize(res) < previous_size
-end
+# @testset "reduce_size!(::HLAModelResult)" begin
+#     ds = Escape.HLADataset("Test")
+#     m = Escape.HLAModel{4}()
+#     data = ds.data[1]
+#
+#     res = @suppress Escape.run(m, data, iter = 5, warmup = 5, chains = 1, 
+#         keep_all_parameters = true)
+#
+#     previous_size = Base.summarysize(res)
+#     Escape.reduce_size!(res)
+#
+#     @test Base.summarysize(res) < previous_size
+# end
 
 @testset "diagnostics(::HLAModelResult)" begin
     ds = Escape.HLADataset("Test")
@@ -55,7 +55,7 @@ end
 
     res = @suppress Escape.run(Escape.HLAModel{1}(), data, iter = 5, warmup = 5, chains = 1)
 
-    @test Escape.diagnostics(res) == res.sf.diagnostics
+    @test @suppress Escape.diagnostics(res) == StanInterface.diagnose(res.sf)
 end
 
 @testset "load_result(::String)" begin

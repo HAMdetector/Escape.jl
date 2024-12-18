@@ -194,7 +194,7 @@ function Base.rand(S::Type{HLAAllele}, gene::Symbol)
     allele_strings = Vector{String}()
 
     for record in fasta_reader
-        allele_string = split(FASTA.description(record))[1]
+        allele_string = split(FASTA.description(record), " ")[2]
         push!(allele_strings, allele_string)
     end
 

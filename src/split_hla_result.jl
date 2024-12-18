@@ -38,7 +38,7 @@ function Escape.loo(result::SplitHLAModelResult)
         d = stan_input(split_result)
         split_pw = Vector{Loo.PointwiseLoo}(undef, d["N"])
         sf = stanfit(split_result)
-        p = extract(sf)
+        p = StanInterface.extract(sf)
         draws = sf.iter * sf.chains
 
         @threads for i in 1:d["N"]
@@ -62,13 +62,13 @@ end
         split_result = Base.invokelatest(result.f, split_idx)
         sf = stanfit(split_result)
 
-        N = sf.data["N"]
-        rs = sf.data["rs"]
-        idx = sf.data["idx"]
-        d = sf.data
-        posterior = extract(sf)
+        stan_data = StanInterface.stan_data(sf)
+        N = stan_data["N"]
+        rs = stan_data["rs"]
+        idx = stan_data["idx"]
+        posterior = StanInterface.extract(sf)
 
-        split_y = sf.data["y"]
+        split_y = stan_data["y"]
         split_theta_pred = Vector{Float64}(undef, N)
 
         @threads for i in 1:N
@@ -103,12 +103,13 @@ end
     for split_idx in 1:result.max_idx
         split_result = Base.invokelatest(result.f, split_idx)
         sf = split_result.sf
-        N = sf.data["N"]
-        rs = sf.data["rs"]
-        idx = sf.data["idx"]
+        stan_data = StanInterface.stan_data(sf)
+        N = stan_data["N"]
+        rs = stan_data["rs"]
+        idx = stan_data["idx"]
 
-        split_theta = [sf.data["phy"][rs[i], idx[i]] for i in 1:N]
-        split_y = sf.data["y"]
+        split_theta = [stan_data["phy"][rs[i], idx[i]] for i in 1:N]
+        split_y = stan_data["y"]
 
         append!(y, split_y)
         append!(theta, split_theta)

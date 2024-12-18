@@ -351,7 +351,7 @@ function phylogeny_information(
     end
     phy = phy'
 
-    return phy
+    return Matrix(phy)
 end
 
 function is_valid(input::Dict{String, Any})

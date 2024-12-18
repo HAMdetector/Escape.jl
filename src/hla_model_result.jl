@@ -17,7 +17,7 @@ function replacement_summary(
     sf = stanfit(result)
     si = stan_input(result)
     data = hla_data(result)
-    posterior = extract(sf)
+    posterior = StanInterface.extract(sf)
 
     alleles = hla_alleles(result)
     rs = replacements(result)
@@ -32,7 +32,7 @@ function replacement_summary(
         fisher_p=Float64[],
         in_predicted_epitope=Int[],
         n_replacement_total=Int[],
-        n_replacement_with_hla=Int[]
+        n_replacement_with_hla=Int[],
     )
 
     R = si["R"]
@@ -67,7 +67,8 @@ function replacement_summary(
                     z,
                     n_total,
                     n_with_hla
-                ]
+                ],
+                promote=true
             )
         end
     end
@@ -86,12 +87,12 @@ end
 function diagnostics(result::HLAModelResult)
     sf = stanfit(result)
 
-    return sf.diagnostics
+    return StanInterface.diagnose(sf)
 end
 
 hla_model(result::HLAModelResult) = result.model
 hla_data(result::HLAModelResult) = result.data
 stanfit(result::HLAModelResult) = result.sf
-stan_input(result::HLAModelResult) = stanfit(result).data
+stan_input(result::HLAModelResult) = StanInterface.stan_data(stanfit(result))
 hla_alleles(result::HLAModelResult) = result.alleles
 replacements(result::HLAModelResult) = result.replacements

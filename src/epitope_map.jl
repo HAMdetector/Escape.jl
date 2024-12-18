@@ -54,17 +54,17 @@ function match_epitope(epitope::String, data::AbstractHLAData;
         max_levenshtein_distance::Int = 0
 )
     position = Int[]
-    query = ApproximateSearchQuery(LongAminoAcidSeq(epitope))
+    query = ApproximateSearchQuery(LongAA(epitope))
 
     for record in records(data)
-        sequence = BioSequences.sequence(record)
+        sequence = FASTX.sequence(record)
         sequence_string = replace(string(sequence), 'X' => '-')
-        sequence = LongAminoAcidSeq(sequence_string)
+        sequence = LongAA(sequence_string)
 
-        idx = approxsearchindex(sequence, query, max_levenshtein_distance)
-        
-        if idx != 0
-            push!(position, idx)
+        idx = findfirst(query, max_levenshtein_distance, sequence)
+
+        if idx != nothing
+            push!(position, idx[1])
         end
     end
 
